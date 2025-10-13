@@ -16,7 +16,7 @@ const AppLayout = ({ children }) => {
       }}
     >
       <Navbar />
-      <Box component="main" flex="1" sx={{ mt: "64px" }}>
+      <Box component="main" flex="1" sx={{ mt: { xs: "80px" } }}>
         {children}
       </Box>
       <Footer />

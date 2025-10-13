@@ -9,20 +9,25 @@ import Stack from "@mui/material/Stack";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
-import MenuItem from "@mui/material/MenuItem";
 import design1dark from "../images/design1dark.png";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 import Link from "@mui/material/Link";
-import { Link as RouterLink } from "react-router-dom"; //to avoid MUI link conflict
+import { Link as RouterLink } from "react-router-dom";
+import MenuItem from "@mui/material/MenuItem";
+
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 import ReportInstruction from "./ReportInstruction";
 const FoundForm = () => {
   const whereYouHear = [
     {
-      value: "Freind/Family",
-      label: "Freind/Family",
+      value: "Friend/Family",
+      label: "Friend/Family",
     },
     {
       value: "X (twitter)",
@@ -36,7 +41,6 @@ const FoundForm = () => {
       value: "TikTok",
       label: "TikTok",
     },
-
     {
       value: "LinkedIn",
       label: "LinkedIn",
@@ -49,6 +53,7 @@ const FoundForm = () => {
   const [filePreview, setFilePreview] = useState(null);
 
   const [fileName, setFileName] = useState("");
+  const [foundDate, setFoundDate] = useState(null);
 
   const { t, i18n } = useTranslation();
 
@@ -98,6 +103,10 @@ const FoundForm = () => {
     });
   };
 
+  const handleDateChange = (newDate) => {
+    setFoundDate(newDate);
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -107,9 +116,19 @@ const FoundForm = () => {
       formData.append("email", foundUserInfo.email);
       formData.append("description", foundUserInfo.description);
       formData.append("location", foundUserInfo.location);
+      formData.append(
+        "recipientDescription",
+        foundUserInfo.recipientDescription
+      );
       formData.append("resource", foundUserInfo.resource);
       formData.append("terms", foundUserInfo.terms);
       formData.append("instruction", foundUserInfo.instruction);
+
+      // Append the found date if it exists
+      if (foundDate) {
+        formData.append("foundDate", foundDate.format("YYYY-MM-DD"));
+      }
+
       // append the file only when a real File object exists. Avoid appending null which becomes the string "null"
       if (foundUserInfo.file) {
         formData.append("image", foundUserInfo.file); //append the file to the form data
@@ -132,6 +151,7 @@ const FoundForm = () => {
         email: "",
         description: "",
         location: "",
+        recipientDescription: "",
         file: null,
         resource: "",
         terms: false,
@@ -139,6 +159,7 @@ const FoundForm = () => {
       });
       setFilePreview(null);
       setFileName("");
+      setFoundDate(null);
       console.log(foundUserInfo);
     } catch (err) {
       console.error(err.message);
@@ -164,9 +185,8 @@ const FoundForm = () => {
           justifyContent: "center",
           backgroundImage: `url(${design1dark})`,
           backgroundRepeat: "no-repeat",
-          backgroundSize: "cover", // to cover the container
+          backgroundSize: "cover",
           backgroundPosition: "center",
-
           overflowX: "hidden",
         }}
       >
@@ -176,7 +196,7 @@ const FoundForm = () => {
           onSubmit={handleFormSubmit}
           encType="multipart/form-data"
           sx={{
-            width: { xs: "80%", sm: "70%", md: "50%", lg: "45%" }, // responsive breakpoints
+            width: { xs: "80%", sm: "70%", md: "50%", lg: "45%" },
             display: "flex",
             flexDirection: "column",
             gap: "1rem",
@@ -204,7 +224,7 @@ const FoundForm = () => {
               {t("Lost items form")}
             </Link>{" "}
           </Typography>
-          <InputLabel htmlFor="name-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="name-input" sx={{ mt: 2, width: "65%" }}>
             {t("Name")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
@@ -219,7 +239,7 @@ const FoundForm = () => {
             onChange={handleNameChange}
           />
 
-          <InputLabel htmlFor="email-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="email-input" sx={{ mt: 2, width: "65%" }}>
             {t("Email")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
@@ -234,7 +254,7 @@ const FoundForm = () => {
             onChange={handleEmailChange}
           />
 
-          <InputLabel htmlFor="description-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="description-input" sx={{ mt: 2, width: "65%" }}>
             {t("Description of the found item")}{" "}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
@@ -252,23 +272,29 @@ const FoundForm = () => {
             onChange={handleDescriptionChange}
           />
 
-          <InputLabel htmlFor="location-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="date-input" sx={{ mt: 2, width: "65%" }}>
             {t("When did you find the item?")}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
-          <TextField
-            required
-            name="date"
-            id="date-input"
-            type="text"
-            placeholder={t("Enter the date")}
-            fullWidth
-            size="small"
-            value={foundUserInfo.location}
-            onChange={handleLocationChange}
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              value={foundDate}
+              onChange={handleDateChange}
+              slotProps={{
+                textField: {
+                  required: true,
+                  fullWidth: true,
+                  size: "small",
+                  id: "date-input",
+                  placeholder: t("Select the date"),
+                },
+              }}
+              maxDate={dayjs()}
+              format="DD/MM/YYYY"
+            />
+          </LocalizationProvider>
 
-          <InputLabel htmlFor="location-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="location-input" sx={{ mt: 2, width: "65%" }}>
             {t("Where did you find the item?")}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
@@ -284,7 +310,10 @@ const FoundForm = () => {
             onChange={handleLocationChange}
           />
 
-          <InputLabel htmlFor="description-input" sx={{ mt: 2 }}>
+          <InputLabel
+            htmlFor="recipientDescription-input"
+            sx={{ mt: 2, width: "65%" }}
+          >
             {t("Where and who did you take the item to?")}{" "}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
@@ -298,19 +327,23 @@ const FoundForm = () => {
             placeholder={t(
               "Please enter a description of the place and information about the recipient if possible."
             )}
-            value={foundUserInfo.description}
-            onChange={handleDescriptionChange}
+            value={foundUserInfo.recipientDescription}
+            onChange={(e) =>
+              setFoundUserInfo({
+                ...foundUserInfo,
+                recipientDescription: e.target.value,
+              })
+            }
           />
 
-          <InputLabel htmlFor="file-input" sx={{ mt: 2 }}>
-            {t("Item photo")} <span style={{ color: "red" }}>*</span>
+          <InputLabel htmlFor="file-input" sx={{ mt: 2, width: "65%" }}>
+            {t("Item Photo")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
 
           {/* label button to style file input */}
           <Button name="file" variant="outlined" component="label" required>
-            {/* file upload should be req */}
             <FileUploadRoundedIcon />
-            {t("Upload Item Photo")}
+            {t("Upload photo")}
             <input
               id="file-input"
               type="file"
@@ -324,6 +357,30 @@ const FoundForm = () => {
               {t("Selected file:")} {fileName}
             </p>
           )}
+
+          <InputLabel htmlFor="resource-input" sx={{ mt: 2, width: "65%" }}>
+            {t("How Did You Hear About Us?")}{" "}
+            <span style={{ color: "red" }}>*</span>
+          </InputLabel>
+          <TextField
+            required
+            name="resource"
+            id="resource-input"
+            select
+            label={t("Select...")}
+            size="small"
+            value={foundUserInfo.resource}
+            onChange={handleResourceChange}
+          >
+            <MenuItem value="">
+              <em>{t("Select...")}</em>
+            </MenuItem>
+            {whereYouHear.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {t(option.label)}
+              </MenuItem>
+            ))}
+          </TextField>
 
           <FormControlLabel
             control={
@@ -364,6 +421,7 @@ const FoundForm = () => {
               </>
             }
           />
+
           <Button
             type="submit"
             variant="contained"
