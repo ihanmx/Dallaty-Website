@@ -1,140 +1,164 @@
-import Stack from "@mui/material/Stack";
+// handelers
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+
+//React-dom
+import { Link } from "react-router-dom";
+
+//local components
+import TrustedBySection from "./TrustedBySection";
+
+//imgs
 import landpageImage from "../images/landpageImage.png";
+
+//MUI components
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
+//MUI icons
 import DeviceUnknownOutlinedIcon from "@mui/icons-material/DeviceUnknownOutlined";
 import ScreenSearchDesktopOutlinedIcon from "@mui/icons-material/ScreenSearchDesktopOutlined";
 
 const LandingPage = () => {
-  const h1Styles = { xs: "1rem", sm: "1.2rem", md: "1.8rem", lg: "1.8rem" };
+  const { t, i18n } = useTranslation();
 
   return (
-    // Main container
-    <Stack
-      direction={{ md: "row", xs: "column" }}
-      justifyContent="center"
-      alignItems="center"
-      spacing={0}
-      sx={{
-        pt: 4,
-        height: "110vh",
-        maxHeight: { md: "110vh", xs: "auto" },
-        maxWidth: "100vw",
-        boxSizing: "border-box",
-        alignItems: "center",
-        justifyContent: { md: "space-around", xs: "center" },
-
-        // backgroundColor: "red",
-      }}
-
-      // sx={{ backgroundColor: "light.main" }}
-    >
-      {/* left side (buttons and typogrophy) */}
-
+    <>
+      {/* // Main container */}
       <Stack
+        id="container"
+        direction={{ md: "row", xs: "column" }}
+        justifyContent="center"
+        alignItems="center"
+        gap={2}
         sx={{
-          height: { md: "100%", xs: "30%" },
-          maxHeight: { md: "100%", xs: "30%" },
-          maxWidth: { md: "40%", xs: "100%" },
-          width: { md: "40%", xs: "100%" },
+          height: { md: "100vh", xs: "auto" },
+          maxHeight: { md: "100vh", xs: "auto" },
+          minHeight: "100vh",
+          width: "100%",
+
+          maxWidth: "100%",
+          boxSizing: "border-box",
           alignItems: "center",
-          justifyContent: "center",
-          p: { xs: 2, md: 1 },
-          // backgroundColor: "green",
-          order: { xs: 2, md: 1 }, // flips on small screens to show the image before the text
+          p: 2,
+
+          justifyContent: "space-evenly",
+          overflowX: "clip",
+
+          // backgroundColor: "red",
         }}
+
+        // sx={{ backgroundColor: "light.main" }}
       >
-        {/* Typography stack */}
+        {/* left side (buttons and typogrophy) */}
+
         <Stack
-          className="Typography-Stack"
-          direction={"column"}
-          //  sx={{ backgroundColor: "yellow" }}
-          gap={2}
-        >
-          <Typography
-            textAlign={"center"}
-            sx={{
-              fontSize: h1Styles, //rem=16px
-              fontWeight: 600,
-            }}
-            color="primary.main"
-          >
-            We work on{" "}
-            <Typography
-              component="span"
-              color="secondary.main"
-              fontWeight={700}
-              sx={{
-                fontSize: h1Styles, //rem=16px
-                fontWeight: 600,
-              }}
-            >
-              matching
-            </Typography>{" "}
-            lost items reports with those who find them
-          </Typography>
+          id="text-container"
+          sx={{
+            height: { md: "100%", xs: "30%" },
+            maxHeight: { md: "100%", xs: "30%" },
+            width: { md: "45%", xs: "100%" },
+            maxWidth: { md: "45%", xs: "100%" },
 
-          <Typography
-            textAlign={"center"}
-            sx={{
-              fontSize: {
-                xs: "1.5rem",
-                sm: "2rem",
-                md: "2.5rem",
-                lg: "2.5rem",
-              }, //rem=16px
-              fontWeight: 700,
-            }}
-            color="secondary.main"
-          >
-            Precisely, Quickly, and Securely
-          </Typography>
-        </Stack>
-
-        {/* Buttons stack */}
-        <Stack className="Buttons-Stack" direction={"row"} spacing={2} mt={4}>
-          <Button
-            variant="contained"
-            startIcon={<DeviceUnknownOutlinedIcon />}
-            sx={{ bgcolor: "primary.main" }}
-          >
-            Lost Something
-          </Button>
-
-          <Button
-            variant="outlined"
-            startIcon={<ScreenSearchDesktopOutlinedIcon />}
-          >
-            Found Something
-          </Button>
-        </Stack>
-      </Stack>
-
-      {/* right side (image) */}
-      <Stack
-        sx={{
-          height: { md: "100%", xs: "65%" },
-          maxHeight: { md: "100%", xs: "65%" },
-          maxWidth: { md: "55%", xs: "100%" },
-          width: { md: "55%", xs: "100%" },
-          alignItems: "center",
-          justifyContent: "center",
-          // backgroundColor: "blue",
-          order: { xs: 1, md: 2 }, // flips on small screens to show the image before the text
-        }}
-      >
-        <img
-          src={landpageImage}
-          alt="Landing Page"
-          style={{
-            width: "90%",
-            height: "80%",
-            objectFit: "contain",
+            alignItems: "center",
+            justifyContent: "center",
+            pr: { xs: 2, md: 1 },
+            pl: { xs: 2, md: 1 },
+            // backgroundColor: "green",
+            order: { xs: 2, md: 1 }, // flips on small screens to show the image before the text
+            boxSizing: "border-box",
           }}
-        />
+        >
+          {/* Typography stack */}
+          <Stack
+            id="text-stack"
+            className="Typography-Stack"
+            direction={"column"}
+            //  sx={{ backgroundColor: "yellow" }}
+            gap={2}
+          >
+            <Typography
+              textAlign={"center"}
+              variant="h4"
+              color="primary.main"
+              sx={{ pb: { xs: 1, md: 2 } }}
+            >
+              {t("We work on")}{" "}
+              <Typography component="span" color="secondary.main" variant="h3">
+                {t("matching")}
+              </Typography>{" "}
+              {t("lost items reports with those who find them")}
+            </Typography>
+
+            <Typography
+              textAlign={"center"}
+              variant="h3"
+              color="secondary.main"
+            >
+              {t("Precisely, Quickly, and Securely")}
+            </Typography>
+          </Stack>
+
+          {/* Buttons stack */}
+          <Stack
+            id="buttons-stack"
+            className="Buttons-Stack"
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            mt={4}
+          >
+            <Link to="/lostform">
+              <Button
+                variant="contained"
+                startIcon={<DeviceUnknownOutlinedIcon />}
+                sx={{ bgcolor: "primary.main" }}
+              >
+                {t("Lost Something")}
+              </Button>
+            </Link>
+
+            <Link to="/foundform">
+              <Button
+                variant="outlined"
+                startIcon={<ScreenSearchDesktopOutlinedIcon />}
+              >
+                {t("Found Something")}
+              </Button>
+            </Link>
+          </Stack>
+        </Stack>
+
+        {/* right side (image) */}
+        <Stack
+          id="image-container"
+          sx={{
+            height: { md: "100%", xs: "50%" },
+            maxHeight: { md: "100%", xs: "50%" },
+            maxWidth: { md: "55%", xs: "90%" },
+            width: { md: "55%", xs: "100%" },
+            alignItems: "center",
+            justifyContent: "center",
+            boxSizing: "border-box",
+            // backgroundColor: "blue",
+            order: { xs: 1, md: 2 }, // flips on small screens to show the image before the text
+          }}
+        >
+          <Box
+            component="img"
+            src={landpageImage}
+            alt="Landing Page"
+            sx={{
+              width: "90%",
+              height: { xs: "100%", md: "80%" },
+              objectFit: "contain",
+            }}
+          />
+        </Stack>
       </Stack>
-    </Stack>
+      <TrustedBySection />
+    </>
   );
 };
 

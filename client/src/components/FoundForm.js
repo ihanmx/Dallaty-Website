@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useLostUserInfo } from "../contexts/LostUserInfoContext";
+import { useFoundUserInfo } from "../contexts/FoundUserInfoContext";
+import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
@@ -9,13 +10,15 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import MenuItem from "@mui/material/MenuItem";
-import design1 from "../images/design1.png";
-
-import Link from "@mui/material/Link";
+import design1dark from "../images/design1dark.png";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+
+import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom"; //to avoid MUI link conflict
-const LostForm = () => {
+
+import ReportInstruction from "./ReportInstruction";
+const FoundForm = () => {
   const whereYouHear = [
     {
       value: "Freind/Family",
@@ -39,55 +42,60 @@ const LostForm = () => {
       label: "LinkedIn",
     },
   ];
-  //Access lostUserInfo and setLostUserInfo from context
-  const { lostUserInfo, setLostUserInfo } = useLostUserInfo();
+  //Access foundUserInfo and setFoundUserInfo from context
+  const { foundUserInfo, setFoundUserInfo } = useFoundUserInfo();
 
   //To store file preview temporaryly
   const [filePreview, setFilePreview] = useState(null);
 
   const [fileName, setFileName] = useState("");
 
+  const { t, i18n } = useTranslation();
+
   //state handelers
   const handleNameChange = (e) => {
-    setLostUserInfo({ ...lostUserInfo, name: e.target.value });
+    setFoundUserInfo({ ...foundUserInfo, name: e.target.value });
   };
 
   const handleEmailChange = (e) => {
-    setLostUserInfo({ ...lostUserInfo, email: e.target.value });
+    setFoundUserInfo({ ...foundUserInfo, email: e.target.value });
   };
 
   const handleDescriptionChange = (e) => {
-    setLostUserInfo({ ...lostUserInfo, description: e.target.value });
+    setFoundUserInfo({ ...foundUserInfo, description: e.target.value });
   };
 
   const handleLocationChange = (e) => {
-    setLostUserInfo({ ...lostUserInfo, location: e.target.value });
+    setFoundUserInfo({ ...foundUserInfo, location: e.target.value });
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0]; //make sure that the file exists
 
     if (file) {
-      setLostUserInfo({ ...lostUserInfo, file: file });
+      setFoundUserInfo({ ...foundUserInfo, file: file });
       setFileName(file.name);
       setFilePreview(URL.createObjectURL(file)); //create a temporary URL for the file preview
     } else {
-      setLostUserInfo({ ...lostUserInfo, file: null });
+      setFoundUserInfo({ ...foundUserInfo, file: null });
       setFileName("file.name");
       setFilePreview(null);
     }
   };
 
   const handleResourceChange = (e) => {
-    setLostUserInfo({ ...lostUserInfo, resource: e.target.value });
+    setFoundUserInfo({ ...foundUserInfo, resource: e.target.value });
   };
 
   const handleTermsChange = (e) => {
-    setLostUserInfo({ ...lostUserInfo, terms: !lostUserInfo.terms });
+    setFoundUserInfo({ ...foundUserInfo, terms: !foundUserInfo.terms });
   };
 
-  const handleFeesChange = (e) => {
-    setLostUserInfo({ ...lostUserInfo, fees: !lostUserInfo.fees });
+  const handleInstructionChange = (e) => {
+    setFoundUserInfo({
+      ...foundUserInfo,
+      instruction: !foundUserInfo.instruction,
+    });
   };
 
   const handleFormSubmit = async (e) => {
@@ -95,20 +103,20 @@ const LostForm = () => {
     try {
       //create a form data object to be able to send file data types
       const formData = new FormData();
-      formData.append("name", lostUserInfo.name);
-      formData.append("email", lostUserInfo.email);
-      formData.append("description", lostUserInfo.description);
-      formData.append("location", lostUserInfo.location);
-      formData.append("resource", lostUserInfo.resource);
-      formData.append("terms", lostUserInfo.terms);
-      formData.append("fees", lostUserInfo.fees);
+      formData.append("name", foundUserInfo.name);
+      formData.append("email", foundUserInfo.email);
+      formData.append("description", foundUserInfo.description);
+      formData.append("location", foundUserInfo.location);
+      formData.append("resource", foundUserInfo.resource);
+      formData.append("terms", foundUserInfo.terms);
+      formData.append("instruction", foundUserInfo.instruction);
       // append the file only when a real File object exists. Avoid appending null which becomes the string "null"
-      if (lostUserInfo.file) {
-        formData.append("image", lostUserInfo.file); //append the file to the form data
+      if (foundUserInfo.file) {
+        formData.append("image", foundUserInfo.file); //append the file to the form data
       }
       //name of append must match the name in the backend multer single("image")
 
-      const response = await fetch("http://localhost:5000/form/lost", {
+      const response = await fetch("http://localhost:5000/form/found", {
         method: "POST",
         body: formData,
       });
@@ -117,9 +125,9 @@ const LostForm = () => {
       console.log("Server response:", responseData);
       alert("Form submitted successfully");
 
-      //reset lostUserInfo and file preview for new submissions
+      //reset foundUserInfo and file preview for new submissions
 
-      setLostUserInfo({
+      setFoundUserInfo({
         name: "",
         email: "",
         description: "",
@@ -127,10 +135,11 @@ const LostForm = () => {
         file: null,
         resource: "",
         terms: false,
-        fees: false,
+        instruction: false,
       });
       setFilePreview(null);
       setFileName("");
+      console.log(foundUserInfo);
     } catch (err) {
       console.error(err.message);
       alert("Error submitting form");
@@ -138,29 +147,30 @@ const LostForm = () => {
   };
 
   return (
-    <>
+    <div>
+      <ReportInstruction thememode="dark" />
       {/* form container */}
 
       <Stack
         sx={{
-          p: 2,
-          minHeight: "100vh",
           width: "100%",
           maxWidth: "100%",
+          p: 2,
+          minHeight: "100vh",
           bgcolor: (theme) => theme.palette.light.main,
           padding: "1rem",
+          boxSizing: "border-box",
           alignItems: "center",
           justifyContent: "center",
-          boxSizing: "border-box",
-          backgroundImage: `url(${design1})`,
+          backgroundImage: `url(${design1dark})`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover", // to cover the container
           backgroundPosition: "center",
 
           overflowX: "hidden",
         }}
-        //          backgroundBlendMode: "lighten", // lighten the contrast of image
       >
+        {/* this box act as the form component */}
         <Box
           component="form"
           onSubmit={handleFormSubmit}
@@ -178,11 +188,11 @@ const LostForm = () => {
           }}
         >
           <Typography textAlign={"center"} variant="h3" color="primary.main">
-            What did you lose?
+            {t("What did you find ?")}
           </Typography>
 
           <Typography>
-            Found a lost item ?{" "}
+            {t("Lost an item ?")}{" "}
             <Link
               component={RouterLink}
               to="/foundform"
@@ -191,42 +201,42 @@ const LostForm = () => {
               underline="always"
               sx={{ fontWeight: "bold" }}
             >
-              Found items form
+              {t("Lost items form")}
             </Link>{" "}
           </Typography>
-
-          <InputLabel htmlFor="name-input" sx={{ mt: 2, width: "65%" }}>
-            Name <span style={{ color: "red" }}>*</span>
+          <InputLabel htmlFor="name-input" sx={{ mt: 2 }}>
+            {t("Name")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
             required
             name="name"
             id="name-input"
             type="text"
-            placeholder="Enter your full name"
+            placeholder={t("Enter your full name")}
             fullWidth
             size="small"
-            value={lostUserInfo.name}
+            value={foundUserInfo.name}
             onChange={handleNameChange}
           />
 
-          <InputLabel htmlFor="email-input" sx={{ mt: 2, width: "65%" }}>
-            Gmail <span style={{ color: "red" }}>*</span>
+          <InputLabel htmlFor="email-input" sx={{ mt: 2 }}>
+            {t("Email")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
             required
             name="email"
             id="email-input"
             type="email"
-            placeholder="Enter your gmail"
+            placeholder={t("Enter your email")}
             fullWidth
             size="small"
-            value={lostUserInfo.email}
+            value={foundUserInfo.email}
             onChange={handleEmailChange}
           />
 
-          <InputLabel htmlFor="description-input" sx={{ mt: 2, width: "65%" }}>
-            Description of the Lost Item <span style={{ color: "red" }}>*</span>
+          <InputLabel htmlFor="description-input" sx={{ mt: 2 }}>
+            {t("Description of the found item")}{" "}
+            <span style={{ color: "red" }}>*</span>
           </InputLabel>
 
           <TextField
@@ -235,13 +245,31 @@ const LostForm = () => {
             id="description-input"
             multiline
             rows={4}
-            placeholder="Mention details such as type, color, brand, size, place, any unique features, etc."
-            value={lostUserInfo.description}
+            placeholder={t(
+              "Mention details such as type, color, brand, size, place, any unique features, etc."
+            )}
+            value={foundUserInfo.description}
             onChange={handleDescriptionChange}
           />
 
-          <InputLabel htmlFor="location-input" sx={{ mt: 2, width: "65%" }}>
-            Approximate Location
+          <InputLabel htmlFor="location-input" sx={{ mt: 2 }}>
+            {t("When did you find the item?")}
+            <span style={{ color: "red" }}>*</span>
+          </InputLabel>
+          <TextField
+            required
+            name="date"
+            id="date-input"
+            type="text"
+            placeholder={t("Enter the date")}
+            fullWidth
+            size="small"
+            value={foundUserInfo.location}
+            onChange={handleLocationChange}
+          />
+
+          <InputLabel htmlFor="location-input" sx={{ mt: 2 }}>
+            {t("Where did you find the item?")}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
@@ -249,22 +277,40 @@ const LostForm = () => {
             name="location"
             id="location-input"
             type="text"
-            placeholder="Enter the approximate location"
+            placeholder={t("Enter the location")}
             fullWidth
             size="small"
-            value={lostUserInfo.location}
+            value={foundUserInfo.location}
             onChange={handleLocationChange}
           />
 
-          <InputLabel htmlFor="file-input" sx={{ mt: 2, width: "65%" }}>
-            Item Photo <span style={{ color: "red" }}>*</span>
+          <InputLabel htmlFor="description-input" sx={{ mt: 2 }}>
+            {t("Where and who did you take the item to?")}{" "}
+            <span style={{ color: "red" }}>*</span>
+          </InputLabel>
+
+          <TextField
+            required
+            name="recipientDescription"
+            id="recipientDescription-input"
+            multiline
+            rows={4}
+            placeholder={t(
+              "Please enter a description of the place and information about the recipient if possible."
+            )}
+            value={foundUserInfo.description}
+            onChange={handleDescriptionChange}
+          />
+
+          <InputLabel htmlFor="file-input" sx={{ mt: 2 }}>
+            {t("Item photo")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
 
           {/* label button to style file input */}
           <Button name="file" variant="outlined" component="label" required>
             {/* file upload should be req */}
             <FileUploadRoundedIcon />
-            Upload photo
+            {t("Upload Item Photo")}
             <input
               id="file-input"
               type="file"
@@ -273,42 +319,25 @@ const LostForm = () => {
               accept="image/*"
             />
           </Button>
-          {fileName && <p>Selected file: {fileName}</p>}
-
-          <InputLabel htmlFor="resource-input" sx={{ mt: 2, width: "65%" }}>
-            How Did You Hear About Us? <span style={{ color: "red" }}>*</span>
-          </InputLabel>
-          <TextField
-            required
-            name="resource"
-            id="resource-input"
-            select
-            label="Select"
-            size="small"
-            value={lostUserInfo.resource}
-            onChange={handleResourceChange}
-          >
-            <MenuItem value="">
-              <em>Select...</em> {/*  default empty value option */}
-            </MenuItem>
-            {whereYouHear.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
+          {fileName && (
+            <p>
+              {t("Selected file:")} {fileName}
+            </p>
+          )}
 
           <FormControlLabel
             control={
               <Checkbox
                 required
-                name="fees"
-                id="fees-checkbox"
-                checked={lostUserInfo.fees}
-                onChange={handleFeesChange}
+                name="instruction"
+                id="instruction-checkbox"
+                checked={foundUserInfo.instruction}
+                onChange={handleInstructionChange}
               />
             }
-            label="I acknowledge that a service fee of 25 SAR applies if the item is found"
+            label={t(
+              "I acknowledge that I committed to all instructions for reporting a found item."
+            )}
           />
 
           <FormControlLabel
@@ -317,20 +346,20 @@ const LostForm = () => {
                 required
                 name="terms"
                 id="terms-checkbox"
-                checked={lostUserInfo.terms}
+                checked={foundUserInfo.terms}
                 onChange={handleTermsChange}
               />
             }
             label={
               <>
-                I agree to the{" "}
+                {t("I agree to the")}{" "}
                 <Link
                   href="https://dhallaty.sa/TC-en"
                   target="_blank"
                   rel="noopener noreferrer"
                   underline="hover"
                 >
-                  Terms and Conditions
+                  {t("Terms and Conditions")}
                 </Link>
               </>
             }
@@ -347,11 +376,11 @@ const LostForm = () => {
               fontWeight: 600,
             }}
           >
-            Submit
+            {t("Submit")}
           </Button>
         </Box>
       </Stack>
-    </>
+    </div>
   );
 };
-export default LostForm;
+export default FoundForm;
