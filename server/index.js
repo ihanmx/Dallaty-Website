@@ -83,7 +83,15 @@ app.post("/form/lost", upload.single("image"), async (req, res) => {
       "INSERT INTO users (name,email,description,location,file,resource,terms,fees) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
       [name, email, description, location, filePath, resource, terms, fees]
     );
-    res.json(newUser.rows[0]);
+    console.log("DB insert result:", newUser);
+
+    if (newUser && newUser.rowCount && newUser.rowCount > 0) {
+      res.status(201).json(newUser.rows[0]);
+    } else {
+      console.warn("DB insert returned no rows", newUser);
+      res.status(400).json({ error: "User could not be created" });
+    }
+
     console.log(req.body);
     console.log(req.file);
   } catch (err) {
@@ -95,7 +103,14 @@ app.post("/form/lost", upload.single("image"), async (req, res) => {
 // found endpoint
 app.post("/form/found", upload.single("image"), async (req, res) => {
   try {
-    const { name, email, description, location, resource } = req.body;
+    const {
+      name,
+      email,
+      description,
+      location,
+      recipientDescription,
+      foundDate, // ✅ extract it from req.body
+    } = req.body;
     // convert checkbox string values to booleans because they came as strings from the client
     const terms =
       req.body.terms === "true" ||
@@ -109,20 +124,32 @@ app.post("/form/found", upload.single("image"), async (req, res) => {
     // multer adds file information to req.file
     const filePath = req.file ? `/uploads/found/${req.file.filename}` : null;
 
+    // ensure foundDate is either null or a string date acceptable by the DB
+    const found_date_value = foundDate && foundDate !== "" ? foundDate : null;
+
     const newUser = await pool.query(
-      "INSERT INTO users1 (name,email,description,location,file,resource,terms,instruction) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
+      "INSERT INTO users1 (name,email,description,found_date,location,file,recipientDescription,terms,instruction) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
       [
         name,
         email,
         description,
+        found_date_value,
         location,
         filePath,
-        resource,
+        recipientDescription,
         terms,
         instruction,
       ]
     );
-    res.json(newUser.rows[0]);
+
+    console.log("DB insert result:", newUser);
+
+    if (newUser && newUser.rowCount && newUser.rowCount > 0) {
+      res.status(201).json(newUser.rows[0]);
+    } else {
+      console.warn("DB insert returned no rows", newUser);
+      res.status(400).json({ error: "User could not be created" });
+    }
     console.log(req.body);
     console.log(req.file);
   } catch (err) {

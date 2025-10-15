@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLostUserInfo } from "../contexts/LostUserInfoContext";
+import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
@@ -14,12 +15,12 @@ import design1 from "../images/design1.png";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Link as RouterLink } from "react-router-dom"; //to avoid MUI link conflict
+import { Link as RouterLink } from "react-router-dom";
 const LostForm = () => {
   const whereYouHear = [
     {
-      value: "Freind/Family",
-      label: "Freind/Family",
+      value: "Friend/Family",
+      label: "Friend/Family",
     },
     {
       value: "X (twitter)",
@@ -33,7 +34,6 @@ const LostForm = () => {
       value: "TikTok",
       label: "TikTok",
     },
-
     {
       value: "LinkedIn",
       label: "LinkedIn",
@@ -41,6 +41,7 @@ const LostForm = () => {
   ];
   //Access lostUserInfo and setLostUserInfo from context
   const { lostUserInfo, setLostUserInfo } = useLostUserInfo();
+  const { t } = useTranslation();
 
   //To store file preview temporaryly
   const [filePreview, setFilePreview] = useState(null);
@@ -147,26 +148,24 @@ const LostForm = () => {
           minHeight: "100vh",
           width: "100%",
           maxWidth: "100%",
-          bgcolor: (theme) => theme.palette.light.main,
+          backgroundColor: "white",
           padding: "1rem",
           alignItems: "center",
           justifyContent: "center",
           boxSizing: "border-box",
           backgroundImage: `url(${design1})`,
           backgroundRepeat: "no-repeat",
-          backgroundSize: "cover", // to cover the container
+          backgroundSize: "cover",
           backgroundPosition: "center",
-
           overflowX: "hidden",
         }}
-        //          backgroundBlendMode: "lighten", // lighten the contrast of image
       >
         <Box
           component="form"
           onSubmit={handleFormSubmit}
           encType="multipart/form-data"
           sx={{
-            width: { xs: "80%", sm: "70%", md: "50%", lg: "45%" }, // responsive breakpoints
+            width: { xs: "80%", sm: "70%", md: "50%", lg: "45%" },
             display: "flex",
             flexDirection: "column",
             gap: "1rem",
@@ -178,11 +177,11 @@ const LostForm = () => {
           }}
         >
           <Typography textAlign={"center"} variant="h3" color="primary.main">
-            What did you lose?
+            {t("What did you lose?")}
           </Typography>
 
           <Typography>
-            Found a lost item ?{" "}
+            {t("Found a lost item ?")}{" "}
             <Link
               component={RouterLink}
               to="/foundform"
@@ -191,19 +190,19 @@ const LostForm = () => {
               underline="always"
               sx={{ fontWeight: "bold" }}
             >
-              Found items form
+              {t("Found items form")}
             </Link>{" "}
           </Typography>
 
           <InputLabel htmlFor="name-input" sx={{ mt: 2, width: "65%" }}>
-            Name <span style={{ color: "red" }}>*</span>
+            {t("Name")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
             required
             name="name"
             id="name-input"
             type="text"
-            placeholder="Enter your full name"
+            placeholder={t("Enter your full name")}
             fullWidth
             size="small"
             value={lostUserInfo.name}
@@ -211,14 +210,14 @@ const LostForm = () => {
           />
 
           <InputLabel htmlFor="email-input" sx={{ mt: 2, width: "65%" }}>
-            Gmail <span style={{ color: "red" }}>*</span>
+            {t("Gmail")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
             required
             name="email"
             id="email-input"
             type="email"
-            placeholder="Enter your gmail"
+            placeholder={t("Enter your gmail")}
             fullWidth
             size="small"
             value={lostUserInfo.email}
@@ -226,7 +225,8 @@ const LostForm = () => {
           />
 
           <InputLabel htmlFor="description-input" sx={{ mt: 2, width: "65%" }}>
-            Description of the Lost Item <span style={{ color: "red" }}>*</span>
+            {t("Description of the Lost Item")}{" "}
+            <span style={{ color: "red" }}>*</span>
           </InputLabel>
 
           <TextField
@@ -235,13 +235,15 @@ const LostForm = () => {
             id="description-input"
             multiline
             rows={4}
-            placeholder="Mention details such as type, color, brand, size, place, any unique features, etc."
+            placeholder={t(
+              "Mention details such as type, color, brand, size, place, any unique features, etc."
+            )}
             value={lostUserInfo.description}
             onChange={handleDescriptionChange}
           />
 
           <InputLabel htmlFor="location-input" sx={{ mt: 2, width: "65%" }}>
-            Approximate Location
+            {t("Approximate Location")}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
@@ -249,7 +251,7 @@ const LostForm = () => {
             name="location"
             id="location-input"
             type="text"
-            placeholder="Enter the approximate location"
+            placeholder={t("Enter the approximate location")}
             fullWidth
             size="small"
             value={lostUserInfo.location}
@@ -257,14 +259,13 @@ const LostForm = () => {
           />
 
           <InputLabel htmlFor="file-input" sx={{ mt: 2, width: "65%" }}>
-            Item Photo <span style={{ color: "red" }}>*</span>
+            {t("Item Photo")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
 
           {/* label button to style file input */}
           <Button name="file" variant="outlined" component="label" required>
-            {/* file upload should be req */}
             <FileUploadRoundedIcon />
-            Upload photo
+            {t("Upload photo")}
             <input
               id="file-input"
               type="file"
@@ -273,27 +274,32 @@ const LostForm = () => {
               accept="image/*"
             />
           </Button>
-          {fileName && <p>Selected file: {fileName}</p>}
+          {fileName && (
+            <p>
+              {t("Selected file:")} {fileName}
+            </p>
+          )}
 
           <InputLabel htmlFor="resource-input" sx={{ mt: 2, width: "65%" }}>
-            How Did You Hear About Us? <span style={{ color: "red" }}>*</span>
+            {t("How Did You Hear About Us?")}{" "}
+            <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
             required
             name="resource"
             id="resource-input"
             select
-            label="Select"
+            label={t("Select...")}
             size="small"
             value={lostUserInfo.resource}
             onChange={handleResourceChange}
           >
             <MenuItem value="">
-              <em>Select...</em> {/*  default empty value option */}
+              <em>{t("Select...")}</em>
             </MenuItem>
             {whereYouHear.map((option) => (
               <MenuItem key={option.value} value={option.value}>
-                {option.label}
+                {t(option.label)}
               </MenuItem>
             ))}
           </TextField>
@@ -308,7 +314,9 @@ const LostForm = () => {
                 onChange={handleFeesChange}
               />
             }
-            label="I acknowledge that a service fee of 25 SAR applies if the item is found"
+            label={t(
+              "I acknowledge that a service fee of 25 SAR applies if the item is found"
+            )}
           />
 
           <FormControlLabel
@@ -323,14 +331,14 @@ const LostForm = () => {
             }
             label={
               <>
-                I agree to the{" "}
+                {t("I agree to the")}{" "}
                 <Link
                   href="https://dhallaty.sa/TC-en"
                   target="_blank"
                   rel="noopener noreferrer"
                   underline="hover"
                 >
-                  Terms and Conditions
+                  {t("Terms and Conditions")}
                 </Link>
               </>
             }
@@ -347,7 +355,7 @@ const LostForm = () => {
               fontWeight: 600,
             }}
           >
-            Submit
+            {t("Submit")}
           </Button>
         </Box>
       </Stack>

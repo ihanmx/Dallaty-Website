@@ -10,7 +10,7 @@ const FoundUserInfoProvider = ({ children }) => {
     name: "",
     email: "",
     description: "",
-    date: "",
+    foundDate: null,
     location: "",
     recipientDescription: "",
     file: null,

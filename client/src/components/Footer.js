@@ -12,12 +12,29 @@ import Typography from "@mui/material/Typography";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 
 const Footer = () => {
   const { t, i18n } = useTranslation();
+
+  const socialIconVariants = {
+    hover: {
+      scale: 1.2,
+      rotate: [-10, 10, -10, 0],
+      transition: {
+        duration: 0.05,
+      },
+    },
+  };
+
   return (
     <>
       <Stack
+        component={motion.div}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
         direction={{ xs: "column", md: "row" }}
         sx={{
           width: "100vw",
@@ -37,10 +54,14 @@ const Footer = () => {
             alignItems: "center",
             justifyContent: "center",
             mb: 2,
-            // order: { xs: 3, md: 1 },
           }}
         >
-          <img src={mainLogo} style={{ height: "10rem", width: "auto" }} />
+          <motion.img
+            src={mainLogo}
+            style={{ height: "10rem", width: "auto" }}
+            whileHover={{ scale: 1.05, rotate: 5 }}
+            transition={{ duration: 0.3 }}
+          />
 
           {/* Social container */}
 
@@ -51,19 +72,39 @@ const Footer = () => {
           >
             {/* the size by px */}
 
-            <Link href="https://x.com/dhallaty?s=21">
+            <Link
+              component={motion.a}
+              whileHover="hover"
+              variants={socialIconVariants}
+              href="https://x.com/dhallaty?s=21"
+            >
               <FaSquareXTwitter size={40} color="#9ab5ae" />
             </Link>
 
-            <Link href="https://www.linkedin.com/company/%D8%B6%D8%A7%D9%84%D8%AA%D9%8A-dhallaty/posts/?feedView=all">
+            <Link
+              component={motion.a}
+              whileHover="hover"
+              variants={socialIconVariants}
+              href="https://www.linkedin.com/company/%D8%B6%D8%A7%D9%84%D8%AA%D9%8A-dhallaty/posts/?feedView=all"
+            >
               <FaLinkedin size={40} color="#9ab5ae" />
             </Link>
 
-            <Link href="https://www.instagram.com/dhallaty?igsh=MTEwem0ydjl5Yzd6dA%3D%3D">
+            <Link
+              component={motion.a}
+              whileHover="hover"
+              variants={socialIconVariants}
+              href="https://www.instagram.com/dhallaty?igsh=MTEwem0ydjl5Yzd6dA%3D%3D"
+            >
               <AiFillInstagram size={43} color="#9ab5ae" />
             </Link>
 
-            <Link href="https://www.tiktok.com/@dhallaty_?_t=ZS-8zbd5sc7bDp&_r=1">
+            <Link
+              component={motion.a}
+              whileHover="hover"
+              variants={socialIconVariants}
+              href="https://www.tiktok.com/@dhallaty_?_t=ZS-8zbd5sc7bDp&_r=1"
+            >
               <AiFillTikTok size={43} color="#9ab5ae" />
             </Link>
           </Stack>
@@ -72,8 +113,8 @@ const Footer = () => {
         {/* Navigation */}
 
         <Stack
-          direction={{ xs: "row", md: "column" }} // row on small screens, column on large
-          flexWrap="wrap" // allows wrapping when items overflow
+          direction={{ xs: "row", md: "column" }}
+          flexWrap="wrap"
           sx={{ justifyContent: "center", mb: 2 }}
           gap={2}
         >
@@ -88,47 +129,82 @@ const Footer = () => {
             {t("Site map")}
           </Typography>
           <Link
-            component={RouterLink}
+            component={motion.a}
+            whileHover={{ scale: 1.05, x: 5 }}
             to="/"
             variant="h6"
             href="#"
-            sx={{ color: (theme) => theme.palette.light.main }}
+            sx={{
+              color: (theme) => theme.palette.light.main,
+              transition: "color 0.3s ease",
+              "&:hover": {
+                color: (theme) => theme.palette.secondary.main,
+              },
+            }}
           >
             {t("Home")}
           </Link>
           <Link
-            component={RouterLink}
+            component={motion.a}
+            whileHover={{ scale: 1.05, x: 5 }}
             to="/about"
             variant="h6"
             href="#"
-            sx={{ color: (theme) => theme.palette.light.main }}
+            sx={{
+              color: (theme) => theme.palette.light.main,
+              transition: "color 0.3s ease",
+              "&:hover": {
+                color: (theme) => theme.palette.secondary.main,
+              },
+            }}
           >
             {t("About")}
           </Link>
           <Link
-            component={RouterLink}
+            component={motion.a}
+            whileHover={{ scale: 1.05, x: 5 }}
             to="/lostform"
             variant="h6"
             href="#"
-            sx={{ color: (theme) => theme.palette.light.main }}
+            sx={{
+              color: (theme) => theme.palette.light.main,
+              transition: "color 0.3s ease",
+              "&:hover": {
+                color: (theme) => theme.palette.secondary.main,
+              },
+            }}
           >
             {t("Lost something")}
           </Link>
           <Link
-            component={RouterLink}
+            component={motion.a}
+            whileHover={{ scale: 1.05, x: 5 }}
             to="foundform"
             variant="h6"
             href="#"
-            sx={{ color: (theme) => theme.palette.light.main }}
+            sx={{
+              color: (theme) => theme.palette.light.main,
+              transition: "color 0.3s ease",
+              "&:hover": {
+                color: (theme) => theme.palette.secondary.main,
+              },
+            }}
           >
             {t("Found something")}
           </Link>
           <Link
-            component={RouterLink}
+            component={motion.a}
+            whileHover={{ scale: 1.05, x: 5 }}
             to="/about"
             variant="h6"
             href="#"
-            sx={{ color: (theme) => theme.palette.light.main }}
+            sx={{
+              color: (theme) => theme.palette.light.main,
+              transition: "color 0.3s ease",
+              "&:hover": {
+                color: (theme) => theme.palette.secondary.main,
+              },
+            }}
           >
             {t("FAQs")}
           </Link>

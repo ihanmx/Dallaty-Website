@@ -9,39 +9,21 @@ import Stack from "@mui/material/Stack";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
-import MenuItem from "@mui/material/MenuItem";
 import design1dark from "../images/design1dark.png";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 import Link from "@mui/material/Link";
-import { Link as RouterLink } from "react-router-dom"; //to avoid MUI link conflict
+import { Link as RouterLink } from "react-router-dom";
+
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { useSnackbar } from "../contexts/SnackbarProvider";
 
 import ReportInstruction from "./ReportInstruction";
 const FoundForm = () => {
-  const whereYouHear = [
-    {
-      value: "Freind/Family",
-      label: "Freind/Family",
-    },
-    {
-      value: "X (twitter)",
-      label: "X (twitter)",
-    },
-    {
-      value: "Instagram",
-      label: "Instagram",
-    },
-    {
-      value: "TikTok",
-      label: "TikTok",
-    },
-
-    {
-      value: "LinkedIn",
-      label: "LinkedIn",
-    },
-  ];
   //Access foundUserInfo and setFoundUserInfo from context
   const { foundUserInfo, setFoundUserInfo } = useFoundUserInfo();
 
@@ -49,8 +31,11 @@ const FoundForm = () => {
   const [filePreview, setFilePreview] = useState(null);
 
   const [fileName, setFileName] = useState("");
+  // const [foundDate, setFoundDate] = useState(null);
 
   const { t, i18n } = useTranslation();
+
+  const { showSnackbar } = useSnackbar();
 
   //state handelers
   const handleNameChange = (e) => {
@@ -65,8 +50,20 @@ const FoundForm = () => {
     setFoundUserInfo({ ...foundUserInfo, description: e.target.value });
   };
 
+  // DatePicker onChange provides a Dayjs value (or null) — not an event
+  const handleFoundDateChange = (value) => {
+    setFoundUserInfo({ ...foundUserInfo, foundDate: value });
+  };
+
   const handleLocationChange = (e) => {
     setFoundUserInfo({ ...foundUserInfo, location: e.target.value });
+  };
+
+  const handleRecipientDescriptionChange = (e) => {
+    setFoundUserInfo({
+      ...foundUserInfo,
+      recipientDescription: e.target.value,
+    });
   };
 
   const handleFileChange = (e) => {
@@ -81,10 +78,6 @@ const FoundForm = () => {
       setFileName("file.name");
       setFilePreview(null);
     }
-  };
-
-  const handleResourceChange = (e) => {
-    setFoundUserInfo({ ...foundUserInfo, resource: e.target.value });
   };
 
   const handleTermsChange = (e) => {
@@ -107,9 +100,22 @@ const FoundForm = () => {
       formData.append("email", foundUserInfo.email);
       formData.append("description", foundUserInfo.description);
       formData.append("location", foundUserInfo.location);
-      formData.append("resource", foundUserInfo.resource);
+      formData.append(
+        "recipientDescription",
+        foundUserInfo.recipientDescription
+      );
+
       formData.append("terms", foundUserInfo.terms);
       formData.append("instruction", foundUserInfo.instruction);
+
+      // Append the found date if it exists
+      if (foundUserInfo.foundDate) {
+        // ensure we format whatever the stored value is using dayjs
+        const formatted = dayjs(foundUserInfo.foundDate).format("YYYY-MM-DD");
+        console.log(formatted);
+        formData.append("foundDate", formatted);
+      }
+
       // append the file only when a real File object exists. Avoid appending null which becomes the string "null"
       if (foundUserInfo.file) {
         formData.append("image", foundUserInfo.file); //append the file to the form data
@@ -125,21 +131,24 @@ const FoundForm = () => {
       console.log("Server response:", responseData);
       alert("Form submitted successfully");
 
-      //reset foundUserInfo and file preview for new submissions
+      if (response.ok) {
+        showSnackbar("Form submitted successfully!", "success");
+        setFoundUserInfo({
+          name: "",
+          email: "",
+          description: "",
+          foundDate: null,
+          location: "",
+          recipientDescription: "",
+          file: null,
+          terms: false,
+          instruction: false,
+        });
+        setFilePreview(null);
+        setFileName("");
 
-      setFoundUserInfo({
-        name: "",
-        email: "",
-        description: "",
-        location: "",
-        file: null,
-        resource: "",
-        terms: false,
-        instruction: false,
-      });
-      setFilePreview(null);
-      setFileName("");
-      console.log(foundUserInfo);
+        console.log(foundUserInfo);
+      }
     } catch (err) {
       console.error(err.message);
       alert("Error submitting form");
@@ -164,9 +173,8 @@ const FoundForm = () => {
           justifyContent: "center",
           backgroundImage: `url(${design1dark})`,
           backgroundRepeat: "no-repeat",
-          backgroundSize: "cover", // to cover the container
+          backgroundSize: "cover",
           backgroundPosition: "center",
-
           overflowX: "hidden",
         }}
       >
@@ -176,7 +184,7 @@ const FoundForm = () => {
           onSubmit={handleFormSubmit}
           encType="multipart/form-data"
           sx={{
-            width: { xs: "80%", sm: "70%", md: "50%", lg: "45%" }, // responsive breakpoints
+            width: { xs: "80%", sm: "70%", md: "50%", lg: "45%" },
             display: "flex",
             flexDirection: "column",
             gap: "1rem",
@@ -204,7 +212,7 @@ const FoundForm = () => {
               {t("Lost items form")}
             </Link>{" "}
           </Typography>
-          <InputLabel htmlFor="name-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="name-input" sx={{ mt: 2, width: "65%" }}>
             {t("Name")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
@@ -219,7 +227,7 @@ const FoundForm = () => {
             onChange={handleNameChange}
           />
 
-          <InputLabel htmlFor="email-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="email-input" sx={{ mt: 2, width: "65%" }}>
             {t("Email")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
           <TextField
@@ -234,7 +242,7 @@ const FoundForm = () => {
             onChange={handleEmailChange}
           />
 
-          <InputLabel htmlFor="description-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="description-input" sx={{ mt: 2, width: "65%" }}>
             {t("Description of the found item")}{" "}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
@@ -252,23 +260,29 @@ const FoundForm = () => {
             onChange={handleDescriptionChange}
           />
 
-          <InputLabel htmlFor="location-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="date-input" sx={{ mt: 2, width: "65%" }}>
             {t("When did you find the item?")}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
-          <TextField
-            required
-            name="date"
-            id="date-input"
-            type="text"
-            placeholder={t("Enter the date")}
-            fullWidth
-            size="small"
-            value={foundUserInfo.location}
-            onChange={handleLocationChange}
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              value={foundUserInfo.foundDate}
+              onChange={handleFoundDateChange}
+              slotProps={{
+                textField: {
+                  required: true,
+                  fullWidth: true,
+                  size: "small",
+                  id: "date-input",
+                  placeholder: t("Select the date"),
+                },
+              }}
+              maxDate={dayjs()}
+              format="DD/MM/YYYY"
+            />
+          </LocalizationProvider>
 
-          <InputLabel htmlFor="location-input" sx={{ mt: 2 }}>
+          <InputLabel htmlFor="location-input" sx={{ mt: 2, width: "65%" }}>
             {t("Where did you find the item?")}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
@@ -284,7 +298,10 @@ const FoundForm = () => {
             onChange={handleLocationChange}
           />
 
-          <InputLabel htmlFor="description-input" sx={{ mt: 2 }}>
+          <InputLabel
+            htmlFor="recipientDescription-input"
+            sx={{ mt: 2, width: "65%" }}
+          >
             {t("Where and who did you take the item to?")}{" "}
             <span style={{ color: "red" }}>*</span>
           </InputLabel>
@@ -298,19 +315,18 @@ const FoundForm = () => {
             placeholder={t(
               "Please enter a description of the place and information about the recipient if possible."
             )}
-            value={foundUserInfo.description}
-            onChange={handleDescriptionChange}
+            value={foundUserInfo.recipientDescription}
+            onChange={handleRecipientDescriptionChange}
           />
 
-          <InputLabel htmlFor="file-input" sx={{ mt: 2 }}>
-            {t("Item photo")} <span style={{ color: "red" }}>*</span>
+          <InputLabel htmlFor="file-input" sx={{ mt: 2, width: "65%" }}>
+            {t("Item Photo")} <span style={{ color: "red" }}>*</span>
           </InputLabel>
 
           {/* label button to style file input */}
           <Button name="file" variant="outlined" component="label" required>
-            {/* file upload should be req */}
             <FileUploadRoundedIcon />
-            {t("Upload Item Photo")}
+            {t("Upload photo")}
             <input
               id="file-input"
               type="file"
@@ -364,6 +380,7 @@ const FoundForm = () => {
               </>
             }
           />
+
           <Button
             type="submit"
             variant="contained"
