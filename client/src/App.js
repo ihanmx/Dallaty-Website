@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import CssBaseline from "@mui/material/CssBaseline";
 import { SnackbarProvider } from "./contexts/SnackbarProvider";
 import TrustedBySection from "./components/TrustedBySection";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const { i18n } = useTranslation();
@@ -37,6 +38,7 @@ function App() {
             {/* Because nav is fixed we need to push content by the nav height */}
             <SnackbarProvider>
               <AppLayout>
+                <ScrollToTop />
                 <Routes>
                   <Route
                     path="/"
@@ -54,7 +56,6 @@ function App() {
                       <>
                         <LandingPage />
                         <AboutPage />
-
                         <TrustedBySection />
                       </>
                     }

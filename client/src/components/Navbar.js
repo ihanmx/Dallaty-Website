@@ -5,6 +5,9 @@ import { useState } from "react";
 // React-dom
 import { Link } from "react-router-dom";
 
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+
 // imgs
 import mainLogo from "../images/mainLogo.png";
 
@@ -27,12 +30,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
-  // States and hooks
-  const [active, setActive] = useState("Home");
-  const [open, setOpen] = useState(false);
-  const [langMenuAnchor, setLangMenuAnchor] = useState(null);
-  const { t, i18n } = useTranslation();
-
+  const location = useLocation();
   const languages = [
     { code: "en", name: "English" },
     { code: "ar", name: "العربية" },
@@ -43,7 +41,24 @@ const Navbar = () => {
     { label: "About", path: "/about" },
     { label: "Lost Something", path: "/lostform" },
     { label: "Found Something", path: "/foundform" },
+    { label: "contact us", path: "/footer" },
   ];
+
+  // States and hooks
+  const [active, setActive] = useState("Home");
+  const [open, setOpen] = useState(false);
+  const [langMenuAnchor, setLangMenuAnchor] = useState(null);
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const currentItem = navItems.find((item) => {
+      return item.path === currentPath;
+    });
+    if (currentItem) {
+      setActive(currentItem.label);
+    }
+  }, [location.pathname]);
 
   //handlers
   const handleMenuClick = () => {

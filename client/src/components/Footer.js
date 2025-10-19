@@ -16,16 +16,30 @@ import { motion } from "framer-motion";
 
 import HoverMotion from "./HoverMotion";
 const Footer = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
-  const socialIconVariants = {
-    rest: { scale: 1, rotate: 0 },
-    hover: {
-      scale: 1.1,
-      rotate: 5,
-      transition: { type: "spring", stiffness: 200, damping: 10 },
+  const socials = [
+    {
+      name: "x",
+      icon: <FaSquareXTwitter size={40} color="#9ab5ae" />,
+      href: "https://x.com/dhallaty?s=21",
     },
-  };
+    {
+      name: "linkedin",
+      icon: <FaLinkedin size={40} color="#9ab5ae" />,
+      href: "https://www.linkedin.com/company/%D8%B6%D8%A7%D9%84%D8%AA%D9%8A-dhallaty/posts/?feedView=all",
+    },
+    {
+      name: "instagram",
+      icon: <AiFillInstagram size={43} color="#9ab5ae" />,
+      href: "https://www.instagram.com/dhallaty?igsh=MTEwem0ydjl5Yzd6dA%3D%3D",
+    },
+    {
+      name: "tiktok",
+      icon: <AiFillTikTok size={43} color="#9ab5ae" />,
+      href: "https://www.tiktok.com/@dhallaty_?_t=ZS-8zbd5sc7bDp&_r=1",
+    },
+  ];
 
   const pages = [
     { pageName: "Home", pageLink: "/" },
@@ -34,6 +48,8 @@ const Footer = () => {
     { pageName: "Found something", pageLink: "/foundform" },
     { pageName: "FAQs", pageLink: "/about#faqs" },
   ];
+
+  const MotionRouterLink = motion(RouterLink); //to wrap rputer link with framer motion and at the same time be able to use it with Link from MUI without unexpected behaviour
 
   return (
     <>
@@ -79,38 +95,16 @@ const Footer = () => {
             sx={{ alignItems: "center", justifyContent: "center" }}
           >
             {/* the size by px */}
-            <HoverMotion>
-              <Link component="a" href="https://x.com/dhallaty?s=21">
-                <FaSquareXTwitter size={40} color="#9ab5ae" />
-              </Link>
-            </HoverMotion>
 
-            <HoverMotion>
-              <Link
-                component="a"
-                href="https://www.linkedin.com/company/%D8%B6%D8%A7%D9%84%D8%AA%D9%8A-dhallaty/posts/?feedView=all"
-              >
-                <FaLinkedin size={40} color="#9ab5ae" />
-              </Link>
-            </HoverMotion>
-
-            <HoverMotion>
-              <Link
-                component="a"
-                href="https://www.instagram.com/dhallaty?igsh=MTEwem0ydjl5Yzd6dA%3D%3D"
-              >
-                <AiFillInstagram size={43} color="#9ab5ae" />
-              </Link>
-            </HoverMotion>
-
-            <HoverMotion>
-              <Link
-                component="a"
-                href="https://www.tiktok.com/@dhallaty_?_t=ZS-8zbd5sc7bDp&_r=1"
-              >
-                <AiFillTikTok size={43} color="#9ab5ae" />
-              </Link>
-            </HoverMotion>
+            {socials.map((social) => {
+              return (
+                <HoverMotion key={social.name} id={social.name}>
+                  <Link component="a" href={social.href}>
+                    {social.icon}
+                  </Link>
+                </HoverMotion>
+              );
+            })}
           </Stack>
         </Stack>
 
@@ -136,10 +130,9 @@ const Footer = () => {
           {pages.map((page) => {
             return (
               <Link
-                component={motion.a}
+                component={MotionRouterLink}
                 whileHover={{ scale: 1.05, x: 5 }}
                 to={page.pageLink}
-                href="#"
                 variant="body1"
                 sx={{
                   color: "white",
