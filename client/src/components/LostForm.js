@@ -1,23 +1,28 @@
+//hooks
 import { useState } from "react";
+//contexts
 import { useLostUserInfo } from "../contexts/LostUserInfoContext";
+import { useSnackbar } from "../contexts/SnackbarProvider";
+// i18-next
 import { useTranslation } from "react-i18next";
+//MUI components
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-
 import Stack from "@mui/material/Stack";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import MenuItem from "@mui/material/MenuItem";
-import design1 from "../images/design1.png";
-
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+//MUI icons
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
+//local images
+import design1 from "../images/design1.png";
+//react-router-dom
 import { Link as RouterLink } from "react-router-dom";
-import { useSnackbar } from "../contexts/SnackbarProvider";
 
 const LostForm = () => {
   const whereYouHear = [

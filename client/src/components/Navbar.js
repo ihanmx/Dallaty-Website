@@ -1,14 +1,13 @@
 // hooks
-import { useTranslation } from "react-i18next";
 import { useState } from "react";
-
-// React-dom
-import { Link } from "react-router-dom";
-
-import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+//i18 next
+import { useTranslation } from "react-i18next";
+// React-router-dom
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-// imgs
+// local images
 import mainLogo from "../images/mainLogo.png";
 
 // MUI components
@@ -23,7 +22,6 @@ import MenuItem from "@mui/material/MenuItem";
 //MUI icons
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import MenuIcon from "@mui/icons-material/Menu";
-import LanguageIcon from "@mui/icons-material/Language";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 // Framer Motion

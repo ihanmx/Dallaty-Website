@@ -1,5 +1,3 @@
-// theme.js
-
 import { createTheme, darken, lighten } from "@mui/material/styles";
 
 const createCustomColor = (mainColor, lightAmount = 0.2, darkAmount = 0.2) => ({

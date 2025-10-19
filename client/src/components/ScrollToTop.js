@@ -1,4 +1,6 @@
+//hooks
 import { useEffect } from "react";
+//react-router-dom
 import { useLocation } from "react-router-dom";
 
 const ScrollToTop = () => {

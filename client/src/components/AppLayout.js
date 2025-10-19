@@ -1,5 +1,7 @@
-import React from "react";
+//MUI components
 import Box from "@mui/material/Box";
+
+// local components
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 

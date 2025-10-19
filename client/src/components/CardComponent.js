@@ -1,15 +1,18 @@
-import Card from "@mui/material/Card";
-
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+// i18-next
 import { useTranslation } from "react-i18next";
+
+//framer motion
 import { motion } from "framer-motion";
 
+//MUI components
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+
 const CardComponent = ({ img, title, body, index = 0 }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const cardVariants = {
     hidden: {

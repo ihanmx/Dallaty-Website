@@ -1,29 +1,36 @@
+//hooks
 import { useState } from "react";
+//contexts
 import { useFoundUserInfo } from "../contexts/FoundUserInfoContext";
+import { useSnackbar } from "../contexts/SnackbarProvider";
+// i18-next
 import { useTranslation } from "react-i18next";
+//MUI components
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
-
 import Stack from "@mui/material/Stack";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
-import design1dark from "../images/design1dark.png";
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
-import Link from "@mui/material/Link";
-import { Link as RouterLink } from "react-router-dom";
-
+import CircularProgress from "@mui/material/CircularProgress";
+//MUI icons
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
+//MUI date pickers
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+//dayjs
 import dayjs from "dayjs";
-import { useSnackbar } from "../contexts/SnackbarProvider";
-import CircularProgress from "@mui/material/CircularProgress";
-
+// react router-dom
+import { Link as RouterLink } from "react-router-dom";
+//local images
+import design1dark from "../images/design1dark.png";
+//local components
 import ReportInstruction from "./ReportInstruction";
+
 const FoundForm = () => {
   //Access foundUserInfo and setFoundUserInfo from context
   const { foundUserInfo, setFoundUserInfo } = useFoundUserInfo();

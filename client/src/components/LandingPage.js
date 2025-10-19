@@ -1,14 +1,10 @@
-// handelers
+// i18-next
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 
-//React-dom
+//Router-dom
 import { Link } from "react-router-dom";
 
-//local components
-import TrustedBySection from "./TrustedBySection";
-
-//imgs
+//local images
 import landpageImage from "../images/landpageImage.png";
 
 //MUI components

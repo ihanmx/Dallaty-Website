@@ -1,6 +1,13 @@
-import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
+//hooks
 import { useState } from "react";
+
+// i18-next
+import { useTranslation } from "react-i18next";
+
+// framer-motion
+import { motion } from "framer-motion";
+
+// MUI components
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -11,6 +18,8 @@ import Stack from "@mui/material/Stack";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+
+//MUI icons
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import SpeedIcon from "@mui/icons-material/Speed";

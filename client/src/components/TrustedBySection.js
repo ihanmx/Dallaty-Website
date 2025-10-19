@@ -1,17 +1,19 @@
+//MUI components
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+//locale images
 import MVPlogo from "../images/MVPlogo1.png";
 import garageLogo from "../images/garageLogo.png";
-import Box from "@mui/material/Box";
+//i18 next
 import { useTranslation } from "react-i18next";
+//framer motion
 import { motion } from "framer-motion";
-import { useState } from "react";
-
+//local components
 import HoverMotion from "./HoverMotion";
 
 const TrustedBySection = () => {
-  const { t, i18n } = useTranslation();
-  const [isHovered, setIsHovered] = useState(false);
+  const { t } = useTranslation();
 
   const containerVariants = {
     hidden: { opacity: 0 },

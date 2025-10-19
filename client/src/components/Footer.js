@@ -1,20 +1,33 @@
-import Stack from "@mui/material/Stack";
+// i18-next
+import { useTranslation } from "react-i18next";
+
+// react router-dom
+import { Link as RouterLink } from "react-router-dom";
+
+//framer motion
+import { motion } from "framer-motion";
+
+// local images
 import mainLogo from "../images/mainLogo.png";
 
+//local components
+import HoverMotion from "./HoverMotion";
+
+// react icons
 import { AiFillTikTok } from "react-icons/ai";
 import { AiFillInstagram } from "react-icons/ai";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 
-import Link from "@mui/material/Link";
-import { Link as RouterLink } from "react-router-dom";
+//MUI components
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
+
+//MUI icons
 import DraftsIcon from "@mui/icons-material/Drafts";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 
-import HoverMotion from "./HoverMotion";
 const Footer = () => {
   const { t } = useTranslation();
 

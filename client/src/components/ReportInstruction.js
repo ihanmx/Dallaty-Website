@@ -1,10 +1,14 @@
+//MUI components
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+//local images
 import cameraIcon from "../images/mobile-camera-icon.png";
 import policaIcon from "../images/constable-police-icon.png";
 import websiteIcon from "../images/software-window-icon.png";
 import membershipIcon from "../images/name-id-icon.png";
+//local components
 import CardComponent from "./CardComponent";
-import Typography from "@mui/material/Typography";
+//i18 next
 import { useTranslation } from "react-i18next";
 
 const ReportInstruction = () => {

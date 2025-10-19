@@ -1,4 +1,7 @@
+//framer motion
 import { motion } from "framer-motion";
+
+//hooks
 import { useState } from "react";
 
 const HoverMotion = ({ children, hoverScale = 1.1, hoverRotate = 5 }) => {
