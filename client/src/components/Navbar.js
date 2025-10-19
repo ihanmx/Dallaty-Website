@@ -39,7 +39,7 @@ const Navbar = () => {
     { label: "About", path: "/about" },
     { label: "Lost Something", path: "/lostform" },
     { label: "Found Something", path: "/foundform" },
-    { label: "contact us", path: "/footer" },
+    { label: "Contact us", path: "/footer" },
   ];
 
   // States and hooks
