@@ -29,10 +29,11 @@ const getTheme = (direction = "ltr") =>
     //you use it from sx typoggraphy attribute or variant prop in Typography component
     typography: {
       // Base font family (you can replace this)
-      fontFamily: '"Poppins", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"Amiri", "Scheherazade New" serif',
 
       // Responsive font sizes for headings
       h1: {
+        fontFamily: '"Amiri",serif',
         fontWeight: 700,
         fontSize: "2.2rem",
         "@media (min-width:600px)": { fontSize: "2.6rem" },
@@ -41,6 +42,7 @@ const getTheme = (direction = "ltr") =>
         "@media (min-width:1536px)": { fontSize: "3.8rem" },
       },
       h2: {
+        fontFamily: '"Amiri" serif',
         fontWeight: 600,
         fontSize: "1.9rem",
         "@media (min-width:600px)": { fontSize: "2.2rem" },
@@ -49,6 +51,7 @@ const getTheme = (direction = "ltr") =>
         "@media (min-width:1536px)": { fontSize: "3.2rem" },
       },
       h3: {
+        fontFamily: '"Amiri" serif',
         fontWeight: 600,
         fontSize: "1.6rem",
         "@media (min-width:600px)": { fontSize: "1.8rem" },
@@ -57,6 +60,7 @@ const getTheme = (direction = "ltr") =>
         "@media (min-width:1536px)": { fontSize: "2.6rem" },
       },
       h4: {
+        fontFamily: '"Amiri" serif',
         fontWeight: 600,
         fontSize: "1.4rem",
         "@media (min-width:600px)": { fontSize: "1.6rem" },
@@ -65,6 +69,7 @@ const getTheme = (direction = "ltr") =>
         "@media (min-width:1536px)": { fontSize: "2.2rem" },
       },
       h5: {
+        fontFamily: '"Amiri" serif',
         fontWeight: 500,
         fontSize: "1.2rem",
         "@media (min-width:600px)": { fontSize: "1.3rem" },
@@ -73,6 +78,7 @@ const getTheme = (direction = "ltr") =>
         "@media (min-width:1536px)": { fontSize: "1.8rem" },
       },
       h6: {
+        fontFamily: '"Amiri" serif',
         fontWeight: 500,
         fontSize: "1.1rem",
         "@media (min-width:600px)": { fontSize: "1.2rem" },
@@ -83,6 +89,7 @@ const getTheme = (direction = "ltr") =>
 
       // Body text sizes
       body1: {
+        fontFamily: '"Scheherazade New" serif',
         fontSize: "0.9rem",
         "@media (min-width:600px)": { fontSize: "1rem" },
         "@media (min-width:900px)": { fontSize: "1.05rem" },
@@ -90,6 +97,7 @@ const getTheme = (direction = "ltr") =>
         "@media (min-width:1536px)": { fontSize: "1.15rem" },
       },
       body2: {
+        fontFamily: '"Scheherazade New" serif',
         fontSize: "0.8rem",
         "@media (min-width:600px)": { fontSize: "0.85rem" },
         "@media (min-width:900px)": { fontSize: "0.9rem" },

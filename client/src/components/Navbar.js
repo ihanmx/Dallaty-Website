@@ -26,11 +26,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 // Framer Motion
 import { motion, AnimatePresence } from "framer-motion";
 
-// import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-// import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
-// import DeviceUnknownOutlinedIcon from "@mui/icons-material/DeviceUnknownOutlined";
-// import ScreenSearchDesktopOutlinedIcon from "@mui/icons-material/ScreenSearchDesktopOutlined";
-
 const Navbar = () => {
   // States and hooks
   const [active, setActive] = useState("Home");
@@ -39,8 +34,8 @@ const Navbar = () => {
   const { t, i18n } = useTranslation();
 
   const languages = [
-    { code: "en", name: "English", flag: "🇬🇧" },
-    { code: "ar", name: "العربية", flag: "🇸🇦" },
+    { code: "en", name: "English" },
+    { code: "ar", name: "العربية" },
   ];
 
   const navItems = [
@@ -115,7 +110,7 @@ const Navbar = () => {
       transition={{ duration: 0.5, ease: "easeOut" }} //type of motion and duration
       position="fixed" //to stay in the place even when you scroll
       sx={{
-        bgcolor: (theme) => theme.palette.light.main,
+        bgcolor: "#f8f9fa",
         boxShadow: "0 2px 10px rgba(0, 0, 0, 0.08)",
         backdropFilter: "blur(10px)", //blur effect on images
       }}
@@ -210,14 +205,12 @@ const Navbar = () => {
                 color: "white",
               },
               "& .MuiButton-endIcon": {
-                marginLeft: "12px",
+                marginLeft: "5px",
+                marginRight: "5px",
               },
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <span style={{ fontSize: "1.2rem" }}>
-                {currentLanguage?.flag}
-              </span>
               <span>{currentLanguage?.name}</span>
             </Box>
           </Button>
@@ -260,7 +253,6 @@ const Navbar = () => {
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <span style={{ fontSize: "1.3rem" }}>{lang.flag}</span>
                   <span style={{ fontWeight: 500 }}>{lang.name}</span>
                 </Box>
               </MenuItem>
@@ -295,7 +287,7 @@ const Navbar = () => {
                 top: "100%",
                 right: 0,
                 width: "100%",
-                bgcolor: (theme) => theme.palette.light.main,
+                bgcolor: "#f8f9fa",
                 display: { xs: "flex", md: "none" },
                 flexDirection: "column",
                 alignItems: "center",
@@ -310,6 +302,7 @@ const Navbar = () => {
                     component={motion.button}
                     custom={index}
                     variants={menuItemVariants}
+                    fontSize="h6"
                     initial="hidden"
                     animate="visible"
                     whileHover={{ scale: 1.05, x: 5 }}
@@ -348,7 +341,8 @@ const Navbar = () => {
                   borderColor: "primary.main",
                   color: "primary.main",
                   "& .MuiButton-endIcon": {
-                    marginLeft: "12px",
+                    marginLeft: "5px",
+                    marginRight: "5px",
                   },
                 }}
               >

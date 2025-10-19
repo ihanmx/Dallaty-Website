@@ -52,7 +52,7 @@
   "Where and who did you take the item to?": "أين و لمن سلمت الغرض؟",
   "What did you lose?": "ماذا فقدت؟",
   "Found a lost item ?": "وجدت غرض مفقود؟",
-  "Found items form": "نموذج المعثورات",
+  "Found items form": "نموذج الأغراض المعثور عليها",
   "Gmail": "البريد الإلكتروني",
   "Enter your gmail": "أدخل البريد الإلكتروني",
   "Description of the Lost Item": "وصف الغرض المفقود",
@@ -61,7 +61,6 @@
   "I acknowledge that a service fee of 25 SAR applies if the item is found": "أقر بأن رسوم الخدمة 25 ريال سعودي تطبق في حال إيجاد الغرض",
   "Item Photo": "صورة الغرض",
   "Upload photo": "ارفع صورة",
-  "Selected file:": "الملف المحدد:",
   "Friend/Family": "صديق/عائلة",
   "X (twitter)": "X (تويتر)",
   "Instagram": "إنستغرام",
@@ -111,5 +110,6 @@
   "faq_duration": "ما هي مدة العثور على الغرض المفقود؟",
   "faq_duration_answer": "سيتم تنبيهك مباشرة في حال العثور على تطابق للدفع والكشف عن موقع الغرض.",
   "Join Our Community": "انضم إلى مجتمعنا",
-  "join_community_description": "كن جزءاً من مجتمع متنامٍ مكرس لمساعدة الناس على استرداد أغراضهم المفقودة. معاً، يمكننا جعل فقدان شيء ما أقل إجهاداً."
+  "join_community_description": "كن جزءاً من مجتمع متنامٍ مكرس لمساعدة الناس على استرداد أغراضهم المفقودة. معاً، يمكننا جعل فقدان شيء ما أقل إجهاداً.",
+  "Form submitted successfully!": "تم إرسال النموذج بنجاح"
 }

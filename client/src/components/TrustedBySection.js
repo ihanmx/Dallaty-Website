@@ -1,13 +1,17 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import MVPlogo from "../images/MVPlogo1.png";
-import garageLogo from "../images/garageLogo2.png";
+import garageLogo from "../images/garageLogo.png";
 import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { useState } from "react";
+
+import HoverMotion from "./HoverMotion";
 
 const TrustedBySection = () => {
   const { t, i18n } = useTranslation();
+  const [isHovered, setIsHovered] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -57,7 +61,7 @@ const TrustedBySection = () => {
         maxWidth: "100vw",
         padding: "3rem 2rem",
         boxSizing: "border-box",
-        bgcolor: "primary.main",
+        bgcolor: "#f8f9fa",
         alignItems: "center",
         justifyContent: "center",
       }}
@@ -67,7 +71,7 @@ const TrustedBySection = () => {
         variants={titleVariants}
         variant="h2"
         sx={{
-          color: (theme) => theme.palette.dark.main,
+          color: "primary.main",
           fontWeight: 700,
           mb: 2,
         }}
@@ -81,55 +85,49 @@ const TrustedBySection = () => {
           width: "100%",
           padding: "2rem",
           boxSizing: "border-box",
-          bgcolor: "primary.main",
+          bgcolor: "#f8f9fa",
           alignItems: "center",
           justifyContent: "center",
         }}
         gap={{ xs: 4, md: 10 }}
       >
-        <Box
-          component={motion.img}
-          variants={logoVariants}
-          whileHover={{
-            scale: 1.1,
-            rotate: [0, -5, 5, 0],
-            transition: { duration: 0.2 },
-          }}
-          src={garageLogo}
-          alt="Garage Logo"
-          sx={{
-            height: { xs: 60, sm: 120, md: 120 },
-            objectFit: "contain",
-            filter: "grayscale(50%)",
-            transition: "filter 0.3s ease",
-            cursor: "pointer",
-            "&:hover": {
-              filter: "grayscale(0%)",
-            },
-          }}
-        />
+        <HoverMotion hoverScale={1.1} hoverRotate={3}>
+          <Box
+            component="img"
+            variants={logoVariants}
+            src={garageLogo}
+            alt="Garage Logo"
+            sx={{
+              height: { xs: 60, sm: 120, md: 120 },
+              objectFit: "contain",
+              filter: "grayscale(50%)",
+              transition: "filter 0.3s ease",
+              cursor: "pointer",
+              "&:hover": {
+                filter: "grayscale(0%)",
+              },
+            }}
+          />
+        </HoverMotion>
 
-        <Box
-          component={motion.img}
-          variants={logoVariants}
-          whileHover={{
-            scale: 1.1,
-            rotate: [0, 5, -5, 0],
-            transition: { duration: 0.5 },
-          }}
-          src={MVPlogo}
-          alt="MVP Logo"
-          sx={{
-            height: { xs: 60, sm: 120, md: 120 },
-            objectFit: "contain",
-            filter: "grayscale(50%)",
-            transition: "filter 0.3s ease",
-            cursor: "pointer",
-            "&:hover": {
-              filter: "grayscale(0%)",
-            },
-          }}
-        />
+        <HoverMotion hoverScale={1.1} hoverRotate={3}>
+          <Box
+            component="img"
+            variants={logoVariants}
+            src={MVPlogo}
+            alt="MVP Logo"
+            sx={{
+              height: { xs: 60, sm: 120, md: 120 },
+              objectFit: "contain",
+              filter: "grayscale(50%)",
+              transition: "filter 0.3s ease",
+              cursor: "pointer",
+              "&:hover": {
+                filter: "grayscale(0%)",
+              },
+            }}
+          />
+        </HoverMotion>
       </Stack>
     </Stack>
   );

@@ -160,7 +160,7 @@ const LandingPage = () => {
                 color="secondary.main"
                 variant="h3"
                 sx={{
-                  fontWeight: 800,
+                  // fontWeight: 800,
                   background:
                     "linear-gradient(45deg, #9ab5ae 30%, #11747f 90%)",
                   WebkitBackgroundClip: "text",
@@ -190,17 +190,19 @@ const LandingPage = () => {
             id="buttons-stack"
             className="Buttons-Stack"
             direction={{ xs: "column", md: "row" }}
+            sx={{ justifyContent: "center", alignItems: "center" }}
             gap={2}
             mt={4}
           >
             <Link to="/lostform">
               <Button
+                size="large"
                 component={motion.button}
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
                 variant="contained"
-                startIcon={<DeviceUnknownOutlinedIcon />}
+                startIcon={<DeviceUnknownOutlinedIcon sx={{ ml: 1 }} />}
                 sx={{
                   bgcolor: "primary.main",
                   px: 3,
@@ -221,12 +223,13 @@ const LandingPage = () => {
 
             <Link to="/foundform">
               <Button
+                size="large"
                 component={motion.button}
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
                 variant="outlined"
-                startIcon={<ScreenSearchDesktopOutlinedIcon />}
+                startIcon={<ScreenSearchDesktopOutlinedIcon sx={{ ml: 1 }} />}
                 sx={{
                   px: 3,
                   py: 1.5,
@@ -280,7 +283,6 @@ const LandingPage = () => {
           />
         </Stack>
       </Stack>
-      <TrustedBySection />
     </>
   );
 };

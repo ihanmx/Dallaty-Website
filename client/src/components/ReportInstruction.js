@@ -7,7 +7,7 @@ import CardComponent from "./CardComponent";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
 
-const ReportInstruction = ({ thememode }) => {
+const ReportInstruction = () => {
   const instructions = [
     {
       title: "Step 1",
@@ -43,10 +43,8 @@ const ReportInstruction = ({ thememode }) => {
         maxWidth: "100%",
         padding: "2rem",
         boxSizing: "border-box",
-        bgcolor: (theme) =>
-          thememode === "dark"
-            ? theme.palette.dark.main
-            : theme.palette.light.main,
+        bgcolor: "#00192F",
+
         alignItems: "center",
         justifyContent: "center",
         overflowX: "hidden",
@@ -58,14 +56,11 @@ const ReportInstruction = ({ thememode }) => {
         sx={{
           width: "100%",
           maxWidth: "100%",
-          bgcolor: (theme) =>
-            thememode === "dark"
-              ? theme.palette.dark.main
-              : theme.palette.light.main,
+
           boxSizing: "border-box",
           alignItems: "center",
           justifyContent: "center",
-          color: "light.main",
+          color: "white",
           textAlign: "center",
           padding: "2rem",
         }}
@@ -86,10 +81,6 @@ const ReportInstruction = ({ thememode }) => {
           maxWidth: "100%",
           padding: "2rem",
 
-          bgcolor: (theme) =>
-            thememode === "dark"
-              ? theme.palette.dark.main
-              : theme.palette.light.main,
           alignItems: "center",
           justifyContent: "space-around",
         }}

@@ -21,6 +21,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useSnackbar } from "../contexts/SnackbarProvider";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import ReportInstruction from "./ReportInstruction";
 const FoundForm = () => {
@@ -36,6 +37,8 @@ const FoundForm = () => {
   const { t, i18n } = useTranslation();
 
   const { showSnackbar } = useSnackbar();
+
+  const [loading, setLoading] = useState(false);
 
   //state handelers
   const handleNameChange = (e) => {
@@ -93,6 +96,7 @@ const FoundForm = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       //create a form data object to be able to send file data types
       const formData = new FormData();
@@ -129,10 +133,9 @@ const FoundForm = () => {
 
       const responseData = await response.json();
       console.log("Server response:", responseData);
-      alert("Form submitted successfully");
 
       if (response.ok) {
-        showSnackbar("Form submitted successfully!", "success");
+        showSnackbar(t("Form submitted successfully!"), "success");
         setFoundUserInfo({
           name: "",
           email: "",
@@ -152,12 +155,14 @@ const FoundForm = () => {
     } catch (err) {
       console.error(err.message);
       alert("Error submitting form");
-    }
+    } finally {
+      setLoading(false);
+    } //to stop loading when there is an error
   };
 
   return (
     <div>
-      <ReportInstruction thememode="dark" />
+      <ReportInstruction />
       {/* form container */}
 
       <Stack
@@ -193,6 +198,7 @@ const FoundForm = () => {
             backgroundColor: "white",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             boxSizing: "border-box",
+            mt: 2,
           }}
         >
           <Typography textAlign={"center"} variant="h3" color="primary.main">
@@ -203,8 +209,7 @@ const FoundForm = () => {
             {t("Lost an item ?")}{" "}
             <Link
               component={RouterLink}
-              to="/foundform"
-              target="_blank"
+              to="/lostform"
               rel="noopener noreferrer"
               underline="always"
               sx={{ fontWeight: "bold" }}
@@ -393,7 +398,11 @@ const FoundForm = () => {
               fontWeight: 600,
             }}
           >
-            {t("Submit")}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              t("Submit")
+            )}
           </Button>
         </Box>
       </Stack>

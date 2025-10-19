@@ -13,6 +13,7 @@ import AppLayout from "./components/AppLayout";
 import { useTranslation } from "react-i18next";
 import CssBaseline from "@mui/material/CssBaseline";
 import { SnackbarProvider } from "./contexts/SnackbarProvider";
+import TrustedBySection from "./components/TrustedBySection";
 
 function App() {
   const { i18n } = useTranslation();
@@ -37,7 +38,27 @@ function App() {
             <SnackbarProvider>
               <AppLayout>
                 <Routes>
-                  <Route path="/" element={<LandingPage />} />
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        <LandingPage />
+                        <AboutPage />
+                        <TrustedBySection />
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/home"
+                    element={
+                      <>
+                        <LandingPage />
+                        <AboutPage />
+
+                        <TrustedBySection />
+                      </>
+                    }
+                  />
                   <Route path="/lostform" element={<LostForm />} />
                   <Route path="/foundform" element={<FoundForm />} />
                   <Route path="/about" element={<AboutPage />} />

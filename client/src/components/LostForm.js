@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import Stack from "@mui/material/Stack";
 import Checkbox from "@mui/material/Checkbox";
@@ -16,6 +17,8 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Link as RouterLink } from "react-router-dom";
+import { useSnackbar } from "../contexts/SnackbarProvider";
+
 const LostForm = () => {
   const whereYouHear = [
     {
@@ -46,7 +49,11 @@ const LostForm = () => {
   //To store file preview temporaryly
   const [filePreview, setFilePreview] = useState(null);
 
+  const [loading, setLoading] = useState(false);
+
   const [fileName, setFileName] = useState("");
+
+  const { showSnackbar } = useSnackbar();
 
   //state handelers
   const handleNameChange = (e) => {
@@ -93,6 +100,8 @@ const LostForm = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    setLoading(true); //start loading
     try {
       //create a form data object to be able to send file data types
       const formData = new FormData();
@@ -116,26 +125,32 @@ const LostForm = () => {
 
       const responseData = await response.json();
       console.log("Server response:", responseData);
-      alert("Form submitted successfully");
+
+      if (response.ok) {
+        showSnackbar(t("Form submitted successfully!"), "success");
+        setLostUserInfo({
+          name: "",
+          email: "",
+          description: "",
+          location: "",
+          file: null,
+          resource: "",
+          terms: false,
+          fees: false,
+        });
+        setFilePreview(null);
+        setFileName("");
+
+        console.log(lostUserInfo);
+      }
 
       //reset lostUserInfo and file preview for new submissions
-
-      setLostUserInfo({
-        name: "",
-        email: "",
-        description: "",
-        location: "",
-        file: null,
-        resource: "",
-        terms: false,
-        fees: false,
-      });
-      setFilePreview(null);
-      setFileName("");
     } catch (err) {
       console.error(err.message);
       alert("Error submitting form");
-    }
+    } finally {
+      setLoading(false);
+    } //to stop loading when there is an error
   };
 
   return (
@@ -143,6 +158,7 @@ const LostForm = () => {
       {/* form container */}
 
       <Stack
+        id="lost-page"
         sx={{
           p: 2,
           minHeight: "100vh",
@@ -171,6 +187,7 @@ const LostForm = () => {
             gap: "1rem",
             borderRadius: "8px",
             p: { xs: "1rem", md: "1.5rem" },
+            mt: 2,
             backgroundColor: "white",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             boxSizing: "border-box",
@@ -185,7 +202,6 @@ const LostForm = () => {
             <Link
               component={RouterLink}
               to="/foundform"
-              target="_blank"
               rel="noopener noreferrer"
               underline="always"
               sx={{ fontWeight: "bold" }}
@@ -355,7 +371,11 @@ const LostForm = () => {
               fontWeight: 600,
             }}
           >
-            {t("Submit")}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              t("Submit")
+            )}
           </Button>
         </Box>
       </Stack>

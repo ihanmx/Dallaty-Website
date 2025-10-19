@@ -130,6 +130,7 @@ const AboutPage = () => {
     <Box sx={{ bgcolor: "white", minHeight: "100vh" }}>
       {/* Hero Section */}
       <Box
+        id="hero-section"
         sx={{
           background: "linear-gradient(135deg, #11747f 0%, #385e5b 100%)",
           color: "white",
@@ -458,7 +459,7 @@ const AboutPage = () => {
       </Box>
 
       {/* FAQ Section */}
-      <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
+      <Container id="faqs" maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
         <Typography
           variant="h3"
           align="center"
