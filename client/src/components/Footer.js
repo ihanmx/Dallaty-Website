@@ -144,6 +144,7 @@ const Footer = () => {
             return (
               <Link
                 component={MotionRouterLink}
+                key={page.pageName}
                 whileHover={{ scale: 1.05, x: 5 }}
                 to={page.pageLink}
                 variant="body1"
