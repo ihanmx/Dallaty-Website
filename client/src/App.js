@@ -15,20 +15,25 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { SnackbarProvider } from "./contexts/SnackbarProvider";
 import TrustedBySection from "./components/TrustedBySection";
 import ScrollToTop from "./components/ScrollToTop";
+import PaymentDash from "./components/PaymentDash";
+import PaymentPage from "./components/PaymentPage";
 
 function App() {
   const { i18n } = useTranslation();
   const direction = i18n.language === "ar" ? "rtl" : "ltr";
 
   // Create theme based on language direction
+  //useMemo to avoid recalculate memo with each render it only change when its value is updated
   const theme = useMemo(() => getTheme(direction), [direction]);
 
   // Update document direction
+
   useEffect(() => {
     document.dir = direction;
     document.documentElement.lang = i18n.language;
   }, [direction, i18n.language]);
 
+  //change lang and access dom change the state and are side effects so we need to avoid calling them out side function
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -39,6 +44,8 @@ function App() {
             <SnackbarProvider>
               <AppLayout>
                 <ScrollToTop />
+                <PaymentDash />
+                <PaymentPage />
                 <Routes>
                   <Route
                     path="/"
