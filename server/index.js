@@ -5,9 +5,10 @@ import path from "path";
 import fs from "fs";
 
 import paymentRoute from "./routes/payment.js";
-import paymentDashboardRoute from "./routes/AdminDashboard.js";
+import paymentDashboardRoute from "./routes/admin.js";
 import lostFormRoute from "./routes/lostForm.js";
 import foundFormRoute from "./routes/foundForm.js";
+import adminRoute from "./routes/admin.js";
 
 const app = express();
 const port = 5000;
@@ -32,6 +33,7 @@ app.use(lostFormRoute);
 app.use(foundFormRoute);
 app.use(paymentRoute);
 app.use(paymentDashboardRoute);
+app.use("/admin", adminRoute);
 
 //unsupported url error msg
 app.use((req, res, next) => {

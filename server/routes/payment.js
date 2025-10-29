@@ -11,111 +11,112 @@ const PAYTABS_PROFILE_ID = process.env.PAYTABS_PROFILE_ID;
 const PAYTABS_SERVER_KEY = process.env.PAYTABS_SERVER_KEY;
 const PAYTABS_BASE_URL = process.env.PAYTABS_BASE_URL;
 
-// Create payment request
+// Create paytab request
 router.post("/api/create-payment", async (req, res) => {
   try {
-    const { orderId, customerName, customerEmail, amount } = req.body;
+    //access the user payment token
+    const { paymentToken } = req.body;
 
-    // Your return and callback URLs
-    const returnUrl = "http://localhost:3000/payment-status"; // frontend page
-    const callbackUrl = "http://localhost:5000/api/payment-callback"; // backend route
+    //access the payment DB to make sure that user has a record + retrive his information to use it in paytabs
 
-    const paymentData = {
+    const paymentQuery = await pool.query(
+      `SELECT * FROM payments WHERE payment_token=$1`,
+      [paymentToken]
+    );
+    console.log("row in payment", paymentQuery.rows[0]);
+
+    //validate that there is a record of payment for the user
+    if (paymentQuery.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "there is no record of user in the payments DB" });
+    }
+
+    const paymentRecord = paymentQuery.rows[0];
+    const returnUrl = "http://localhost:3000/payment-status"; //front (success page)
+    const callbackUrl =
+      "https://lourdes-unligatured-benton.ngrok-free.dev/api/webhook"; //hosted back from nogrek to be able to use callcack from paytabs since it does not work with local host
+
+    const uniqueCartID = `${paymentRecord.payment_token}-${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
+
+    const paymentPayload = {
       profile_id: PAYTABS_PROFILE_ID,
       tran_type: "sale",
       tran_class: "ecom",
-      cart_id: orderId,
-      cart_currency: "SAR",
-      cart_amount: amount,
-      cart_description: "Order payment",
+      cart_id: uniqueCartID,
+      cart_currency: paymentRecord.currency,
+      cart_amount: paymentRecord.amount,
+      cart_description: "Dhallaty service fee",
       callback: callbackUrl,
       return: returnUrl,
       customer_details: {
-        name: customerName,
-        email: customerEmail,
+        name: "Dhallaty User",
+        email: paymentRecord.email,
         street1: "NA",
         city: "Riyadh",
         country: "SA",
       },
     };
 
-    // Ensure PayTabs credentials are present
-    // If PayTabs credentials are missing, allow a dev-mode mock response so frontend can be tested
-    if (!PAYTABS_PROFILE_ID || !PAYTABS_SERVER_KEY) {
-      const msg =
-        "PayTabs credentials are not configured (PAYTABS_PROFILE_ID or PAYTABS_SERVER_KEY).";
-      console.warn(msg);
-
-      // In production we should fail hard. In development, return a mock redirect URL and insert a mock DB row.
-
-      //if dev mode (real server production then no fake data)
-      if (process.env.NODE_ENV === "production") {
-        return res.status(500).json({ error: msg });
-      }
-
-      // Create a mock transaction reference and redirect URL for local testing (development mode)
-      //create fake ref for transaction from Date.now()
-      const mock_tran_ref = `MOCK-${Date.now()}`;
-      const mock_redirect_url = `http://localhost:3000/mock-paytabs?tran_ref=${mock_tran_ref}`;
-
-      // store mock record for admin dashboard
-      await pool.query(
-        `INSERT INTO payments (order_id, paytabs_tran_ref, status) VALUES ($1, $2, $3)`,
-        [orderId, mock_tran_ref, "initiated"]
-      );
-
-      return res.json({ url: mock_redirect_url });
-    }
-
-    const response = await axios.post(PAYTABS_BASE_URL, paymentData, {
+    const response = await axios.post(PAYTABS_BASE_URL, paymentPayload, {
       headers: {
         authorization: PAYTABS_SERVER_KEY,
         "Content-Type": "application/json",
       },
     });
 
-    const { tran_ref, redirect_url } = response.data;
+    const { tran_ref, redirect_url, cart_id } = response.data; //extract reference and redirect URL from paytabs response
 
-    // store record for admin dashboard
+    console.log("the res of Paytabs", response.data);
+
+    //now the user has created a payment proccess it paytabs we are going to store it ref
+    //from paytabs in payment DB and change the record status to initiated
     await pool.query(
-      `INSERT INTO payments (order_id, paytabs_tran_ref, status)
-       VALUES ($1, $2, $3)`,
-      [orderId, tran_ref, "initiated"]
+      `UPDATE payments SET paytabs_tran_ref=$1, status='initiated' WHERE payment_token=$2`,
+      [tran_ref, paymentToken]
     );
+
+    //finally the route will send the redirect URL as a response
 
     res.json({ url: redirect_url });
   } catch (error) {
-    // Log full error for debugging
-    console.error("Error creating PayTabs payment:", {
-      message: error.message,
-      responseData: error.response?.data,
-      status: error.response?.status,
-      stack: error.stack,
-    });
-
-    // Return something actionable to the client for local debugging
-    const clientMessage = error.response?.data || { error: error.message };
-    res
-      .status(500)
-      .json({ error: "Payment initialization failed", details: clientMessage });
+    console.error(
+      "Error creating PayTabs payment:",
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: "Payment initialization failed" });
   }
 });
 
-// Callback from PayTabs (after payment)
-router.post("/api/payment-callback", async (req, res) => {
-  try {
-    const { tran_ref, resp_status, resp_message } = req.body;
+//called by paytabs after payment
 
-    // Update DB with final payment status
+router.post("/api/webhook", async (req, res) => {
+  try {
+    console.log("hello from webhook");
+    //these info are taken from paytabs response when the user pay whether it is success or fail
+    const { tran_ref, payment_result, cart_id } = req.body; //extract paytabs payment details from body
+
+    console.log("webhook called", tran_ref, payment_result, cart_id);
+    const status = payment_result?.response_status; //if the payment result object exists them access the satet (check paytabs response for more info)
+
+    //we update the user payment info based on paytab response
     await pool.query(
-      `UPDATE payments SET status = $1 WHERE paytabs_tran_ref = $2`,
-      [resp_status, tran_ref]
+      `UPDATE payments SET status=$1, paytabs_tran_ref=$2 WHERE report_id=$3`,
+      [status, tran_ref, cart_id]
     );
 
-    res.status(200).json({ message: "Callback received" });
-  } catch (error) {
-    console.error("Error handling callback:", error.message);
-    res.status(500).json({ error: "Callback error" });
+    //A is a response from paytabs that means approaved so wa want  to make it clear for thae admin by converting it into success
+    if (status === "A") {
+      await pool.query(
+        `UPDATE lostreports SET status='paid' WHERE reportid=$1`,
+        [cart_id]
+      );
+    }
+
+    res.json({ message: "Webhook processed successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to process webhook" });
   }
 });
 

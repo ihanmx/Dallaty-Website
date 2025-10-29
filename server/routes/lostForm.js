@@ -54,7 +54,7 @@ router.post("/form/lost", upload.single("image"), async (req, res) => {
     const reportId = uuidv4();
 
     const result = await pool.query(
-      "INSERT INTO users (name,email,description,location,file,resource,terms,fees,reportId) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
+      "INSERT INTO lostreports (name,email,description,location,file,resource,terms,fees,reportid) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
       [
         name,
         email,
