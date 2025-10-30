@@ -30,7 +30,7 @@ router.get("/dashboard-data", async (req, res) => {
 
 //confirm matching and sending emails route
 
-router.post("/confirm-match", async (req, res) => {
+router.post("/confirm-match-lost", async (req, res) => {
   const { reportId, lostOwnerEmail, lostOwnerName } = req.body;
   console.log(reportId, lostOwnerEmail, lostOwnerName);
   try {
@@ -58,7 +58,27 @@ router.post("/confirm-match", async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to confirm match" });
+    res.status(500).json({ error: "Failed to confirm lost item match" });
+  }
+});
+
+router.post("/confirm-match-found", async (req, res) => {
+  const { reportId } = req.body;
+  console.log("found Item confirmed", reportId);
+  try {
+    //update LostReports database by the admin
+    const result = await pool.query(
+      `UPDATE foundreports SET status='matched' WHERE reportid=$1 RETURNING *`,
+      [reportId]
+    );
+
+    res.json({
+      message: "Found item matched",
+      payment: result.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to confirm found item match" });
   }
 });
 

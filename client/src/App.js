@@ -17,6 +17,9 @@ import TrustedBySection from "./components/TrustedBySection";
 import ScrollToTop from "./components/ScrollToTop";
 import PaymentDash from "./components/PaymentDash";
 import PaymentPage from "./components/PaymentPage";
+import PaymentStatus from "./components/PaymentStatus";
+import MockPayTabs from "./components/MockPaytabs";
+import AdminDashboard from "./components/AdminDashboard";
 
 function App() {
   const { i18n } = useTranslation();
@@ -44,8 +47,8 @@ function App() {
             <SnackbarProvider>
               <AppLayout>
                 <ScrollToTop />
-                <PaymentDash />
-                <PaymentPage />
+                <AdminDashboard />
+
                 <Routes>
                   <Route
                     path="/"
@@ -70,6 +73,12 @@ function App() {
                   <Route path="/lostform" element={<LostForm />} />
                   <Route path="/foundform" element={<FoundForm />} />
                   <Route path="/about" element={<AboutPage />} />
+                  <Route path="/" element={<PaymentPage />} />
+                  <Route
+                    path="/payment/:paymentToken"
+                    element={<PaymentPage />}
+                  />
+                  <Route path="/payment-status" element={<PaymentStatus />} />
                 </Routes>
               </AppLayout>
             </SnackbarProvider>

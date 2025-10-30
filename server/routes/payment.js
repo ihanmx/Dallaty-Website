@@ -18,7 +18,7 @@ router.post("/api/create-payment", async (req, res) => {
     const { paymentToken } = req.body;
 
     //access the payment DB to make sure that user has a record + retrive his information to use it in paytabs
-
+    console.log("create payment calles");
     const paymentQuery = await pool.query(
       `SELECT * FROM payments WHERE payment_token=$1`,
       [paymentToken]
@@ -37,7 +37,7 @@ router.post("/api/create-payment", async (req, res) => {
     const callbackUrl =
       "https://lourdes-unligatured-benton.ngrok-free.dev/api/webhook"; //hosted back from nogrek to be able to use callcack from paytabs since it does not work with local host
 
-    const uniqueCartID = `${paymentRecord.payment_token}-${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
+    const uniqueCartID = `${paymentRecord.payment_token}_${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
 
     const paymentPayload = {
       profile_id: PAYTABS_PROFILE_ID,
@@ -72,10 +72,9 @@ router.post("/api/create-payment", async (req, res) => {
     //now the user has created a payment proccess it paytabs we are going to store it ref
     //from paytabs in payment DB and change the record status to initiated
     await pool.query(
-      `UPDATE payments SET paytabs_tran_ref=$1, status='initiated' WHERE payment_token=$2`,
-      [tran_ref, paymentToken]
+      `UPDATE payments SET paytabs_tran_ref=$1, status='initiated', cart_id=$2 WHERE payment_token=$3`,
+      [tran_ref, uniqueCartID, paymentToken]
     );
-
     //finally the route will send the redirect URL as a response
 
     res.json({ url: redirect_url });
@@ -98,18 +97,19 @@ router.post("/api/webhook", async (req, res) => {
 
     console.log("webhook called", tran_ref, payment_result, cart_id);
     const status = payment_result?.response_status; //if the payment result object exists them access the satet (check paytabs response for more info)
-
+    console.log("webhook status", payment_result?.response_status);
     //we update the user payment info based on paytab response
     await pool.query(
-      `UPDATE payments SET status=$1, paytabs_tran_ref=$2 WHERE report_id=$3`,
+      `UPDATE payments SET status=$1, paytabs_tran_ref=$2 WHERE cart_id=$3`,
       [status, tran_ref, cart_id]
     );
 
     //A is a response from paytabs that means approaved so wa want  to make it clear for thae admin by converting it into success
+
     if (status === "A") {
       await pool.query(
         `UPDATE lostreports SET status='paid' WHERE reportid=$1`,
-        [cart_id]
+        [originalReportId]
       );
     }
 
