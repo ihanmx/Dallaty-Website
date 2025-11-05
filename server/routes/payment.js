@@ -33,11 +33,11 @@ router.post("/api/create-payment", async (req, res) => {
     }
 
     const paymentRecord = paymentQuery.rows[0];
-    const returnUrl = "http://localhost:3000/payment-status"; //front (success page)
+    const returnUrl = `http://localhost:3000/payment-status/${paymentRecord.report_id}`; //front (success page)
     const callbackUrl =
       "https://lourdes-unligatured-benton.ngrok-free.dev/api/webhook"; //hosted back from nogrek to be able to use callcack from paytabs since it does not work with local host
 
-    const uniqueCartID = `${paymentRecord.payment_token}_${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
+    const uniqueCartID = `${paymentRecord.report_id}_${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
 
     const paymentPayload = {
       profile_id: PAYTABS_PROFILE_ID,
@@ -88,35 +88,70 @@ router.post("/api/create-payment", async (req, res) => {
 });
 
 //called by paytabs after payment
-
+//server to server only
 router.post("/api/webhook", async (req, res) => {
   try {
-    console.log("hello from webhook");
-    //these info are taken from paytabs response when the user pay whether it is success or fail
-    const { tran_ref, payment_result, cart_id } = req.body; //extract paytabs payment details from body
+    console.log("✅ Webhook triggered");
+    console.log("Webhook full body:", JSON.stringify(req.body, null, 2));
+    const { tran_ref, payment_result, cart_id } = req.body;
 
-    console.log("webhook called", tran_ref, payment_result, cart_id);
-    const status = payment_result?.response_status; //if the payment result object exists them access the satet (check paytabs response for more info)
-    console.log("webhook status", payment_result?.response_status);
-    //we update the user payment info based on paytab response
+    if (!tran_ref || !cart_id) {
+      console.error("Missing data from PayTabs:", req.body);
+      return res.status(400).json({ error: "Invalid webhook payload" });
+    }
+
+    // PayTabs status
+    const statusCode = payment_result?.response_status || "U"; // U = Unknown
+    const status =
+      statusCode === "A"
+        ? "success"
+        : statusCode === "D"
+        ? "declined"
+        : "failed";
+
+    // Extract report ID (we used cart_id = `${reportId}_${Date.now()}`)
+    const originalReportId = cart_id.split("_")[0];
+    console.error("From webhook the report ID is:", originalReportId);
+
+    // Update payments table
     await pool.query(
-      `UPDATE payments SET status=$1, paytabs_tran_ref=$2 WHERE cart_id=$3`,
-      [status, tran_ref, cart_id]
+      `UPDATE payments SET status=$1, paytabs_tran_ref=$2 WHERE report_id=$3`,
+      [status, tran_ref, originalReportId]
     );
 
-    //A is a response from paytabs that means approaved so wa want  to make it clear for thae admin by converting it into success
-
-    if (status === "A") {
+    // If payment succeeded, mark lostreports as paid
+    if (status === "success") {
       await pool.query(
         `UPDATE lostreports SET status='paid' WHERE reportid=$1`,
         [originalReportId]
       );
     }
 
-    res.json({ message: "Webhook processed successfully" });
+    console.log(`Webhook processed: report ${originalReportId} → ${status}`);
+
+    res.json({ message: "Webhook processed successfully", status });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Webhook error:", err);
     res.status(500).json({ error: "Failed to process webhook" });
+  }
+});
+
+router.get("/api/payment-status/:reportId", async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const result = await pool.query(
+      `SELECT status FROM payments WHERE report_id=$1`,
+      [reportId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ status: "not_found" });
+    }
+
+    res.json({ status: result.rows[0].status });
+  } catch (err) {
+    console.error("Error fetching payment status:", err);
+    res.status(500).json({ status: "error" });
   }
 });
 

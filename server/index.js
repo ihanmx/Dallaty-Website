@@ -12,19 +12,8 @@ import ngrok from "@ngrok/ngrok";
 
 const app = express();
 const port = 5000;
+
 dotenv.config();
-
-// global error handlers to capture unhandled promise rejections and exceptions
-
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise, "reason:", reason);
-});
-
-process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err && err.stack ? err.stack : err);
-  // optional: exit process after a delay to allow logs to flush
-  // setTimeout(() => process.exit(1), 1000);
-});
 
 app.use(cors());
 app.use(express.json());
@@ -63,8 +52,7 @@ app.listen(port, async () => {
     // The port your app is running on.
     addr: 5000,
     authtoken: process.env.NGROK_AUTHTOKEN, // Secure your endpoint with a traffic policy. // This could also be a path to a traffic policy file.
-    // traffic_policy:
-    //   '{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}',
-  }); // Output ngrok url to console
+  });
+
   console.log(`Ingress established at ${listener.url()}`);
 });

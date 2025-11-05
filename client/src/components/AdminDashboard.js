@@ -180,7 +180,7 @@ export default function AdminDashboard() {
         <table border="1" cellPadding="8" width="100%">
           <thead>
             <tr style={{ background: "#eee" }}>
-              <th>ID</th>
+              <th>ReportID</th>
               <th>Email</th>
               <th>Amount</th>
               <th>Status</th>
@@ -197,9 +197,9 @@ export default function AdminDashboard() {
             ) : (
               data.paymentRecords.map((p) => (
                 <tr key={p.id}>
-                  <td>{p.id}</td>
+                  <td>{p.report_id}</td>
                   <td>{p.email}</td>
-                  <td>{p.amount}</td>
+                  <td>{p.paytabs_tran_ref}</td>
                   <td>{p.status}</td>
                   <td>{p.payment_token}</td>
                 </tr>

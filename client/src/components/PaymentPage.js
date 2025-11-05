@@ -20,6 +20,7 @@ export default function PaymentPage() {
             paymentToken,
           }
         );
+        console.log("front create payment called and send token", paymentToken);
         // Redirect to PayTabs checkout page (which is sent by the backend server)
         window.location.href = res.data.url;
       } catch (err) {

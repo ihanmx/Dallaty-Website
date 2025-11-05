@@ -78,7 +78,10 @@ function App() {
                     path="/payment/:paymentToken"
                     element={<PaymentPage />}
                   />
-                  <Route path="/payment-status" element={<PaymentStatus />} />
+                  <Route
+                    path="/payment-status/:reportId"
+                    element={<PaymentStatus />}
+                  />
                 </Routes>
               </AppLayout>
             </SnackbarProvider>

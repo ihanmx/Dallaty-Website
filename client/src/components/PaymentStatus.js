@@ -1,20 +1,40 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 export default function PaymentStatus() {
-  const [searchParams] = useSearchParams();
+  const { reportId } = useParams(); // e.g., /payment/:reportId
   const [message, setMessage] = useState("Processing your payment...");
 
   useEffect(() => {
-    const status = searchParams.get("respStatus"); // PayTabs may send params like ?respStatus=A
-    if (status === "A") {
-      setMessage("✅ Payment Successful! Thank you for using Dhallaty.");
-    } else if (status) {
-      setMessage("❌ Payment Failed. Please try again.");
-    }
-  }, [searchParams]);
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/payment-status/${reportId}`
+        );
+        const data = await res.json();
+
+        if (data.status === "success") {
+          setMessage("✅ Payment Successful! Thank you for using Dhallaty.");
+        } else if (data.status === "failed" || data.status === "declined") {
+          setMessage("❌ Payment Failed. Please try again.");
+        } else {
+          setMessage("⏳ Payment still processing...");
+        }
+      } catch (err) {
+        console.error(err);
+        setMessage(
+          "⚠️ Unable to retrieve payment status. Please check again later."
+        );
+      }
+    };
+
+    // poll every 5 seconds for updates
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 5000);
+    return () => clearInterval(interval);
+  }, [reportId]);
 
   return (
     <Box textAlign="center" mt={10}>
