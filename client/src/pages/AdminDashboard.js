@@ -1,3 +1,4 @@
+//  Note: this page need for (Front designing) we only use this draft to test the back
 import { useEffect, useState } from "react";
 import axios from "axios";
 

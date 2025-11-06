@@ -29,7 +29,7 @@ import { Link as RouterLink } from "react-router-dom";
 //local images
 import design1dark from "../images/design1dark.png";
 //local components
-import ReportInstruction from "./ReportInstruction";
+import ReportInstruction from "../components/ReportInstruction";
 
 const FoundForm = () => {
   //Access foundUserInfo and setFoundUserInfo from context

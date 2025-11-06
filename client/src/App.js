@@ -1,25 +1,37 @@
-// import "./App.css";
+// hooks
 import { useMemo, useEffect } from "react";
-import getTheme from "./themes/theme";
-import { ThemeProvider } from "@mui/material/styles";
-import { LostUserInfoProvider } from "./contexts/LostUserInfoContext";
-import LostForm from "./components/LostForm";
-import LandingPage from "./components/LandingPage";
-import FoundForm from "./components/FoundForm";
-import AboutPage from "./components/AboutPage";
-import { FoundUserInfoProvider } from "./contexts/FoundUserInfoContext";
+
+// React router-dom
 import { Routes, Route } from "react-router-dom";
-import AppLayout from "./components/AppLayout";
-import { useTranslation } from "react-i18next";
-import CssBaseline from "@mui/material/CssBaseline";
+
+//contexts
+import { LostUserInfoProvider } from "./contexts/LostUserInfoContext";
+import { FoundUserInfoProvider } from "./contexts/FoundUserInfoContext";
 import { SnackbarProvider } from "./contexts/SnackbarProvider";
+
+// theme
+import getTheme from "./themes/theme";
+
+// i-18 library
+import { useTranslation } from "react-i18next";
+
+// MUI
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+
+//local components
 import TrustedBySection from "./components/TrustedBySection";
 import ScrollToTop from "./components/ScrollToTop";
-import PaymentDash from "./components/PaymentDash";
-import PaymentPage from "./components/PaymentPage";
-import PaymentStatus from "./components/PaymentStatus";
-import MockPayTabs from "./components/MockPaytabs";
-import AdminDashboard from "./components/AdminDashboard";
+import AppLayout from "./components/AppLayout";
+
+// local pages
+import PaymentPage from "./pages/PaymentPage";
+import PaymentStatus from "./pages/PaymentStatus";
+import AdminDashboard from "./pages/AdminDashboard";
+import LostForm from "./pages/LostForm";
+import LandingPage from "./pages/LandingPage";
+import FoundForm from "./pages/FoundForm";
+import AboutPage from "./pages/AboutPage";
 
 function App() {
   const { i18n } = useTranslation();
