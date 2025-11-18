@@ -3,9 +3,12 @@ import {
   postCreatePayment,
   postPaymentWebhook,
   getPaymentStatus,
+  getPaymentDetails,
 } from "../controllers/PaymentController.js";
 
 const router = express.Router();
+
+router.get("/payment-details/:paymentToken", getPaymentDetails);
 
 // Create paytab request
 router.post("/api/create-payment", postCreatePayment);

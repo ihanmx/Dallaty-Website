@@ -9,13 +9,45 @@ const PAYTABS_PROFILE_ID = process.env.PAYTABS_PROFILE_ID;
 const PAYTABS_SERVER_KEY = process.env.PAYTABS_SERVER_KEY;
 const PAYTABS_BASE_URL = process.env.PAYTABS_BASE_URL;
 
+//done
+export const getPaymentDetails = async (req, res) => {
+  const { paymentToken } = req.params;
+
+  try {
+    const userReportData = await pool.query(
+      "SELECT lostreports.* from lostreports JOIN payments ON payments.report_id=lostreports.reportid WHERE payments.payment_token=$1",
+      [paymentToken]
+    );
+
+    if (userReportData.rows.length > 0) {
+      console.log("user report details", userReportData.rows[0]);
+      res.json(userReportData.rows[0]);
+    } else
+      res.status(404).json({
+        url: `http://localhost:3000/payment-status/invalid?error=invalidToken`,
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      url: `http://localhost:3000/payment-status/invalid?error=serverError`,
+    });
+  }
+};
+
+//
 export const postCreatePayment = async (req, res) => {
   try {
     //access the user payment token
-    const { paymentToken } = req.body;
+    const { paymentToken, agreedToTerms } = req.body;
 
     //access the payment DB to make sure that user has a record + retrive his information to use it in paytabs
     console.log("create payment calles");
+    if (!agreedToTerms) {
+      return res
+        .status(400)
+        .json({ error: "You must agree to the payment terms" });
+    }
+
     const paymentQuery = await pool.query(
       `SELECT * FROM payments WHERE payment_token=$1`,
       [paymentToken]
@@ -27,6 +59,10 @@ export const postCreatePayment = async (req, res) => {
       return res
         .status(404)
         .json({ error: "there is no record of user in the payments DB" });
+    } else if (paymentQuery.rows[0].status === "success") {
+      return res.json({
+        url: `http://localhost:3000/payment-status/${paymentQuery.rows[0].report_id}?alreadyPaid=true`,
+      });
     }
 
     const paymentRecord = paymentQuery.rows[0];
@@ -35,7 +71,7 @@ export const postCreatePayment = async (req, res) => {
       "https://lourdes-unligatured-benton.ngrok-free.dev/api/webhook"; //hosted back from nogrek to be able to use callcack from paytabs since it does not work with local host
 
     const uniqueCartID = `${paymentRecord.report_id}_${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
-
+    //note you must set digital product setting from paytabs dashboard
     const paymentPayload = {
       profile_id: PAYTABS_PROFILE_ID,
       tran_type: "sale",
@@ -46,13 +82,8 @@ export const postCreatePayment = async (req, res) => {
       cart_description: "Dhallaty service fee",
       callback: callbackUrl,
       return: returnUrl,
-      customer_details: {
-        name: "Dhallaty User",
-        email: paymentRecord.email,
-        street1: "NA",
-        city: "Riyadh",
-        country: "SA",
-      },
+      hide_shipping: true,
+      hide_billing: true,
     };
 
     const response = await axios.post(PAYTABS_BASE_URL, paymentPayload, {
@@ -66,11 +97,11 @@ export const postCreatePayment = async (req, res) => {
 
     console.log("the res of Paytabs", response.data);
 
-    //now the user has created a payment proccess it paytabs we are going to store it ref
+    //now the user has created a payment proccess it paytabs we are going to store it ref of the procees from paytabs res
     //from paytabs in payment DB and change the record status to initiated
     await pool.query(
-      `UPDATE payments SET paytabs_tran_ref=$1, status='initiated', cart_id=$2 WHERE payment_token=$3`,
-      [tran_ref, uniqueCartID, paymentToken]
+      `UPDATE payments SET paytabs_tran_ref=$1, status='initiated', cart_id=$2,agreed_to_terms=$3 WHERE payment_token=$4`,
+      [tran_ref, uniqueCartID, agreedToTerms, paymentToken]
     );
     //finally the route will send the redirect URL as a response
 
@@ -83,6 +114,8 @@ export const postCreatePayment = async (req, res) => {
     res.status(500).json({ error: "Payment initialization failed" });
   }
 };
+
+//Done
 
 export const postPaymentWebhook = async (req, res) => {
   try {
@@ -127,9 +160,13 @@ export const postPaymentWebhook = async (req, res) => {
     res.json({ message: "Webhook processed successfully", status });
   } catch (err) {
     console.error("❌ Webhook error:", err);
-    res.status(500).json({ error: "Failed to process webhook" });
+    res
+      .status(500)
+      .json({ error: "Failed to process webhook", status: "error" });
   }
 };
+
+//Done
 
 export const getPaymentStatus = async (req, res) => {
   try {

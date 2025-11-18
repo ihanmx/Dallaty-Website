@@ -186,6 +186,7 @@ export default function AdminDashboard() {
               <th>Amount</th>
               <th>Status</th>
               <th>Token</th>
+              <th>agreed_terms</th>
             </tr>
           </thead>
           <tbody>
@@ -203,6 +204,7 @@ export default function AdminDashboard() {
                   <td>{p.paytabs_tran_ref}</td>
                   <td>{p.status}</td>
                   <td>{p.payment_token}</td>
+                  <td>{p.agreed_to_terms ? "yes" : "No"}</td>
                 </tr>
               ))
             )}

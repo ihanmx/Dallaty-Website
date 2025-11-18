@@ -1,6 +1,7 @@
 import pool from "../config/dp.js";
 import { v4 as uuidv4 } from "uuid";
-import sendPaymentEmail from "../services/nodemailer.js";
+// import sendPaymentEmail from "../services/nodemailer.js";
+import sendPaymentEmail from "../services/zapiermail.js";
 
 export const getDashboardData = async (req, res) => {
   try {

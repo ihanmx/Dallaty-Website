@@ -15,6 +15,10 @@ const port = 5000;
 
 dotenv.config();
 
+process.on("unhandledRejection", (err) => {
+  console.error("🔴 Unhandled Promise Rejection:", err);
+});
+
 app.use(cors());
 app.use(express.json());
 // ensure uploads directories exist

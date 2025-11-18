@@ -85,13 +85,16 @@ function App() {
                   <Route path="/lostform" element={<LostForm />} />
                   <Route path="/foundform" element={<FoundForm />} />
                   <Route path="/about" element={<AboutPage />} />
-                  <Route path="/" element={<PaymentPage />} />
                   <Route
                     path="/payment/:paymentToken"
                     element={<PaymentPage />}
                   />
                   <Route
                     path="/payment-status/:reportId"
+                    element={<PaymentStatus />}
+                  />
+                  <Route
+                    path="/payment-status/invalid"
                     element={<PaymentStatus />}
                   />
                 </Routes>
