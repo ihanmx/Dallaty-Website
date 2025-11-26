@@ -1,13 +1,17 @@
 import nodemailer from "nodemailer";
 
+import dotenv from "dotenv";
+
+dotenv.config();
+
 // Mailtrap credentials (hardcoded for local testing)
 // Looking to send emails in production? Check out our Email API/SMTP product!
 var transport = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
   auth: {
-    user: "34f17213adf582",
-    pass: "de77dd7df9c4b2",
+    user: process.env.NODEMAILER_USER,
+    pass: process.env.NODEMAILER_PASSWORD,
   },
 });
 

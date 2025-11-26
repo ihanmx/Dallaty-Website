@@ -1,9 +1,12 @@
 import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const sendPaymentEmail = async (toEmail, userName, paymentToken) => {
   const paymentLink = `http://localhost:3000/payment/${paymentToken}`;
   try {
-    await axios.post("https://hooks.zapier.com/hooks/catch/25303820/uspp94x/", {
+    await axios.post(process.env.ZAPIER_PAYMENT_WEBHOOK_URL, {
       email: toEmail,
       userName: userName,
       link: paymentLink,
