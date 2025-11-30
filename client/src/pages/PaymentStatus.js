@@ -104,6 +104,7 @@ export default function PaymentStatus() {
         );
         const data = await res.json();
         if (alreadyPaid) {
+          //from url query
           setStatus("payed");
           clearInterval(interval);
         } else if (error === "invalidToken") {
@@ -112,6 +113,8 @@ export default function PaymentStatus() {
         } else if (error === "serverError") {
           setStatus("server_error");
           clearInterval(interval);
+
+          //from res status
         } else if (data.status === "success") {
           setStatus("success");
 

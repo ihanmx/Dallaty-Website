@@ -32,6 +32,7 @@ import LostForm from "./pages/LostForm";
 import LandingPage from "./pages/LandingPage";
 import FoundForm from "./pages/FoundForm";
 import AboutPage from "./pages/AboutPage";
+import AdminMatchDashboard from "./pages/AdminMatchDashboard";
 
 function App() {
   const { i18n } = useTranslation();
@@ -59,7 +60,7 @@ function App() {
             <SnackbarProvider>
               <AppLayout>
                 <ScrollToTop />
-                <AdminDashboard />
+                {/* <AdminDashboard /> */}
 
                 <Routes>
                   <Route
@@ -96,6 +97,11 @@ function App() {
                   <Route
                     path="/payment-status/invalid"
                     element={<PaymentStatus />}
+                  />
+
+                  <Route
+                    path="/admin-match-dashboard"
+                    element={<AdminMatchDashboard />}
                   />
                 </Routes>
               </AppLayout>

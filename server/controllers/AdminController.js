@@ -25,13 +25,47 @@ export const getDashboardData = async (req, res) => {
 };
 
 export const postConfirmMatchLost = async (req, res) => {
-  const { reportId, lostOwnerEmail, lostOwnerName } = req.body;
-  console.log(reportId, lostOwnerEmail, lostOwnerName);
+  const { matchedLostReportId, matchedFoundReportId } = req.body;
+
   try {
+    const LostUserRecord = await pool.query(
+      "SELECT * FROM lostreports WHERE reportid=$1",
+      [matchedLostReportId]
+    );
+
+    const lostRow = LostUserRecord.rows[0];
+
+    const FoundUserRecord = await pool.query(
+      "SELECT * FROM foundreports WHERE reportid=$1",
+      [matchedFoundReportId]
+    );
+
+    const foundRow = FoundUserRecord.rows[0];
+
+    if (!lostRow) {
+      return res.status(404).json({ error: "lost_report_not_found" });
+    }
+
+    if (!foundRow) {
+      return res.status(404).json({ error: "found_report_not_found" });
+    }
+
+    if (
+      lostRow.status === "matched" ||
+      lostRow.status === "found_pending_payment" ||
+      lostRow.status === "paid"
+    ) {
+      return res.status(400).json({ error: "lost_already_matched" });
+    } else if (foundRow.status === "matched") {
+      return res.status(400).json({ error: "found_already_matched" });
+    }
+
+    console.log(lostRow);
+
     //update LostReports database by the admin
     await pool.query(
       `UPDATE lostreports SET status='found_pending_payment' WHERE reportid=$1`,
-      [reportId]
+      [matchedLostReportId]
     );
     //create payment token
     const paymentToken = uuidv4();
@@ -40,11 +74,32 @@ export const postConfirmMatchLost = async (req, res) => {
     const result = await pool.query(
       `INSERT INTO payments (report_id, email, amount, currency, payment_token, status)
        VALUES ($1,$2,$3,$4,$5,'pending') RETURNING *`,
-      [reportId, lostOwnerEmail, 25.0, "SAR", paymentToken]
+      [matchedLostReportId, lostRow.email, 25.0, "SAR", paymentToken]
+    );
+
+    //update found database by the admin
+    const result1 = await pool.query(
+      `UPDATE foundreports SET status='matched' WHERE reportid=$1 RETURNING *`,
+      [matchedFoundReportId]
+    );
+
+    //initiate record for the matched item
+    const matchedRecord = await pool.query(
+      `INSERT INTO matched_items (lost_reportid, found_reportid, lost_report_date, found_date, description, location,recipient_details)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      [
+        lostRow.reportid,
+        foundRow.reportid,
+        lostRow.created_date,
+        foundRow.found_date,
+        foundRow.description,
+        foundRow.location,
+        foundRow.recipientdescription,
+      ]
     );
 
     //call the function that sends email for the user to pay the fees
-    await sendPaymentEmail(lostOwnerEmail, lostOwnerName, paymentToken);
+    await sendPaymentEmail(lostRow.email, lostRow.name, paymentToken);
 
     res.json({
       message: "Lost item matched, payment created, email sent.",
