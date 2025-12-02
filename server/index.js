@@ -8,6 +8,7 @@ import paymentRoute from "./routes/payment.js";
 import lostFormRoute from "./routes/lostForm.js";
 import foundFormRoute from "./routes/foundForm.js";
 import adminRoute from "./routes/admin.js";
+import matchedItemRouter from "./routes/matchedItem.js";
 import ngrok from "@ngrok/ngrok";
 
 const app = express();
@@ -18,10 +19,10 @@ dotenv.config();
 process.on("unhandledRejection", (err) => {
   console.error("🔴 Unhandled Promise Rejection:", err);
 });
-
+//to enable front to access back
 app.use(cors());
-app.use(express.json());
-// ensure uploads directories exist
+app.use(express.json()); //built in body parser
+// It makes the uploads folder public so the browser can access the image directly.
 const uploadsLostDir = path.join(process.cwd(), "uploads", "lost");
 const uploadsFoundDir = path.join(process.cwd(), "uploads", "found");
 [uploadsLostDir, uploadsFoundDir].forEach((dir) => {
@@ -40,6 +41,7 @@ app.use(lostFormRoute);
 app.use(foundFormRoute);
 app.use(paymentRoute);
 app.use("/admin", adminRoute);
+app.use(matchedItemRouter);
 app.get("/test", (req, res) => {
   console.log("✅ /test route reached through ngrok");
   res.send("Ngrok works!");

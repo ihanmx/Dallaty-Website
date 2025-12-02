@@ -2,6 +2,8 @@ import axios from "axios";
 import pool from "../config/dp.js";
 import dotenv from "dotenv";
 
+import { sendReportDetails } from "../services/zapiermail.js";
+
 dotenv.config();
 
 // PayTabs API credentials (keep in .env)
@@ -15,7 +17,7 @@ export const getPaymentDetails = async (req, res) => {
 
   try {
     const userReportData = await pool.query(
-      "SELECT lostreports.* from lostreports JOIN payments ON payments.report_id=lostreports.reportid WHERE payments.payment_token=$1",
+      "SELECT matched_items.* from matched_items JOIN payments ON payments.report_id=matched_items.lost_reportid WHERE payments.payment_token=$1",
       [paymentToken]
     );
 
@@ -34,7 +36,7 @@ export const getPaymentDetails = async (req, res) => {
   }
 };
 
-//
+//called when user clicks pay button
 export const postCreatePayment = async (req, res) => {
   try {
     //access the user payment token
@@ -149,9 +151,41 @@ export const postPaymentWebhook = async (req, res) => {
 
     // If payment succeeded, mark lostreports as paid
     if (status === "success") {
-      await pool.query(
-        `UPDATE lostreports SET status='paid' WHERE reportid=$1`,
+      const lostUserData = await pool.query(
+        `UPDATE lostreports SET status='paid' WHERE reportid=$1 RETURNING *`,
         [originalReportId]
+      );
+
+      const lostUserDataRow = lostUserData.rows[0];
+
+      console.log("for zapier send th id", lostUserDataRow.reportid);
+      // const reportData = await pool.query(
+      //   "SELECT * from matched_items WHERE lost_reportid=$1",
+      //   [originalReportId]
+      // );
+
+      //   const sendReportDetails = async (
+      //   reportId,
+      //   toEmail,
+      //   userName,
+      //   location,
+      //   description,
+      //   file,
+      //   recipientDescription,
+      //   foundDate
+      // )
+
+      // const reportDataRow = reportData.rows[0];
+      sendReportDetails(
+        lostUserDataRow.reportid,
+        lostUserDataRow.email,
+        lostUserDataRow.name
+
+        // reportDataRow.location,
+        // reportDataRow.description,
+        // reportDataRow.file,
+        // reportDataRow.recipientDescription,
+        // reportDataRow.found_date
       );
     }
 

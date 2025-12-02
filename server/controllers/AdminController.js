@@ -1,7 +1,7 @@
 import pool from "../config/dp.js";
 import { v4 as uuidv4 } from "uuid";
 // import sendPaymentEmail from "../services/nodemailer.js";
-import sendPaymentEmail from "../services/zapiermail.js";
+import { sendPaymentEmail } from "../services/zapiermail.js";
 
 export const getDashboardData = async (req, res) => {
   try {
@@ -85,8 +85,8 @@ export const postConfirmMatchLost = async (req, res) => {
 
     //initiate record for the matched item
     const matchedRecord = await pool.query(
-      `INSERT INTO matched_items (lost_reportid, found_reportid, lost_report_date, found_date, description, location,recipient_details)
-       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      `INSERT INTO matched_items (lost_reportid, found_reportid, lost_report_date, found_date, description, location,recipient_details,file)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
       [
         lostRow.reportid,
         foundRow.reportid,
@@ -95,6 +95,7 @@ export const postConfirmMatchLost = async (req, res) => {
         foundRow.description,
         foundRow.location,
         foundRow.recipientdescription,
+        foundRow.file,
       ]
     );
 

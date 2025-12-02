@@ -1,5 +1,4 @@
-//  Note: this page need for (Front designing) we only use this draft to test the back
-
+import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -9,9 +8,7 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
-
+import { Link } from "react-router-dom";
 //local images
 import design1 from "../images/design1.png";
 import Stack from "@mui/material/Stack";
@@ -19,53 +16,44 @@ import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
 import Modal from "@mui/material/Modal";
 
-//context
+const ItemDetails = () => {
+  // `http://localhost:3000/item-details/${reportId}`
+  const { reportId } = useParams();
 
-export default function PaymentPage() {
-  const { paymentToken } = useParams(); //takes the token from the header of URL
-  const [loading, setLoading] = useState(true);
-  const [reportData, setReportData] = useState({});
-  const [agreed, setAgreed] = useState(false);
-  const [error, setError] = useState("");
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const [itemDetails, setItemDetails] = useState({});
   const [openImage, setOpenImage] = useState(false);
 
   useEffect(() => {
-    const fetchUserReportDetails = async () => {
+    const fetchItemDetails = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/payment-details/${paymentToken}`
+          `http://localhost:5000/item-details/${reportId}`
         );
 
         console.log("server res with details", res);
 
-        setReportData(res.data);
+        setItemDetails(res.data);
+        console.log("item details", ItemDetails);
         setLoading(false);
       } catch (err) {
         // Axios puts backend response here
-        const url = err.response?.data?.url;
+        const errStatus = err.response?.status || 500;
 
-        if (url) {
-          window.location.href = url;
+        if (errStatus) {
+          window.location.href = `/item-details-error?status=${errStatus}`;
         } else {
           console.error("Unexpected error:", err);
-          setError("server");
+          // setError("server");
         }
       }
     };
 
-    fetchUserReportDetails();
-  }, [paymentToken]);
+    fetchItemDetails();
+  }, []);
 
-  const handlePayClick = async () => {
-    const res = await axios.post("http://localhost:5000/api/create-payment", {
-      paymentToken,
-      agreedToTerms: agreed,
-    });
-    window.location.href = res.data.url;
-  };
-
-  if (loading && !error) {
+  if (loading) {
     return (
       <Box textAlign="center" mt={10}>
         <CircularProgress />
@@ -73,7 +61,6 @@ export default function PaymentPage() {
       </Box>
     );
   }
-
   return (
     <Stack
       id="lost-page"
@@ -96,13 +83,13 @@ export default function PaymentPage() {
     >
       <Card
         sx={{
-          width: { xs: "95%", sm: "85%", md: "55%" },
+          width: { xs: "70%", md: "50%" },
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           padding: 2,
-          // wordBreak: "break-word",
+          wordBreak: "break-word",
           whiteSpace: "normal",
           overflowWrap: "break-word",
         }}
@@ -128,7 +115,7 @@ export default function PaymentPage() {
             onClick={() => setOpenImage(false)}
           >
             <img
-              src={`http://localhost:5000${reportData.file}`}
+              src={`http://localhost:5000${itemDetails.file}`}
               alt="Expanded Item"
               style={{
                 width: "100%",
@@ -145,37 +132,44 @@ export default function PaymentPage() {
           sx={{ textAlign: "center", fontWeight: "bold", mb: 2 }}
           color="primary.main"
         >
-          {t("report_details")}
+          {t("lost_item_details")}
         </Typography>
         <CardContent sx={{ width: "80%" }}>
           <Typography variant="h6" mt="2">
             {t("found_at_date")}
           </Typography>
 
-          <Typography variant="body1">{reportData.found_date}</Typography>
-
-          {/* <Typography mt={2} variant="h6">
-            {t("email")}
-          </Typography> */}
-
-          {/* <Typography variant="body1">{reportData.location}</Typography> */}
+          <Typography variant="body1"> {itemDetails.found_date}</Typography>
 
           <Typography mt={2} variant="h6">
             {t("description")}
           </Typography>
 
-          <Typography variant="body1">{reportData.description}</Typography>
+          <Typography variant="body1">{itemDetails.description}</Typography>
 
           <Typography mt={2} variant="h6">
             {t("location")}
           </Typography>
 
-          <Typography variant="body1">
-            {reportData.recipient_details}
+          <Typography variant="body1">{itemDetails.location}</Typography>
+
+          <Typography mt={2} variant="h6">
+            {t("recipient_details")}
           </Typography>
 
+          <Typography variant="body1">
+            {itemDetails.recipient_details}
+          </Typography>
+
+          <Typography mt={2} variant="h6">
+            {t("matched_at")}
+          </Typography>
+
+          <Typography variant="body1"> {itemDetails.matched_at}</Typography>
+
           <img
-            src={`http://localhost:5000${reportData.file}`}
+            src={`http://localhost:5000${itemDetails.file}`}
+            alt="Found Item"
             onClick={() => setOpenImage(true)}
             style={{
               width: "100%",
@@ -188,30 +182,17 @@ export default function PaymentPage() {
               display: "block",
             }}
           />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={agreed}
-                onChange={(e) => {
-                  setAgreed(e.target.checked);
-                }}
-              />
-            }
-            label={t("payment_terms")}
-            sx={{ mt: 2 }}
-          />
         </CardContent>
         <CardActions>
-          <Button
-            disabled={!agreed}
-            onClick={handlePayClick}
-            variant="contained"
-            size="small"
-          >
-            {t("pay_now")}
-          </Button>
+          <Link to="/home">
+            <Button variant="contained" size="small">
+              {t("Home")}
+            </Button>
+          </Link>
         </CardActions>
       </Card>
     </Stack>
   );
-}
+};
+
+export default ItemDetails;

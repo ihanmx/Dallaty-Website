@@ -23,6 +23,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import TrustedBySection from "./components/TrustedBySection";
 import ScrollToTop from "./components/ScrollToTop";
 import AppLayout from "./components/AppLayout";
+import ItemDetails from "./pages/ItemDetails";
 
 // local pages
 import PaymentPage from "./pages/PaymentPage";
@@ -33,6 +34,7 @@ import LandingPage from "./pages/LandingPage";
 import FoundForm from "./pages/FoundForm";
 import AboutPage from "./pages/AboutPage";
 import AdminMatchDashboard from "./pages/AdminMatchDashboard";
+import ItemDetailsErrPage from "./pages/ItemDetailsErrPage";
 
 function App() {
   const { i18n } = useTranslation();
@@ -102,6 +104,16 @@ function App() {
                   <Route
                     path="/admin-match-dashboard"
                     element={<AdminMatchDashboard />}
+                  />
+
+                  <Route
+                    path="/item-details/:reportId"
+                    element={<ItemDetails />}
+                  />
+
+                  <Route
+                    path="/item-details-error"
+                    element={<ItemDetailsErrPage />}
                   />
                 </Routes>
               </AppLayout>
