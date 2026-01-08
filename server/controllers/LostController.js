@@ -1,0 +1,40 @@
+import pool from "../config/dp.js";
+import { v4 as uuidv4 } from "uuid";
+export const postLostController = async (req, res) => {
+  try {
+    const { name, email, description, location, resource } = req.body;
+
+    const terms =
+      req.body.terms === "true" ||
+      req.body.terms === "on" ||
+      req.body.terms === "1";
+
+    const fees =
+      req.body.fees === "true" ||
+      req.body.fees === "on" ||
+      req.body.fees === "1";
+
+    const filePath = req.file ? `/uploads/lost/${req.file.filename}` : null;
+    const reportId = uuidv4();
+
+    const result = await pool.query(
+      "INSERT INTO lostreports (name,email,description,location,file,resource,terms,fees,reportid) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
+      [
+        name,
+        email,
+        description,
+        location,
+        filePath,
+        resource,
+        terms,
+        fees,
+        reportId,
+      ]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error in /form/lost:", err.message);
+    res.status(500).json({ error: "Server error: " + err.message });
+  }
+};
