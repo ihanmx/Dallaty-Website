@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { Stack, width } from "@mui/system";
+//api config
+import API_URL from "../config/api";
 
 const AdminMatchDashboard = () => {
   const [lostReports, setLostReports] = useState([]);
@@ -34,7 +36,10 @@ const AdminMatchDashboard = () => {
   async function fetchDashboardData() {
     try {
       setLoading(true);
+      // development
       const res = await axios.get("http://localhost:5000/admin/dashboard-data");
+      // production
+      // const res = await axios.get(`${API_URL}/admin/dashboard-data`);
       setLostReports(res.data.lostReports);
       setFoundReports(res.data.foundReports);
     } catch (err) {
@@ -54,6 +59,7 @@ const AdminMatchDashboard = () => {
 
       const res = await axios.post(
         "http://localhost:5000/admin/confirm-match-lost",
+        `${API_URL}/admin/confirm-match-lost`,
         payload
       );
       alert(res.data.message || "Payment email sent successfully.");
@@ -211,6 +217,14 @@ const AdminMatchDashboard = () => {
         onClick={handleSubmitMatch}
       >
         Submit Match
+      </Button>
+
+      <Button
+        variant="outlined"
+        sx={{ width: "40%", mt: 2 }}
+        onClick={() => window.location.href = "/admin-db-viewer"}
+      >
+        View RAW Database (Tables)
       </Button>
     </Stack>
   );

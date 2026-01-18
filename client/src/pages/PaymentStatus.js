@@ -11,6 +11,8 @@ import { useParams } from "react-router-dom";
 // i18-next
 import { useTranslation } from "react-i18next";
 import StatusMessage from "../components/StatusMessage";
+//api config
+import API_URL from "../config/api";
 
 export default function PaymentStatus() {
   const { reportId } = useParams(); // e.g., /payment/:reportId
@@ -30,7 +32,10 @@ export default function PaymentStatus() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(
+          //development
           `http://localhost:5000/api/payment-status/${reportId}`
+          //production
+          // `${API_URL}/api/payment-status/${reportId}`
         );
         const data = await res.json();
         if (alreadyPaid) {

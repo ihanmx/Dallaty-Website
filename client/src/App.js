@@ -33,6 +33,10 @@ import LandingPage from "./pages/LandingPage";
 import FoundForm from "./pages/FoundForm";
 import AboutPage from "./pages/AboutPage";
 import AdminMatchDashboard from "./pages/AdminMatchDashboard";
+<<<<<<< HEAD
+=======
+import DatabaseViewer from "./pages/DatabaseViewer";
+>>>>>>> 31aaf71b97e1c23384d8f4c0b52b040e903b9801
 import ItemDetailsErrPage from "./pages/ItemDetailsErrPage";
 
 function App() {
@@ -112,13 +116,25 @@ function App() {
                     path="/admin-match-dashboard"
                     element={<AdminMatchDashboard />}
                   />
+<<<<<<< HEAD
+=======
+
+                  <Route
+                    path="/admin-db-viewer"
+                    element={<DatabaseViewer />}
+                  />
+>>>>>>> 31aaf71b97e1c23384d8f4c0b52b040e903b9801
                   {/* displays item details for the users who paid the fees */}
 
                   <Route
                     path="/item-details/:reportId"
                     element={<ItemDetails />}
                   />
+<<<<<<< HEAD
                   
+=======
+
+>>>>>>> 31aaf71b97e1c23384d8f4c0b52b040e903b9801
 
                   <Route
                     path="/item-details-error"

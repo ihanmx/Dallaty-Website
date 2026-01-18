@@ -18,6 +18,8 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
 import Modal from "@mui/material/Modal";
+//api config
+import API_URL from "../config/api";
 
 //context
 
@@ -34,7 +36,10 @@ export default function PaymentPage() {
     const fetchUserReportDetails = async () => {
       try {
         const res = await axios.get(
+          //development
           `http://localhost:5000/payment-details/${paymentToken}`
+          //production
+          // `${API_URL}/payment-details/${paymentToken}`
         );
 
         console.log("server res with details", res);
@@ -58,7 +63,10 @@ export default function PaymentPage() {
   }, [paymentToken]);
 
   const handlePayClick = async () => {
+    //development
     const res = await axios.post("http://localhost:5000/api/create-payment", {
+      //production
+    // const res = await axios.post(`${API_URL}/api/create-payment`, {
       paymentToken,
       agreedToTerms: agreed,
     });
@@ -128,7 +136,10 @@ export default function PaymentPage() {
             onClick={() => setOpenImage(false)}
           >
             <img
+            //development
               src={`http://localhost:5000${reportData.file}`}
+              //production
+              src={`${API_URL}${reportData.file}`}
               alt="Expanded Item"
               style={{
                 width: "100%",
@@ -174,12 +185,16 @@ export default function PaymentPage() {
             {reportData.recipient_details}
           </Typography>
 
-            <Typography mt={2} variant="body1"color="primary.main">
+            {/* <Typography mt={2} variant="body1"color="primary.main"> */}
+          <Typography mt={2} variant="body1" color="primary.main">
             {t("complete_payment_instruction")}
           </Typography>
 
           {/* <img
+          //development
             src={`http://localhost:5000${reportData.file}`}
+            //production
+            src={`${API_URL}${reportData.file}`}
             onClick={() => setOpenImage(true)}
             style={{
               width: "100%",

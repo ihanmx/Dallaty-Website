@@ -30,6 +30,8 @@ import { Link as RouterLink } from "react-router-dom";
 import design1dark from "../images/design1dark.png";
 //local components
 import ReportInstruction from "../components/ReportInstruction";
+//api config
+import API_URL from "../config/api";
 
 const FoundForm = () => {
   //Access foundUserInfo and setFoundUserInfo from context
@@ -133,7 +135,11 @@ const FoundForm = () => {
       }
       //name of append must match the name in the backend multer single("image")
 
+      
+//development
       const response = await fetch("http://localhost:5000/form/found", {
+        //production
+      // const response = await fetch(`${API_URL}/form/found`, {
         method: "POST",
         body: formData,
       });

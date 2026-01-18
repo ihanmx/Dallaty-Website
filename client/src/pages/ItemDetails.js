@@ -15,6 +15,8 @@ import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
 import Modal from "@mui/material/Modal";
+//api config
+import API_URL from "../config/api";
 
 const ItemDetails = () => {
   // `http://localhost:3000/item-details/${reportId}`
@@ -29,7 +31,10 @@ const ItemDetails = () => {
     const fetchItemDetails = async () => {
       try {
         const res = await axios.get(
+          // development
           `http://localhost:5000/item-details/${reportId}`
+          // production
+          // `${API_URL}/item-details/${reportId}`
         );
 
         console.log("server res with details", res);
@@ -116,6 +121,8 @@ const ItemDetails = () => {
           >
             <img
               src={`http://localhost:5000${itemDetails.file}`}
+              //production
+              // src={`${API_URL}${itemDetails.file}`}
               alt="Expanded Item"
               style={{
                 width: "100%",
@@ -168,7 +175,10 @@ const ItemDetails = () => {
           <Typography variant="body1"> {itemDetails.matched_at}</Typography>
 
           <img
+          //development
             src={`http://localhost:5000${itemDetails.file}`}
+            //production
+            // src={`${API_URL}${itemDetails.file}`}
             alt="Found Item"
             onClick={() => setOpenImage(true)}
             style={{

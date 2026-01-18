@@ -23,6 +23,8 @@ import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import design1 from "../images/design1.png";
 //react-router-dom
 import { Link as RouterLink } from "react-router-dom";
+//api config
+import API_URL from "../config/api";
 
 const LostForm = () => {
   const whereYouHear = [
@@ -122,8 +124,11 @@ const LostForm = () => {
         formData.append("image", lostUserInfo.file); //append the file to the form data
       }
       //name of append must match the name in the backend multer single("image")
+      //development
 
       const response = await fetch("http://localhost:5000/form/lost", {
+        //production
+      // const response = await fetch(`${API_URL}/form/lost`, {
         method: "POST",
         body: formData,
       });

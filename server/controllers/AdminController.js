@@ -131,3 +131,20 @@ export const postConfirmMatchFound = async (req, res) => {
     res.status(500).json({ error: "Failed to confirm found item match" });
   }
 };
+
+export const getTableData = async (req, res) => {
+  const { tableName } = req.params;
+  const allowedTables = ['users', 'lostreports', 'foundreports', 'payments', 'matched_items'];
+
+  if (!allowedTables.includes(tableName)) {
+    return res.status(400).json({ error: "Invalid table name" });
+  }
+
+  try {
+    const result = await pool.query(`SELECT * FROM ${tableName}`);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching table data:", error);
+    res.status(500).json({ error: "Failed to fetch table data" });
+  }
+};
