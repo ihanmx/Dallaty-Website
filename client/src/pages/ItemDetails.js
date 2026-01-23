@@ -31,7 +31,7 @@ const ItemDetails = () => {
     const fetchItemDetails = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/item-details/${reportId}`
+          `${API_URL}/api/item-details/${reportId}`
         );
 
         console.log("server res with details", res);

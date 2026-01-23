@@ -4,6 +4,6 @@ import { getItemDetails } from "../controllers/matchedItemController.js";
 
 const router = express.Router();
 
-router.get("/item-details/:reportId", getItemDetails);
+router.get("/api/item-details/:reportId", getItemDetails);
 
 export default router;
