@@ -2,6 +2,61 @@ import pool from "../config/dp.js";
 import { v4 as uuidv4 } from "uuid";
 // import sendPaymentEmail from "../services/nodemailer.js";
 import { sendPaymentEmail } from "../services/zapiermail.js";
+import bcrypt from "bcrypt";         // Import bcrypt to check hashed passwords
+import jwt from "jsonwebtoken";      // Import JWT to generate tokens
+
+// ==========================================
+//  ADMIN LOGIN FUNCTION
+/**
+ * Login Function
+ * Purpose: Authenticate admin and return a JWT token.
+ */
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Check if email/password are provided
+    if (!email || !password) {
+      return res.status(400).json({ message: "Please provide both email and password" });
+    }
+
+    // 2. Find admin in Database
+    // NOTE: Ensure your database has a table named 'admins'
+    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
+
+    // Check if user exists
+    if (result.rows.length === 0) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const admin = result.rows[0];
+
+    // 3. Compare passwords
+    const isMatch = await bcrypt.compare(password, admin.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // 4. Generate Token (Expires in 1 hour)
+    const token = jwt.sign(
+      { id: admin.id, email: admin.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // 5. Send response
+    res.json({
+      message: "Login successful",
+      token: token,
+      admin: { id: admin.id, email: admin.email }
+    });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 
 export const getDashboardData = async (req, res) => {
   try {

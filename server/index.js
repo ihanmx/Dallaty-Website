@@ -67,7 +67,10 @@ app.use("/uploads/lost", express.static(uploadsLostDir));
 app.use("/uploads/found", express.static(uploadsFoundDir));
 
 //development
-app.use("/", (req, res) => {
+// Root route for testing server status.
+// We use 'app.get' instead of 'app.use' to ensure this ONLY matches the exact root path ("/").
+// NOTE: If we used 'app.use', it would intercept ALL requests (like /admin), breaking other routes.
+app.get("/", (req, res) => {
   res.send("<h1>here is server 5000</h1>");
 });
 //development
