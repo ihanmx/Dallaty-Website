@@ -6,10 +6,9 @@ import jwt from "jsonwebtoken";
  */
 const verifyAdminToken = (req, res, next) => {
   // 1. Get the 'Authorization' header from the request
-  // Format: "Bearer <token>"
   const authHeader = req.headers['authorization'];
 
-  // 2. Extract the token (remove "Bearer " prefix)
+  // 2. Extract the token 
   const token = authHeader && authHeader.split(' ')[1];
 
   // 3. Check if token exists

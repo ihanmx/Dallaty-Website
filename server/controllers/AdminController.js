@@ -21,7 +21,6 @@ export const login = async (req, res) => {
     }
 
     // 2. Find admin in Database
-    // NOTE: Ensure your database has a table named 'admins'
     const result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
 
     // Check if user exists
