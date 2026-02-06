@@ -66,11 +66,6 @@ const uploadsFoundDir = path.join(process.cwd(), "uploads", "found");
 app.use("/uploads/lost", express.static(uploadsLostDir));
 app.use("/uploads/found", express.static(uploadsFoundDir));
 
-//development
-app.use("/", (req, res) => {
-  res.send("<h1>here is server 5000</h1>");
-});
-//development
 //production
 // Health check endpoint
 // app.get("/health", (req, res) => {
