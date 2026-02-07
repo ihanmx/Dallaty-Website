@@ -32,6 +32,8 @@ import LostForm from "./pages/LostForm";
 import LandingPage from "./pages/LandingPage";
 import FoundForm from "./pages/FoundForm";
 import AboutPage from "./pages/AboutPage";
+// Import the new Terms and Conditions page
+import TermsAndConditions from "./pages/TermsAndConditions";
 import AdminMatchDashboard from "./pages/AdminMatchDashboard";
 import DatabaseViewer from "./pages/DatabaseViewer";
 import ItemDetailsErrPage from "./pages/ItemDetailsErrPage";
@@ -113,7 +115,7 @@ function App() {
                     path="/admin-match-dashboard"
                     element={<AdminMatchDashboard />}
                   />
-
+                  
                   <Route
                     path="/admin-db-viewer"
                     element={<DatabaseViewer />}
@@ -124,12 +126,17 @@ function App() {
                     path="/item-details/:reportId"
                     element={<ItemDetails />}
                   />
-
+                  
 
                   <Route
                     path="/item-details-error"
                     element={<ItemDetailsErrPage />}
                   />
+                   {/* Terms and Conditions page route */}
+                   <Route
+                     path="/terms-and-conditions"
+                     element={<TermsAndConditions />}
+                   />
                 </Routes>
               </AppLayout>
             </SnackbarProvider>
