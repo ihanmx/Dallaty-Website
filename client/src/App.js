@@ -8,6 +8,7 @@ import { Routes, Route } from "react-router-dom";
 import { LostUserInfoProvider } from "./contexts/LostUserInfoContext";
 import { FoundUserInfoProvider } from "./contexts/FoundUserInfoContext";
 import { SnackbarProvider } from "./contexts/SnackbarProvider";
+import AuthProvider from "./contexts/AuthProvider";
 
 // theme
 import getTheme from "./themes/theme";
@@ -58,90 +59,91 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <LostUserInfoProvider>
-          <FoundUserInfoProvider>
-            {/* Because nav is fixed we need to push content by the nav height */}
-            <SnackbarProvider>
-              <AppLayout>
-                <ScrollToTop />
-                {/* <AdminDashboard /> */}
+        <AuthProvider>
+          <LostUserInfoProvider>
+            <FoundUserInfoProvider>
+              {/* Because nav is fixed we need to push content by the nav height */}
+              <SnackbarProvider>
+                <AppLayout>
+                  <ScrollToTop />
+                  {/* <AdminDashboard /> */}
 
-                <Routes>
-                  {/* // Default route to landing page */}
-                  <Route
-                    path="/"
-                    element={
-                      <>
-                        <LandingPage />
-                        <AboutPage />
-                        <TrustedBySection />
-                      </>
-                    }
-                  />
-                  {/* //Home page */}
-                  <Route
-                    path="/home"
-                    element={
-                      <>
-                        <LandingPage />
-                        <AboutPage />
-                        <TrustedBySection />
-                      </>
-                    }
-                  />
-                  {/* lost reports form  */}
-                  <Route path="/lostform" element={<LostForm />} />
-                  {/* found reports form */}
-                  <Route path="/foundform" element={<FoundForm />} />
-                  {/* about page */}
-                  <Route path="/about" element={<AboutPage />} />
-                  {/* payment page :displays brief details about the item and redirect to paytabs */}
-                  <Route
-                    path="/payment/:paymentToken"
-                    element={<PaymentPage />}
-                  />
-                  {/* displays messages about paymnet status like fail and success */}
-                  <Route
-                    path="/payment-status/:reportId"
-                    element={<PaymentStatus />}
-                  />
-                  <Route
-                    path="/payment-status/invalid"
-                    element={<PaymentStatus />}
-                  />
-                  {/* admin dashboard  */}
+                  <Routes>
+                    {/* // Default route to landing page */}
+                    <Route
+                      path="/"
+                      element={
+                        <>
+                          <LandingPage />
+                          <AboutPage />
+                          <TrustedBySection />
+                        </>
+                      }
+                    />
+                    {/* //Home page */}
+                    <Route
+                      path="/home"
+                      element={
+                        <>
+                          <LandingPage />
+                          <AboutPage />
+                          <TrustedBySection />
+                        </>
+                      }
+                    />
+                    {/* lost reports form  */}
+                    <Route path="/lostform" element={<LostForm />} />
+                    {/* found reports form */}
+                    <Route path="/foundform" element={<FoundForm />} />
+                    {/* about page */}
+                    <Route path="/about" element={<AboutPage />} />
+                    {/* payment page :displays brief details about the item and redirect to paytabs */}
+                    <Route
+                      path="/payment/:paymentToken"
+                      element={<PaymentPage />}
+                    />
+                    {/* displays messages about paymnet status like fail and success */}
+                    <Route
+                      path="/payment-status/:reportId"
+                      element={<PaymentStatus />}
+                    />
+                    <Route
+                      path="/payment-status/invalid"
+                      element={<PaymentStatus />}
+                    />
+                    {/* admin dashboard  */}
 
-                  <Route
-                    path="/admin-match-dashboard"
-                    element={<AdminMatchDashboard />}
-                  />
-                  
-                  <Route
-                    path="/admin-db-viewer"
-                    element={<DatabaseViewer />}
-                  />
-                  {/* displays item details for the users who paid the fees */}
+                    <Route
+                      path="/admin-match-dashboard"
+                      element={<AdminMatchDashboard />}
+                    />
 
-                  <Route
-                    path="/item-details/:reportId"
-                    element={<ItemDetails />}
-                  />
-                  
+                    <Route
+                      path="/admin-db-viewer"
+                      element={<DatabaseViewer />}
+                    />
+                    {/* displays item details for the users who paid the fees */}
 
-                  <Route
-                    path="/item-details-error"
-                    element={<ItemDetailsErrPage />}
-                  />
-                   {/* Terms and Conditions page route */}
-                   <Route
-                     path="/terms-and-conditions"
-                     element={<TermsAndConditions />}
-                   />
-                </Routes>
-              </AppLayout>
-            </SnackbarProvider>
-          </FoundUserInfoProvider>
-        </LostUserInfoProvider>
+                    <Route
+                      path="/item-details/:reportId"
+                      element={<ItemDetails />}
+                    />
+
+                    <Route
+                      path="/item-details-error"
+                      element={<ItemDetailsErrPage />}
+                    />
+                    {/* Terms and Conditions page route */}
+                    <Route
+                      path="/terms-and-conditions"
+                      element={<TermsAndConditions />}
+                    />
+                  </Routes>
+                </AppLayout>
+              </SnackbarProvider>
+            </FoundUserInfoProvider>
+          </LostUserInfoProvider>
+        </AuthProvider>
       </ThemeProvider>
     </>
   );
