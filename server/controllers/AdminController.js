@@ -4,12 +4,14 @@ import { v4 as uuidv4 } from "uuid";
 import { sendPaymentEmail } from "../services/zapiermail.js";
 import bcrypt from "bcrypt";         // Import bcrypt to check hashed passwords
 import jwt from "jsonwebtoken";      // Import JWT to generate tokens
+import dotenv from "dotenv";
 
-// ==========================================
-//  ADMIN LOGIN FUNCTION
+dotenv.config();
+
+//  ADMIN LOGIN FUNCTION (UPDATED)
 /**
  * Login Function
- * Purpose: Authenticate admin and return a JWT token.
+ * Purpose: Authenticate admin, generate Access & Refresh tokens, and set cookie.
  */
 export const login = async (req, res) => {
   try {
@@ -37,18 +39,39 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 4. Generate Token (Expires in 1 hour)
-    const token = jwt.sign(
-      { id: admin.id, email: admin.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+  // 4. Generate Tokens (Access + Refresh)
+    // Access Token: Short-lived (15 minutes) for security
+    const accessToken = jwt.sign(
+      { "id": admin.id, "email": admin.email },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '15m' }
     );
 
-    // 5. Send response
+    // Refresh Token: Long-lived (e.g., 7 days) to maintain session
+    const refreshToken = jwt.sign(
+      { "id": admin.id, "email": admin.email },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // 5. Store Refresh Token in Database
+    // This allows us to invalidate the session later (for example on logout)
+    await pool.query("UPDATE admins SET refresh_token = $1 WHERE id = $2", [refreshToken, admin.id]);
+
+    // 6. Send Refresh Token as HttpOnly Cookie
+    // This prevents XSS attacks since JavaScript cannot read this cookie
+    res.cookie('jwt', refreshToken, {
+      httpOnly: true, 
+      secure: false, // Set to true in production (requires HTTPS)
+      sameSite: 'strict', 
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+// 7. Send Access Token in JSON response
     res.json({
       message: "Login successful",
-      token: token,
-      admin: { id: admin.id, email: admin.email }
+      accessToken: accessToken  
+      // admin: { id: admin.id, email: admin.email } // for the fornt-end if needed
     });
 
   } catch (error) {
@@ -56,6 +79,44 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+/**
+ * Logout Function
+ *Clear the refresh token from DB and cookies.
+ */
+export const logout = async (req, res) => {
+    // Get cookies from request
+    const cookies = req.cookies;
+    
+    // Check if jwt cookie exists
+    if (!cookies?.jwt) return res.sendStatus(204); 
+    
+    const refreshToken = cookies.jwt;
+
+    try {
+        // Added Try-Catch block to prevent server crash on DB error
+        // Check if token exists in DB
+        const foundAdmin = await pool.query("SELECT * FROM admins WHERE refresh_token = $1", [refreshToken]);
+        
+        // If token found in DB, remove it
+        if (foundAdmin.rows.length > 0) {
+            const adminId = foundAdmin.rows[0].id;
+            await pool.query("UPDATE admins SET refresh_token = NULL WHERE id = $1", [adminId]);
+        }
+
+        // Clear cookie (it Must match login cookie settings)
+        res.clearCookie('jwt', { 
+            httpOnly: true, 
+            sameSite: 'strict', //Match the login setting
+            secure: false 
+        });
+        
+        res.sendStatus(204); 
+
+    } catch (err) {
+        console.error("Logout Error:", err.message);
+        res.sendStatus(500); // Internal Server Error
+    }
+}
 
 export const getDashboardData = async (req, res) => {
   try {

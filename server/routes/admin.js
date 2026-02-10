@@ -1,36 +1,39 @@
 import express from "express";
-// Add 'login' to the existing import list
+// Add 'login and logout' to the existing import list
 import {
   login,
+  logout,
   getDashboardData,
   postConfirmMatchLost,
   postConfirmMatchFound,
   getTableData,
 } from "../controllers/AdminController.js";
 // Import the authentication middleware
-import verifyAdminToken from "../middleware/authMiddleware.js";
-
+// Import Middleware
+// I use { } here because I used 'export const' in the middleware file
+import { verifyAdminToken } from "../middleware/authMiddleware.js"; 
+import { handleRefreshToken } from "../controllers/refreshTokenController.js";
 const router = express.Router();
 
-// ==========================================
 //  1. Public Routes (Accessible without token)
-// Admin login route to generate JWT token
-router.post("/login", login); 
+// Login Route
+router.post("/login", login);
 
-// ==========================================
-//  2. Protected Routes (Require JWT Token)
-// Apply authentication middleware. 
-// Any route defined below this line will automatically require a valid token.
+// Refresh Token Route (MUST be public/before middleware)
+// Frontend calls this when it gets a 403 error
+router.get("/refresh", handleRefreshToken);
+
+// Logout Route
+router.post("/logout", logout);
+
+//  2. Protected Routes (Require Valid Access Token)
+
+// Apply authentication middleware to all routes below this line
 router.use(verifyAdminToken);
 
 router.get("/dashboard-data", getDashboardData);
-router.get("/table/:tableName", getTableData);
-
-//confirm matching and sending emails route
-
+router.get("/table/:tableName", getTableData); // this route should matche the frontend request
 router.post("/confirm-match-lost", postConfirmMatchLost);
-
-
 router.post("/confirm-match-found", postConfirmMatchFound);
 
 
