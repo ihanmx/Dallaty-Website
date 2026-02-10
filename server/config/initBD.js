@@ -3,6 +3,14 @@ import pool from "./dp.js";
 export const initializeTables = async () => {
   try {
     await pool.query(`
+      /* New admins table */
+      CREATE TABLE IF NOT EXISTS admins (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        refresh_token TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
       CREATE TABLE IF NOT EXISTS foundreports (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100),

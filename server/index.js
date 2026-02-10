@@ -5,7 +5,7 @@ import path from "path";
 import fs from "fs";
 import paymentRoute from "./routes/payment.js";
 import { initializeTables } from "./config/initBD.js";
-
+import cookieParser from "cookie-parser"; // import cookieParser
 import lostFormRoute from "./routes/lostForm.js";
 import foundFormRoute from "./routes/foundForm.js";
 import adminRoute from "./routes/admin.js";
@@ -33,11 +33,19 @@ process.on("unhandledRejection", (err) => {
   console.error("🔴 Unhandled Promise Rejection:", err);
 });
 
+// CORS & Middleware Configuration
+// (WhiteList)
+const corsOptions = {
+  origin:"http://localhost:3000", // Allow only the frontend
+  credentials: true, // Allow cookies to be sent/received
+  optionsSuccessStatus: 200
+};
 
 //development
 //to enable front to access back
 app.use(cors());
 app.use(express.json()); //built in body parser
+app.use(cookieParser()); // Enable Cookie Parser
 //development
 
 //production
