@@ -124,8 +124,11 @@ const LostForm = () => {
         formData.append("image", lostUserInfo.file); //append the file to the form data
       }
       //name of append must match the name in the backend multer single("image")
+      //development
 
-      const response = await fetch(`${API_URL}/form/lost`, {
+      const response = await fetch("http://localhost:5000/form/lost", {
+        //production
+      // const response = await fetch(`${API_URL}/form/lost`, {
         method: "POST",
         body: formData,
       });
@@ -355,11 +358,12 @@ const LostForm = () => {
             label={
               <>
                 {t("I agree to the")}{" "}
+                {/* Updated to use React Router Link for internal navigation to new T&C page */}
                 <Link
-                  href="https://dhallaty.sa/TC-en"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/terms-and-conditions"
                   underline="hover"
+                  component={require('react-router-dom').Link}
+                  to="/terms-and-conditions"
                 >
                   {t("Terms and Conditions")}
                 </Link>

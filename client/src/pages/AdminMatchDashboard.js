@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { Stack, width } from "@mui/system";
@@ -8,6 +8,15 @@ import { Stack, width } from "@mui/system";
 import API_URL from "../config/api";
 
 const AdminMatchDashboard = () => {
+  // Check admin authentication (simple localStorage check)
+  const navigate = useNavigate();
+  useEffect(() => {
+    const adminAuth = localStorage.getItem("adminAuth");
+    if (!adminAuth) {
+      navigate("/admin-login");
+    }
+    
+  }, [navigate]);
   const [lostReports, setLostReports] = useState([]);
   const [foundReports, setFoundReports] = useState([]);
   // Search state
@@ -36,7 +45,10 @@ const AdminMatchDashboard = () => {
   async function fetchDashboardData() {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_URL}/admin/dashboard-data`);
+      // development
+      const res = await axios.get("http://localhost:5000/admin/dashboard-data");
+      // production
+      // const res = await axios.get(`${API_URL}/admin/dashboard-data`);
       setLostReports(res.data.lostReports);
       setFoundReports(res.data.foundReports);
     } catch (err) {
@@ -55,6 +67,7 @@ const AdminMatchDashboard = () => {
       };
 
       const res = await axios.post(
+        "http://localhost:5000/admin/confirm-match-lost",
         `${API_URL}/admin/confirm-match-lost`,
         payload
       );

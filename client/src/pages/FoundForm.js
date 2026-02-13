@@ -135,7 +135,11 @@ const FoundForm = () => {
       }
       //name of append must match the name in the backend multer single("image")
 
-      const response = await fetch(`${API_URL}/form/found`, {
+      
+//development
+      const response = await fetch("http://localhost:5000/form/found", {
+        //production
+      // const response = await fetch(`${API_URL}/form/found`, {
         method: "POST",
         body: formData,
       });
@@ -383,11 +387,12 @@ const FoundForm = () => {
             label={
               <>
                 {t("I agree to the")}{" "}
+                {/* Updated to use React Router Link for internal navigation to new T&C page */}
                 <Link
-                  href="https://dhallaty.sa/TC-en"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/terms-and-conditions"
                   underline="hover"
+                  component={require('react-router-dom').Link}
+                  to="/terms-and-conditions"
                 >
                   {t("Terms and Conditions")}
                 </Link>
