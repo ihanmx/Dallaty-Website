@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { Stack, width } from "@mui/system";
+import { Stack } from "@mui/system";
 //api config
 import API_URL from "../config/api";
 
 const AdminMatchDashboard = () => {
-  // Check admin authentication (simple localStorage check)
-  const navigate = useNavigate();
-  useEffect(() => {
-    const adminAuth = localStorage.getItem("adminAuth");
-    if (!adminAuth) {
-      navigate("/admin-login");
-    }
-    
-  }, [navigate]);
   const [lostReports, setLostReports] = useState([]);
   const [foundReports, setFoundReports] = useState([]);
   // Search state
@@ -38,7 +28,7 @@ const AdminMatchDashboard = () => {
     console.log(
       "Normalized dashboard state updated",
       lostReports,
-      foundReports
+      foundReports,
     );
   }, [lostReports, foundReports]);
 
@@ -69,7 +59,7 @@ const AdminMatchDashboard = () => {
       const res = await axios.post(
         "http://localhost:5000/admin/confirm-match-lost",
         `${API_URL}/admin/confirm-match-lost`,
-        payload
+        payload,
       );
       alert(res.data.message || "Payment email sent successfully.");
       fetchDashboardData();
@@ -120,13 +110,13 @@ const AdminMatchDashboard = () => {
     (row) =>
       row.name.toLowerCase().includes(lostSearch.toLowerCase()) ||
       row.email.toLowerCase().includes(lostSearch.toLowerCase()) ||
-      row.reportid.toLowerCase().includes(lostSearch.toLowerCase())
+      row.reportid.toLowerCase().includes(lostSearch.toLowerCase()),
   );
   const filteredFoundRows = foundReports.filter(
     (row) =>
       row.name.toLowerCase().includes(foundSearch.toLowerCase()) ||
       row.email.toLowerCase().includes(foundSearch.toLowerCase()) ||
-      row.reportid.toLowerCase().includes(foundSearch.toLowerCase())
+      row.reportid.toLowerCase().includes(foundSearch.toLowerCase()),
   );
 
   return (
@@ -231,7 +221,7 @@ const AdminMatchDashboard = () => {
       <Button
         variant="outlined"
         sx={{ width: "40%", mt: 2 }}
-        onClick={() => window.location.href = "/admin-db-viewer"}
+        onClick={() => (window.location.href = "/admin-db-viewer")}
       >
         View RAW Database (Tables)
       </Button>
