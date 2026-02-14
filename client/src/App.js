@@ -112,35 +112,28 @@ function App() {
                   />
                   {/* admin dashboard  */}
 
-                    <Route
-                      path="/admin-login"
-                      element={<AdminLogin />}
-                    />
-                    <Route
-                      path="/admin-match-dashboard"
-                      element={<AdminMatchDashboard />}
-                    />
-                    <Route
-                      path="/admin-db-viewer"
-                      element={<DatabaseViewer />}
-                    />
+                  <Route path="/admin-login" element={<AdminLogin />} />
+                  <Route
+                    path="/admin-match-dashboard"
+                    element={<AdminMatchDashboard />}
+                  />
+                  <Route path="/admin-db-viewer" element={<DatabaseViewer />} />
                   {/* displays item details for the users who paid the fees */}
 
                   <Route
                     path="/item-details/:reportId"
                     element={<ItemDetails />}
                   />
-                  
 
                   <Route
                     path="/item-details-error"
                     element={<ItemDetailsErrPage />}
                   />
-                   {/* Terms and Conditions page route */}
-                   <Route
-                     path="/terms-and-conditions"
-                     element={<TermsAndConditions />}
-                   />
+                  {/* Terms and Conditions page route */}
+                  <Route
+                    path="/terms-and-conditions"
+                    element={<TermsAndConditions />}
+                  />
                 </Routes>
               </AppLayout>
             </SnackbarProvider>

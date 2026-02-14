@@ -107,7 +107,7 @@
   "We Match & Notify": "We Match & Notify",
   "Our system automatically matches reports and sends instant notifications.": "Our system automatically matches reports and sends instant notifications.",
   "Connect & Reunite": "Connect & Reunite",
- "Connect with the owner to provide him with the lost item details.": "Connect with the owner to provide him with the lost item details.",
+  "Connect with the owner to provide him with the lost item details.": "Connect with the owner to provide him with the lost item details.",
   "Frequently Asked Questions": "Frequently Asked Questions",
   "faq_verify_match": "How to verify the match between missing and found items?",
   "faq_verify_match_answer": "We utilize artificial intelligence algorithms to match the reports of missing and found items, and send an alert to the item's owner by Dhallaty staff in the event of a possible match.",
@@ -156,6 +156,238 @@
   "lost_item_details": "Lost Item Details",
   "recipient_details": "Where, and who have your item now: ",
   "matched_at": "Matched by Dhallaty at: ",
-  "rights_reserved":"©2025 Dhallaty, All right reserved.",
-  "complete_payment_instruction":"To be able to view the full details of the lost item like image and where it is, please proceed with the payment."
+  "rights_reserved": "©2025 Dhallaty, All right reserved.",
+  "complete_payment_instruction": "To be able to view the full details of the lost item like image and where it is, please proceed with the payment.",
+
+  "terms": {
+    "pageTitle": "Terms and Conditions - Dhallaty",
+    "lastUpdate": "Last update: 8th September 2025",
+    "sections": [
+      {
+        "id": "definitions",
+        "title": "1. Definitions and Basic Terms",
+        "items": [
+          "The term \"Dhallaty\" represents the electronic platform owned and operated by Hilla Smart Information Technology Company to provide missing and found reporting services.",
+          "The terms \"Service\" means any services provided through Dhallaty website, its applications or associated channels.",
+          "Force majeure: Any action or event that exceeds normal control and cannot be avoided or predicted under normal circumstances.",
+          "Intellectual Property Rights: include the texts, designs, graphics, content, software, trademarks, logos, and any other materials owned or licensed by Dhallaty."
+        ]
+      },
+      {
+        "id": "serviceScope",
+        "title": "2. Service Scope and Description",
+        "items": [
+          "Dhallaty grants you a limited, non-exclusive, non-transferable or assignable license to access and use the Service in accordance with these Terms and Conditions.",
+          "By using the Service, you acknowledge your full compliance with these Terms, and if you do not accept them, you must stop using them.",
+          "These terms apply only to the services provided by Dhallaty, and our website may include links to third party services for which not under our liability.",
+          "Official website:"
+        ],
+        "hasWebsite": true
+      },
+      {
+        "id": "businessModel",
+        "title": "2.1. Business model mechanism",
+        "items": [
+          "Dhallaty service is available throughout Saudi Arabia within open and closed environments (such as shopping malls, universities, etc.).",
+          "The platform enables anyone to report a found or missing item via a report form whose data is securely saved in the database.",
+          "The platform uses artificial intelligence technologies to match missing information reports with found information reports and sends an alert by Dhallaty staff to the owner of the missing item when there is a potential match.",
+          "After successful delivery, the report status is changed to \"Delivered\" and automatically archived. Data is also updated automatically to ensure accuracy, and reports that are more than 90 days old are archived."
+        ]
+      },
+      {
+        "id": "reportFound",
+        "title": "2.2. Guidelines and steps for reporting a found item",
+        "items": [
+          "1) Handing over the item to an entity responsible for lost items on site (such as a security officer or lost items officer, if any)",
+          "2) Log in to the Dhallaty website, choose \"Report a found item\" and file the report.",
+          "3) Create an account (if you do not have a previous account.)",
+          "4) Automatically join the membership of Dhallaty ambassadors and enjoy the benefits of membership."
+        ]
+      },
+      {
+        "id": "reportMissing",
+        "title": "2.3. Guidelines and steps for reporting a missing item",
+        "items": [
+          "1) Log in to the Dhallaty website, choose \"Report a missing item\" and file a report.",
+          "2) Create an account (if you do not have a previous account.)",
+          "3) Follow up on the status of the report; When an automatic match occurs, an alert will appear to the user without showing the other report's personal data.",
+          "4) Manually confirm the match and pay the fee (if applicable) to show details of the purpose receipt location.",
+          "5) After payment, information about the location of the item appears for receipt according to the specified instructions."
+        ]
+      },
+      {
+        "id": "organizationalClarifications",
+        "title": "2.4. Important organizational clarifications",
+        "items": [
+          "a) Dhallaty has the exclusively an electronic service, not a logistics or storage service; it does not transport or store items.",
+          "b) The items found are not stored or physically managed by Dhallaty in any way; any communication regarding delivery takes place through the operators.",
+          "c) Matching, notifications, and archiving are managed automatically and/or manually by Dhallaty staff to improve the user experience and avoid future problems.",
+          "d) Dhallaty is not a partner party or operator of the places where it is reported (whether public or private) and does not bear responsibility for what falls within the scope of the management of those entities."
+        ]
+      },
+      {
+        "id": "termTermination",
+        "title": "3. Term and Termination",
+        "items": [
+          "These Terms shall remain in effect until you or Dhallaty terminate them. Dhallaty reserves the right to suspend or terminate access to the service at any time and without notice in the event of a violation of the Terms.",
+          "You may terminate use by deleting the website/App and all associated files from your device and stopping use of the service."
+        ]
+      },
+      {
+        "id": "externalServices",
+        "title": "4. External Services (Third Party)",
+        "items": [
+          "Dhallaty may provide access to third party content or services. Your use of it is at your own risk and subject to the terms of its providers. My claim is not responsible for the accuracy, legality or quality of those services."
+        ]
+      },
+      {
+        "id": "liability",
+        "title": "5. Liability",
+        "items": [
+          "In no event shall Dhallaty be liable for any direct, indirect or consequential damages arising from your use of or inability to use the service, including loss of data or profits.",
+          "If your use of the website results in the need to maintain, repair or correct any devices or data, you alone bear all work for such resulting maintenance.",
+          "Dhallaty reserves the right to modify prices or usage policies at any time without prior notice.",
+          "The service operates within the borders of the Kingdom of Saudi Arabia; if you access the service from outside Saudi Arabia, you are responsible for ensuring that your use complies with local laws."
+        ]
+      },
+      {
+        "id": "determineLiability",
+        "title": "6. Determine Liability",
+        "items": [
+          "If you suffer any damages as a result of using the website, the maximum liability of Dhallaty to you is equal to the amount you paid for using the service (if any).",
+          "Neither Dhallaty nor its suppliers shall be liable for loss of profits or data, business interruption, loss of privacy, personal injury or any other consequential damages, even if warned of the possibility of them occurring."
+        ]
+      },
+      {
+        "id": "payment",
+        "title": "7. Payment",
+        "items": [
+          "Some services may require a subscription or fee. By providing payment information, you authorize Dhallaty to verify and deduct the fees due.",
+          "You are responsible for updating your billing information and notifying us immediately of any change."
+        ]
+      },
+      {
+        "id": "returnRefund",
+        "title": "8. Return and Refund Policy",
+        "items": [
+          "All orders placed through our platform are subject to these Terms and Privacy Policy. By completing any transaction, you confirm your acceptance of the applicable policies.",
+          "We strive to process complaints quickly and with reasonable satisfaction through customer support.",
+          "Important notice: The amount cannot be refunded after confirming the matching process and showing the receipt location. Except in specific cases, it is estimated by Dhallaty"
+        ]
+      },
+      {
+        "id": "suspendService",
+        "title": "9. Suspend the Service and Refresh the Page",
+        "items": [
+          "Dhallaty may, at its sole discretion and without prior notice, temporarily or permanently discontinue all or part of the provision of the service. If your account is disabled, you may lose access to stored data.",
+          "Any updates to this page will be posted with the date they were last modified."
+        ]
+      },
+      {
+        "id": "modificationsTerms",
+        "title": "10. Modifications on the Terms and Conditions",
+        "items": [
+          "We may amend these Terms at any time. If the changes are substantive, we will notify you at least 15 days before they take effect. Your continued use of the website after its entry into force means you agree to the new terms."
+        ]
+      },
+      {
+        "id": "fullTerms",
+        "title": "11. Full Terms and Conditions",
+        "items": [
+          "These Terms, Privacy Policy and any other legal notices constitute the entire and final agreement between you and Dhallaty regarding the use of the website, and supersede any prior agreements."
+        ]
+      },
+      {
+        "id": "updatesTerms",
+        "title": "12. Updates on the Terms and Conditions",
+        "items": [
+          "We may update our services or policies from time to time. We will notify you according to regulatory requirements and give you the opportunity to review the updated terms; if you do not agree, you may delete your account."
+        ]
+      },
+      {
+        "id": "modificationsWebsite",
+        "title": "13. Modifications on the Website",
+        "items": [
+          "We reserve the right to modify, suspend or discontinue any part of the website or its services at any time without notice or liability."
+        ]
+      },
+      {
+        "id": "updatesWebsite",
+        "title": "14. Updates on the Website",
+        "items": [
+          "We may release updates to improve functionality, fix bugs, or add new features, and updates may remove or change some existing features."
+        ]
+      },
+      {
+        "id": "intellectualProperty",
+        "title": "15. Intellectual Property",
+        "items": [
+          "All content on the website, including text, designs, graphics, software, videos and audio, is owned by Dhallaty or its licensors and protected under intellectual property laws in Saudi Arabia and internationally.",
+          "No part of the content may be copied, modified, reproduced or distributed without the prior written permission of Dhallaty. If you claim copyright infringement, please contact us with the information necessary to remove the infringing content."
+        ]
+      },
+      {
+        "id": "noGuarantees",
+        "title": "16. No Guarantees Provided",
+        "items": [
+          "The website and service are provided \"as is\" and \"as available\" without any express or implied warranties, including warranties of merchantability, for a particular purpose, or non-infringement.",
+          "We do not guarantee that the service will be free of errors, interruptions or viruses, nor do we guarantee that any issues will be fixed."
+        ]
+      },
+      {
+        "id": "waiver",
+        "title": "17. Waiver",
+        "items": [
+          "Failure to exercise any right or delay in exercising it shall not constitute a waiver thereof. Waiving a single breach is not a waiver of any subsequent breaches."
+        ]
+      },
+      {
+        "id": "disputeSettlement",
+        "title": "18. Dispute Settlement",
+        "items": [
+          "This section applies to any dispute relating to the website or these Terms. A written \"dispute notice\" containing communication information, a description of the dispute, and the requested resolution must be sent to: admin@dhallaty.sa.",
+          "The parties shall attempt to settle the dispute amicably within 60 days, and if this is not possible, the case will be submitted to the competent court in the Kingdom of Saudi Arabia."
+        ]
+      },
+      {
+        "id": "promotions",
+        "title": "19. Promotions",
+        "items": [
+          "From time to time, Dhallaty may offer contests, raffles, or promotions subject to separate eligibility requirements. It is your responsibility to review them and confirm your eligibility before participating."
+        ]
+      },
+      {
+        "id": "disclaimer",
+        "title": "20. Disclaimer",
+        "items": [
+          "Dhallaty is not responsible for any errors or inaccuracies in the content or code, and does not bear any direct, indirect or consequential damages resulting from the use of the service or its content.",
+          "We have the right to modify or delete any content at any time without prior notice."
+        ]
+      },
+      {
+        "id": "generalProvisions",
+        "title": "21. General Provisions",
+        "items": [
+          "These terms constitute a legal agreement between you and Dhallaty. By using the website or completing any order, you agree to these Terms and Privacy Policy.",
+          "If any clause is deemed invalid or unenforceable, it will be amended to the extent necessary, and the remaining clauses will remain in effect.",
+          "We have the right to refuse or cancel any order entered with incorrect information or prices due to a typo, with an immediate refund to the original payment method."
+        ]
+      },
+      {
+        "id": "providingSuggestions",
+        "title": "22. Providing Suggestions",
+        "items": [
+          "Any ideas, suggestions or comments you provide regarding the application or service remain the property of Dhallaty and may be used, modified or published without obligation to compensate."
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "23. Contacting us",
+        "items": [
+          "If you have any questions, please contact us via our email: support@dhallaty.sa or via our website:"
+        ],
+        "hasWebsite": true
+      }
+    ]
+  }
 }
