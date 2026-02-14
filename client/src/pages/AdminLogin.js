@@ -1,7 +1,6 @@
 // Admin login page for Dhallaty
 // This page is based on the LostForm page structure and MUI design
 
-
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button, InputLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -70,11 +69,11 @@ const AdminLogin = () => {
           sx={{
             textAlign: "center",
             fontWeight: 700,
-            fontFamily: 'inherit',
+            fontFamily: "inherit",
             mb: 1,
           }}
         >
-          {t("Admin Area Login")}
+          {t("Admin Login")}
         </Typography>
 
         {/* Email label and input */}
@@ -153,7 +152,14 @@ const AdminLogin = () => {
           type="submit"
           variant="contained"
           color="primary"
-          sx={{ mt: 2, width: "40%", alignSelf: "center", textTransform: "none", fontWeight: 600, fontSize: 18 }}
+          sx={{
+            mt: 2,
+            width: "40%",
+            alignSelf: "center",
+            textTransform: "none",
+            fontWeight: 600,
+            fontSize: 18,
+          }}
           disabled={loading}
         >
           {loading ? t("Logging In...") : t("Login")}
