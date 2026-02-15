@@ -1,3 +1,4 @@
+import pool from "../db.js";
 import pool from "../config/dp.js";
 import { v4 as uuidv4 } from "uuid";
 

@@ -36,9 +36,9 @@ import AboutPage from "./pages/AboutPage";
 // Import the new Terms and Conditions page
 import TermsAndConditions from "./pages/TermsAndConditions";
 import AdminMatchDashboard from "./pages/AdminMatchDashboard";
-import DatabaseViewer from "./pages/DatabaseViewer";
 import ItemDetailsErrPage from "./pages/ItemDetailsErrPage";
 import AdminLogin from "./pages/AdminLogin";
+import DatabaseViewer from "./pages/DatabaseViewer";
 
 function App() {
   const { i18n } = useTranslation();

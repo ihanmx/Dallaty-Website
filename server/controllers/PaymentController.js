@@ -28,12 +28,18 @@ export const getPaymentDetails = async (req, res) => {
       res.json(userReportData.rows[0]);
     } else
       res.status(404).json({
-        url: `${FRONTEND_URL}/payment-status/invalid?error=invalidToken`,
+        //development
+        url: `http://localhost:3000/payment-status/invalid?error=invalidToken`,
+        //production
+        // url: `${FRONTEND_URL}/payment-status/invalid?error=invalidToken`,
       });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      url: `${FRONTEND_URL}/payment-status/invalid?error=serverError`,
+      //development
+      url: `http://localhost:3000/payment-status/invalid?error=serverError`,
+      //production
+      // url: `${FRONTEND_URL}/payment-status/invalid?error=serverError`,
     });
   }
 };
@@ -65,13 +71,21 @@ export const postCreatePayment = async (req, res) => {
         .json({ error: "there is no record of user in the payments DB" });
     } else if (paymentQuery.rows[0].status === "success") {
       return res.json({
-        url: `${FRONTEND_URL}/payment-status/${paymentQuery.rows[0].report_id}?alreadyPaid=true`,
+        //development
+        url: `http://localhost:3000/payment-status/${paymentQuery.rows[0].report_id}?alreadyPaid=true`,
+        //production
+        // url: `${FRONTEND_URL}/payment-status/${paymentQuery.rows[0].report_id}?alreadyPaid=true`,
       });
     }
 
     const paymentRecord = paymentQuery.rows[0];
-    const returnUrl = `${FRONTEND_URL}/payment-status/${paymentRecord.report_id}`; //front (success page)
-    const callbackUrl = `${BACKEND_URL}/api/webhook`; // Production callback URL for PayTabs
+    //development
+    const returnUrl = `http://localhost:3000/payment-status/${paymentRecord.report_id}`; //front (success page)
+    const callbackUrl =
+      "https://lourdes-unligatured-benton.ngrok-free.dev/api/webhook"; //hosted back from nogrek to be able to use callcack from paytabs since it does not work with local host
+      //production
+    // const returnUrl = `${FRONTEND_URL}/payment-status/${paymentRecord.report_id}`; //front (success page)
+    // const callbackUrl = `${BACKEND_URL}/api/webhook`; // Production callback URL for PayTabs
 
     const uniqueCartID = `${paymentRecord.report_id}_${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
     //note you must set digital product setting from paytabs dashboard
@@ -137,8 +151,9 @@ export const postPaymentWebhook = async (req, res) => {
       statusCode === "A"
         ? "success"
         : statusCode === "D"
-          ? "declined"
-          : "failed";
+        ? "declined"
+        : "failed";
+ 
 
     // Extract report ID (we used cart_id = `${reportId}_${Date.now()}`)
     const originalReportId = cart_id.split("_")[0];
