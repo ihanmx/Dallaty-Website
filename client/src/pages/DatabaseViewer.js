@@ -156,6 +156,9 @@ const DatabaseViewer = () => {
       </Stack>
 
       {/* Add key prop to force remount on table change */}
+      {/* 
+    type: 'include' → individual selection, use the IDs from the Set directly
+type: 'exclude' → "select all", compute all row IDs minus the excluded ones */}
       <DataGrid
         key={currentTable} // This forces a complete remount
         rows={rows}
@@ -164,12 +167,19 @@ const DatabaseViewer = () => {
         checkboxSelection
         disableRowSelectionOnClick
         onRowSelectionModelChange={(newSelection) => {
-          // Handle both array and object formats
-          const ids = newSelection?.ids
-            ? Array.from(newSelection.ids)
-            : newSelection;
-
-          setSelectedRows(ids || []); //converts from set to array
+          if (newSelection?.type === "include") {
+            // Individual rows selected — use the IDs directly
+            setSelectedRows(Array.from(newSelection.ids));
+          } else if (newSelection?.type === "exclude") {
+            // "Select all" — all rows except the excluded ones
+            const excludedIds = newSelection.ids;
+            setSelectedRows(
+              rows.map((row) => row.id).filter((id) => !excludedIds.has(id)),
+            );
+          } else {
+            // Fallback for plain array format
+            setSelectedRows(newSelection || []);
+          }
         }}
         getRowId={(row) => row.id}
         sx={{ flex: 1, bgcolor: "background.paper" }}
