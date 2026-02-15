@@ -69,7 +69,7 @@ export const login = async (req, res) => {
     // This prevents XSS attacks since JavaScript cannot read this cookie
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -118,7 +118,7 @@ export const logout = async (req, res) => {
     res.clearCookie("jwt", {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
     });
 
     res.sendStatus(204);
