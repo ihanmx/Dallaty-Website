@@ -66,7 +66,16 @@
   "X (twitter)": "X (twitter)",
   "Instagram": "Instagram",
   "TikTok": "TikTok",
+
   "LinkedIn": "LinkedIn",
+  "Admin Login": "Admins Login",
+  "Email": "Email",
+  "Password": "Password",
+  "Enter your email": "Enter your email",
+  "Enter your password": "Enter your password",
+  "Logging In...": "Logging In...",
+  "Login": "Login",
+  "Admin login": "Admin login",
 
   "About Dhallaty": "About Dhallaty",
   "about_hero_description": "We connect people with their lost belongings by matching reports using artificial intelligence. Our goal is to make finding lost items simple, fast, and safe.",

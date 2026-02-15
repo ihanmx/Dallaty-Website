@@ -36,7 +36,10 @@ export default function PaymentPage() {
     const fetchUserReportDetails = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/payment-details/${paymentToken}`
+          //development
+          `http://localhost:5000/payment-details/${paymentToken}`
+          //production
+          // `${API_URL}/payment-details/${paymentToken}`
         );
 
         console.log("server res with details", res);
@@ -60,7 +63,10 @@ export default function PaymentPage() {
   }, [paymentToken]);
 
   const handlePayClick = async () => {
-    const res = await axios.post(`${API_URL}/api/create-payment`, {
+    //development
+    const res = await axios.post("http://localhost:5000/api/create-payment", {
+      //production
+    // const res = await axios.post(`${API_URL}/api/create-payment`, {
       paymentToken,
       agreedToTerms: agreed,
     });
@@ -130,6 +136,9 @@ export default function PaymentPage() {
             onClick={() => setOpenImage(false)}
           >
             <img
+            //development
+              src={`http://localhost:5000${reportData.file}`}
+              //production
               src={`${API_URL}${reportData.file}`}
               alt="Expanded Item"
               style={{
@@ -176,11 +185,15 @@ export default function PaymentPage() {
             {reportData.recipient_details}
           </Typography>
 
+            {/* <Typography mt={2} variant="body1"color="primary.main"> */}
           <Typography mt={2} variant="body1" color="primary.main">
             {t("complete_payment_instruction")}
           </Typography>
 
           {/* <img
+          //development
+            src={`http://localhost:5000${reportData.file}`}
+            //production
             src={`${API_URL}${reportData.file}`}
             onClick={() => setOpenImage(true)}
             style={{

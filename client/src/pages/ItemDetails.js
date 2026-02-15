@@ -31,7 +31,10 @@ const ItemDetails = () => {
     const fetchItemDetails = async () => {
       try {
         const res = await axios.get(
-          `${API_URL}/api/item-details/${reportId}`
+          // development
+          `http://localhost:5000/item-details/${reportId}`
+          // production
+          // `${API_URL}/item-details/${reportId}`
         );
 
         console.log("server res with details", res);
@@ -117,7 +120,9 @@ const ItemDetails = () => {
             onClick={() => setOpenImage(false)}
           >
             <img
-              src={`${API_URL}${itemDetails.file}`}
+              src={`http://localhost:5000${itemDetails.file}`}
+              //production
+              // src={`${API_URL}${itemDetails.file}`}
               alt="Expanded Item"
               style={{
                 width: "100%",
@@ -170,7 +175,10 @@ const ItemDetails = () => {
           <Typography variant="body1"> {itemDetails.matched_at}</Typography>
 
           <img
-            src={`${API_URL}${itemDetails.file}`}
+          //development
+            src={`http://localhost:5000${itemDetails.file}`}
+            //production
+            // src={`${API_URL}${itemDetails.file}`}
             alt="Found Item"
             onClick={() => setOpenImage(true)}
             style={{

@@ -38,6 +38,7 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import AdminMatchDashboard from "./pages/AdminMatchDashboard";
 import DatabaseViewer from "./pages/DatabaseViewer";
 import ItemDetailsErrPage from "./pages/ItemDetailsErrPage";
+import AdminLogin from "./pages/AdminLogin";
 
 function App() {
   const { i18n } = useTranslation();
@@ -113,11 +114,11 @@ function App() {
                     />
                     {/* admin dashboard  */}
 
+                    <Route path="/admin-login" element={<AdminLogin />} />
                     <Route
                       path="/admin-match-dashboard"
                       element={<AdminMatchDashboard />}
                     />
-
                     <Route
                       path="/admin-db-viewer"
                       element={<DatabaseViewer />}

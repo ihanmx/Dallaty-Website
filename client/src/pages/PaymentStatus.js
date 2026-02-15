@@ -32,7 +32,10 @@ export default function PaymentStatus() {
     const fetchStatus = async () => {
       try {
         const res = await fetch(
-          `${API_URL}/api/payment-status/${reportId}`
+          //development
+          `http://localhost:5000/api/payment-status/${reportId}`
+          //production
+          // `${API_URL}/api/payment-status/${reportId}`
         );
         const data = await res.json();
         if (alreadyPaid) {
