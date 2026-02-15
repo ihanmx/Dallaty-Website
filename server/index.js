@@ -25,14 +25,6 @@ process.on("unhandledRejection", (err) => {
   console.error("🔴 Unhandled Promise Rejection:", err);
 });
 
-// CORS & Middleware Configuration
-// (WhiteList)
-// const corsOptions = {
-//   origin: "http://localhost:3000", // Allow only the frontend
-//   credentials: true, // Allow cookies to be sent/received
-//   optionsSuccessStatus: 200,
-// };
-
 //development
 //to enable front to access back
 app.use(cors(corsOptions));
@@ -53,30 +45,32 @@ app.use("/uploads/found", express.static(uploadsFoundDir));
 
 //development
 // Root route for testing server status.
-// We use 'app.get' instead of 'app.use' to ensure this ONLY matches the exact root path ("/").
-// NOTE: If we used 'app.use', it would intercept ALL requests (like /admin), breaking other routes.
 app.get("/", (req, res) => {
   res.send("<h1>here is server 5000</h1>");
 });
 //development
+
 //production
 // Health check endpoint
 // app.get("/health", (req, res) => {
 //   res.json({ status: "ok", environment: process.env.NODE_ENV || "development" });
 // });
 //production
+
 // mount routes
 app.use(lostFormRoute);
 app.use(foundFormRoute);
 app.use(paymentRoute);
 app.use("/admin", adminRoute);
 app.use(matchedItemRouter);
+
 //development
 app.get("/test", (req, res) => {
   console.log("✅ /test route reached through ngrok");
   res.send("Ngrok works!");
 });
 //development
+
 //production
 // app.get("/test", (req, res) => {
 //   console.log("✅ /test route reached");
@@ -89,7 +83,6 @@ app.use((req, res, next) => {
   res.status(404).send("<h1>Page not found !</h1>");
 });
 
-//development
 // Initialize database tables
 await initializeTables(); //
 app.listen(port, async () => {
