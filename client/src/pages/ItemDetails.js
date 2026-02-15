@@ -32,7 +32,7 @@ const ItemDetails = () => {
       try {
         const res = await axios.get(
           // development
-          `http://localhost:5000/item-details/${reportId}`
+          `http://localhost:5000/api/item-details/${reportId}`
           // production
           // `${API_URL}/item-details/${reportId}`
         );

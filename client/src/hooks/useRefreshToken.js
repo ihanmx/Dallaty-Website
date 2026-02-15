@@ -6,7 +6,7 @@ const useRefreshToken = () => {
   const { setAuth } = useAuth();
 
   const refresh = async () => {
-    const response = await axios.get("/refresh", { withCredentials: true }); //calls the backend refresh end point toget new access token
+    const response = await axios.get("/admin/refresh", { withCredentials: true }); //calls the backend refresh end point toget new access token
     setAuth((prev) => {
       console.log("Previous Auth State:", JSON.stringify(prev)); //this prent the state before refresh and set
       console.log("New access token:", response.data.accessToken);

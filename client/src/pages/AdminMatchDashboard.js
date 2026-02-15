@@ -58,7 +58,7 @@ const AdminMatchDashboard = () => {
 
       const res = await axios.post(
         "http://localhost:5000/admin/confirm-match-lost",
-        `${API_URL}/admin/confirm-match-lost`,
+
         payload,
       );
       alert(res.data.message || "Payment email sent successfully.");

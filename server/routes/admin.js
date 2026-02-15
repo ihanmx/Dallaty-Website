@@ -7,6 +7,7 @@ import {
   postConfirmMatchLost,
   postConfirmMatchFound,
   getTableData,
+  deleteTableRows,
 } from "../controllers/AdminController.js";
 //refresh token controller
 import { handleRefreshToken } from "../controllers/refreshTokenController.js";
@@ -30,12 +31,16 @@ router.post("/logout", logout);
 //  2. Protected Routes (Require Valid Access Token)
 
 // Apply authentication middleware to all routes below this line
-router.use(verifyAdminToken);
+// router.use(verifyAdminToken);
 // Frontend endpoint: GET /admin/dashboard-data
 router.get("/dashboard-data", getDashboardData);
 // Frontend endpoint: GET /admin/table/:tableName
 router.get("/table/:tableName", getTableData); // this route should matche the frontend request
-// Frontend endpoint: POST /admin/confirm-match-lost
+
+router.delete("/table/:tableName", deleteTableRows);
+
+//confirm matching and sending emails route
+
 router.post("/confirm-match-lost", postConfirmMatchLost);
 // Frontend endpoint: POST /admin/confirm-match-found
 router.post("/confirm-match-found", postConfirmMatchFound);

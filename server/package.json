@@ -13,6 +13,7 @@
     "seed": "node seedAdmin.js"
   },
   "dependencies": {
+    "@mui/x-data-grid": "^8.25.0",
     "@ngrok/ngrok": "^1.5.2",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",

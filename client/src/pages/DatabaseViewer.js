@@ -11,12 +11,23 @@ import {
   Stack,
 } from "@mui/material";
 import API_URL from "../config/api";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Button } from "@mui/material";
 
 const DatabaseViewer = () => {
   const [currentTable, setCurrentTable] = useState("payments");
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState([]);
+
+  //selected rows from the data grid (This is stores ONLY the IDs of rows the user selected by checking the boxes.)
+  const [selectedRows, setSelectedRows] = useState([]); // Track selected rows
+  const [openDialog, setOpenDialog] = useState(false);
 
   const tables = ["payments", "lostreports", "foundreports", "matched_items"];
 
@@ -26,6 +37,8 @@ const DatabaseViewer = () => {
 
   const fetchTableData = async (tableName) => {
     setLoading(true);
+
+    setSelectedRows([]); //  reset selection when fetching
     try {
       const res = await axios.get(`${API_URL}/admin/table/${tableName}`);
       const data = res.data;
@@ -48,6 +61,57 @@ const DatabaseViewer = () => {
     }
   };
 
+  const handleDeleteClick = () => {
+    //if no rows selected, alert and return
+
+    if (selectedRows.length === 0) {
+      alert("No rows selected for deletion.");
+      return;
+    }
+    //if rows selected, open confirmation dialog
+    setOpenDialog(true);
+  };
+
+  //When deletion is confirmed call API to delete rows
+  const handleConfirmDelete = async () => {
+    setLoading(true);
+    const idFieldMap = {
+      lostreports: "reportid",
+      foundreports: "reportid",
+      payments: "report_id",
+    };
+
+    const idField = idFieldMap[currentTable]; //get the correct ID field for the table
+    //selected rows only contains the row IDs, we need to map them to actual database data
+    const selectedRowsData = rows.filter((row) =>
+      selectedRows.includes(row.id),
+    );
+    // Extract the correct ID field values
+    const idsToDelete = selectedRowsData.map((row) => row[idField]);
+    console.log("Delete IDs:", idsToDelete);
+
+    try {
+      await axios.delete(`${API_URL}/admin/table/${currentTable}`, {
+        //body
+        data: { ids: idsToDelete },
+      });
+      //to refresh the table data after deletion
+      setRows(rows.filter((row) => !selectedRows.includes(row.id)));
+      //set loading false and close dialog
+      setSelectedRows([]);
+      setOpenDialog(false);
+      alert(`${selectedRows.length} row(s) deleted successfully`);
+    } catch (err) {
+      console.error("Failed to delete rows:", err);
+      alert("Failed to delete selected rows.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
   return (
     <Box
       sx={{ p: 4, height: "90vh", display: "flex", flexDirection: "column" }}
@@ -59,29 +123,90 @@ const DatabaseViewer = () => {
         mb={2}
       >
         <Typography variant="h4">Database Viewer</Typography>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>Select Table</InputLabel>
-          <Select
-            value={currentTable}
-            label="Select Table"
-            onChange={(e) => setCurrentTable(e.target.value)}
+
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={handleDeleteClick}
+            disabled={selectedRows.length === 0}
           >
-            {tables.map((table) => (
-              <MenuItem key={table} value={table}>
-                {table}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            {`Delete (${selectedRows?.length || 0})`}
+          </Button>
+
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel>Select Table</InputLabel>
+            <Select
+              value={currentTable}
+              label="Select Table"
+              onChange={(e) => {
+                setCurrentTable(e.target.value);
+                setSelectedRows([]);
+              }}
+            >
+              {tables.map((table) => (
+                <MenuItem key={table} value={table}>
+                  {table}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
       </Stack>
 
+      {/* Add key prop to force remount on table change */}
       <DataGrid
+        key={currentTable} // This forces a complete remount
         rows={rows}
         columns={columns}
         loading={loading}
-        getRowId={(row) => row.id} // Ensure uniqueness
+        checkboxSelection
+        disableRowSelectionOnClick
+        onRowSelectionModelChange={(newSelection) => {
+          // Handle both array and object formats
+          const ids = newSelection?.ids
+            ? Array.from(newSelection.ids)
+            : newSelection;
+
+          setSelectedRows(ids || []); //converts from set to array
+        }}
+        getRowId={(row) => row.id}
         sx={{ flex: 1, bgcolor: "background.paper" }}
+        slots={{
+          noRowsOverlay: () => (
+            <Stack height="100%" alignItems="center" justifyContent="center">
+              No data available
+            </Stack>
+          ),
+        }}
       />
+
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete {selectedRows.length} selected
+            row(s) from the <strong>{currentTable}</strong> table?
+            <br />
+            <br />
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
