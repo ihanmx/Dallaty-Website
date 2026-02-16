@@ -10,7 +10,7 @@ import {
   MenuItem,
   Stack,
 } from "@mui/material";
-import API_URL from "../config/api";
+import config from "../config";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -18,6 +18,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const DatabaseViewer = () => {
   const [currentTable, setCurrentTable] = useState("payments");
@@ -40,17 +41,47 @@ const DatabaseViewer = () => {
 
     setSelectedRows([]); //  reset selection when fetching
     try {
-      const res = await axios.get(`${API_URL}/admin/table/${tableName}`);
+      const res = await axios.get(`${config.apiUrl}/admin/table/${tableName}`);
       const data = res.data;
       setRows(data.map((row, index) => ({ id: row.id || index, ...row }))); // Ensure ID
 
       if (data.length > 0) {
-        const cols = Object.keys(data[0]).map((key) => ({
-          field: key,
-          headerName: key.toUpperCase(),
-          flex: 1,
-          minWidth: 150,
-        }));
+        const cols = Object.keys(data[0]).map((key) => {
+          const col = {
+            field: key,
+            headerName: key.toUpperCase(),
+            flex: 1,
+            minWidth: 150,
+          };
+
+          // Render filepath columns as clickable image thumbnails
+          if (key === "file") {
+            col.minWidth = 120;
+            col.flex = 0;
+            col.headerName = "IMAGE";
+            col.renderCell = (params) => {
+              if (!params.value) return "No image";
+              const imageUrl = `${config.apiUrl}${params.value}`;
+              return (
+                <Box
+                  component="a"
+                  href={imageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  View Image
+                </Box>
+              );
+            };
+          }
+
+          return col;
+        });
         setColumns(cols);
       }
     } catch (err) {
@@ -91,7 +122,7 @@ const DatabaseViewer = () => {
     console.log("Delete IDs:", idsToDelete);
 
     try {
-      await axios.delete(`${API_URL}/admin/table/${currentTable}`, {
+      await axios.delete(`${config.apiUrl}/admin/table/${currentTable}`, {
         //body
         data: { ids: idsToDelete },
       });
@@ -114,17 +145,36 @@ const DatabaseViewer = () => {
   };
   return (
     <Box
-      sx={{ p: 4, height: "90vh", display: "flex", flexDirection: "column" }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
       <Stack
         direction="row"
         justifyContent="space-between"
         alignItems="center"
-        mb={2}
+        sx={{
+          position: "sticky",
+          top: "80px",
+          zIndex: 100,
+          backgroundColor: "#fafafa",
+          width: "100%",
+          borderBottom: "1px solid #ddd",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+          p: 2,
+        }}
       >
         <Typography variant="h4">Database Viewer</Typography>
 
         <Stack direction="row" spacing={2} alignItems="center">
+          <Button
+            variant="outlined"
+            component={Link}
+            to="/admin-match-dashboard"
+          >
+            Admin Match Dashboard
+          </Button>
           <Button
             variant="contained"
             color="error"
@@ -154,69 +204,78 @@ const DatabaseViewer = () => {
           </FormControl>
         </Stack>
       </Stack>
-
-      {/* Add key prop to force remount on table change */}
-      {/* 
+      <Box
+        sx={{
+          p: 4,
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minHeight: 0,
+        }}
+      >
+        {/* Add key prop to force remount on table change */}
+        {/* 
     type: 'include' → individual selection, use the IDs from the Set directly
 type: 'exclude' → "select all", compute all row IDs minus the excluded ones */}
-      <DataGrid
-        key={currentTable} // This forces a complete remount
-        rows={rows}
-        columns={columns}
-        loading={loading}
-        checkboxSelection
-        disableRowSelectionOnClick
-        onRowSelectionModelChange={(newSelection) => {
-          if (newSelection?.type === "include") {
-            // Individual rows selected — use the IDs directly
-            setSelectedRows(Array.from(newSelection.ids));
-          } else if (newSelection?.type === "exclude") {
-            // "Select all" — all rows except the excluded ones
-            const excludedIds = newSelection.ids;
-            setSelectedRows(
-              rows.map((row) => row.id).filter((id) => !excludedIds.has(id)),
-            );
-          } else {
-            // Fallback for plain array format
-            setSelectedRows(newSelection || []);
-          }
-        }}
-        getRowId={(row) => row.id}
-        sx={{ flex: 1, bgcolor: "background.paper" }}
-        slots={{
-          noRowsOverlay: () => (
-            <Stack height="100%" alignItems="center" justifyContent="center">
-              No data available
-            </Stack>
-          ),
-        }}
-      />
+        <DataGrid
+          key={currentTable} // This forces a complete remount
+          rows={rows}
+          columns={columns}
+          loading={loading}
+          checkboxSelection
+          disableRowSelectionOnClick
+          onRowSelectionModelChange={(newSelection) => {
+            if (newSelection?.type === "include") {
+              // Individual rows selected — use the IDs directly
+              setSelectedRows(Array.from(newSelection.ids));
+            } else if (newSelection?.type === "exclude") {
+              // "Select all" — all rows except the excluded ones
+              const excludedIds = newSelection.ids;
+              setSelectedRows(
+                rows.map((row) => row.id).filter((id) => !excludedIds.has(id)),
+              );
+            } else {
+              // Fallback for plain array format
+              setSelectedRows(newSelection || []);
+            }
+          }}
+          getRowId={(row) => row.id}
+          sx={{ flex: 1, bgcolor: "background.paper" }}
+          slots={{
+            noRowsOverlay: () => (
+              <Stack height="100%" alignItems="center" justifyContent="center">
+                No data available
+              </Stack>
+            ),
+          }}
+        />
 
-      <Dialog open={openDialog} onClose={handleDialogClose}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete {selectedRows.length} selected
-            row(s) from the <strong>{currentTable}</strong> table?
-            <br />
-            <br />
-            This action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-            autoFocus
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        <Dialog open={openDialog} onClose={handleDialogClose}>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete {selectedRows.length} selected
+              row(s) from the <strong>{currentTable}</strong> table?
+              <br />
+              <br />
+              This action cannot be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogClose} color="primary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              color="error"
+              variant="contained"
+              autoFocus
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </Box>
   );
 };

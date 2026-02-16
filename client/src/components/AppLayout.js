@@ -14,7 +14,7 @@ const AppLayout = ({ children }) => {
         flexDirection: "column",
         minHeight: "100vh",
         width: "100%", // ✅ instead of maxWidth: "100vw"
-        overflowX: "hidden", // ✅ hide any accidental overflow
+        // overflowX: "hidden", // ✅ hide any accidental overflow
       }}
     >
       <Navbar />

@@ -3,8 +3,9 @@ import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
+import { Link } from "react-router-dom";
 //api config
-import API_URL from "../config/api";
+import config from "../config";
 
 const AdminMatchDashboard = () => {
   const [lostReports, setLostReports] = useState([]);
@@ -36,9 +37,7 @@ const AdminMatchDashboard = () => {
     try {
       setLoading(true);
       // development
-      const res = await axios.get("http://localhost:5000/admin/dashboard-data");
-      // production
-      // const res = await axios.get(`${API_URL}/admin/dashboard-data`);
+      const res = await axios.get(`${config.apiUrl}/admin/dashboard-data`);
       setLostReports(res.data.lostReports);
       setFoundReports(res.data.foundReports);
     } catch (err) {
@@ -57,8 +56,7 @@ const AdminMatchDashboard = () => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/admin/confirm-match-lost",
-
+        `${config.apiUrl}/admin/confirm-match-lost`,
         payload,
       );
       alert(res.data.message || "Payment email sent successfully.");
@@ -82,11 +80,28 @@ const AdminMatchDashboard = () => {
     { field: "email", headerName: "Email", flex: 2 },
     { field: "description", headerName: "Description", flex: 2 },
     { field: "location", headerName: "Location", flex: 1 },
-    // {
-    //   field: "file",
-    //   headerName: "Image",
-    //   flex: 2,
-    // },
+    {
+      field: "file",
+      headerName: "Image",
+      flex: 0,
+      minWidth: 120,
+      //controls how image are being displayed
+      renderCell: (params) => {
+        if (!params.value) return "No image";
+        const imageUrl = `${config.apiUrl}${params.value}`;
+        return (
+          <Box
+            component="a"
+            href={imageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ display: "flex", alignItems: "center", height: "100%" }}
+          >
+            View Image
+          </Box>
+        );
+      },
+    },
 
     { field: "status", headerName: "Status", flex: 1 },
   ];
@@ -98,7 +113,27 @@ const AdminMatchDashboard = () => {
     { field: "email", headerName: "Email", flex: 1 },
     { field: "description", headerName: "Description", flex: 2 },
     { field: "location", headerName: "Location", flex: 1 },
-    // { field: "file", headerName: "Image", flex: 2 },
+    {
+      field: "file",
+      headerName: "Image",
+      flex: 0,
+      minWidth: 120,
+      renderCell: (params) => {
+        if (!params.value) return "No image";
+        const imageUrl = `${config.apiUrl}${params.value}`;
+        return (
+          <Box
+            component="a"
+            href={imageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ display: "flex", alignItems: "center", height: "100%" }}
+          >
+            View Image
+          </Box>
+        );
+      },
+    },
     { field: "recipientdescription", headerName: "recipient", flex: 2 },
     { field: "found_date", headerName: "date", flex: 1 },
 
@@ -123,9 +158,44 @@ const AdminMatchDashboard = () => {
     <Stack direction={"column"} alignItems={"center"}>
       <Box
         sx={{
+          position: "sticky",
+          top: "64px",
+          zIndex: 1100,
+          backgroundColor: "#fafafa",
+          width: "100%",
+          borderBottom: "1px solid #ddd",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+        }}
+      >
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ p: 2 }}
+        >
+          <Typography variant="h4">Admin Match Dashboard</Typography>
+
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="contained"
+              disabled={!selectedLostReportId || !selectedFoundReportId}
+              onClick={handleSubmitMatch}
+            >
+              Submit Match
+            </Button>
+
+            <Button variant="outlined" component={Link} to="/admin-db-viewer">
+              View RAW Database (Tables)
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+      <Box
+        sx={{
           display: "flex",
           gap: 2,
           p: 2,
+          mt: 2,
           minHeight: "80vh",
           width: "100%",
           flexDirection: {
@@ -209,22 +279,6 @@ const AdminMatchDashboard = () => {
           />
         </Box>
       </Box>
-      <Button
-        variant="contained"
-        disabled={!selectedLostReportId || !selectedFoundReportId}
-        sx={{ width: "40%", margin: "2" }}
-        onClick={handleSubmitMatch}
-      >
-        Submit Match
-      </Button>
-
-      <Button
-        variant="outlined"
-        sx={{ width: "40%", mt: 2 }}
-        onClick={() => (window.location.href = "/admin-db-viewer")}
-      >
-        View RAW Database (Tables)
-      </Button>
     </Stack>
   );
 };
