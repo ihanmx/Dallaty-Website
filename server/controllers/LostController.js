@@ -14,6 +14,7 @@ export const postLostController = async (req, res) => {
       req.body.fees === "on" ||
       req.body.fees === "1";
 
+    //req.file is the object multer attaches to the request. It contains filename, originalname, mimetype, size, etc.
     const filePath = req.file ? `/uploads/lost/${req.file.filename}` : null;
     const reportId = uuidv4();
 
@@ -29,7 +30,7 @@ export const postLostController = async (req, res) => {
         terms,
         fees,
         reportId,
-      ]
+      ],
     );
 
     res.status(201).json(result.rows[0]);

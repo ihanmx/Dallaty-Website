@@ -33,7 +33,8 @@ const upload = multer({
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
 });
-
+//attach multer instance as middleware that expects one images from the field called image
+//key image must match with frontend
 // POST /form/lost
 router.post("/form/lost", upload.single("image"), postLostController);
 

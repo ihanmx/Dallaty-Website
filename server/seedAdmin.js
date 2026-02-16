@@ -38,11 +38,11 @@ const seedAdmin = async () => {
       console.log("Admin already exists. No changes made.");
     }
 
-    process.exit(0);
+    process.exit(0);//terminates node proccess
 
   } catch (error) {
     console.error("Error seeding admin:", error.message);
-    process.exit(1);
+    process.exit(1); 
   }
 };
 

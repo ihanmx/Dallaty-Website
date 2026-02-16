@@ -32,14 +32,14 @@ app.use(express.json()); //built in body parser
 app.use(cookieParser()); // Enable Cookie Parser
 //development
 
-// It makes the uploads folder public so the browser can access the image directly.
+//check if uploads folders exists if not create them
 const uploadsLostDir = path.join(process.cwd(), "uploads", "lost");
 const uploadsFoundDir = path.join(process.cwd(), "uploads", "found");
 [uploadsLostDir, uploadsFoundDir].forEach((dir) => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-// serve static uploads
+// serve static folders so the browser can access them
 app.use("/uploads/lost", express.static(uploadsLostDir));
 app.use("/uploads/found", express.static(uploadsFoundDir));
 
