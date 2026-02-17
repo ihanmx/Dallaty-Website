@@ -4,6 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { postLostController } from "../controllers/LostController.js";
+import { formLimiter } from "../config/rateLimiter.js";
 
 const router = express.Router();
 
@@ -36,6 +37,11 @@ const upload = multer({
 //attach multer instance as middleware that expects one images from the field called image
 //key image must match with frontend
 // POST /form/lost
-router.post("/form/lost", upload.single("image"), postLostController);
+router.post(
+  "/form/lost",
+  formLimiter,
+  upload.single("image"),
+  postLostController,
+);
 
 export default router;

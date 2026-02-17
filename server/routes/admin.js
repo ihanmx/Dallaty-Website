@@ -13,13 +13,13 @@ import {
 import { getRefreshToken } from "../controllers/refreshTokenController.js";
 //auth middleware
 import { verifyAdminToken } from "../middleware/authMiddleware.js";
-
+import { loginLimiter } from "../config/rateLimiter.js";
 const router = express.Router();
 
 //  1. Public Routes (Accessible without token)
 // Login Route
 // Frontend endpoint: POST /admin/login
-router.post("/login", postLogin);
+router.post("/login", loginLimiter, postLogin);
 // Refresh Token Route (MUST be public/before middleware)
 // Frontend calls this when it gets a 403 error
 // Frontend endpoint: GET /admin/refresh

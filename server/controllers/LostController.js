@@ -36,6 +36,6 @@ export const postLostController = async (req, res) => {
     res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error("Error in /form/lost:", err.message);
-    res.status(500).json({ error: "Server error: " + err.message });
+    res.status(500).json({ error: "Server error can't send the report" });
   }
 };

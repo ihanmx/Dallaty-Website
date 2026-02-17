@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { postFoundController } from "../controllers/FoundController.js";
-
+import { formLimiter } from "../config/rateLimiter.js";
 const router = express.Router();
 
 const uploadsFoundDir = path.join(process.cwd(), "uploads", "found");
@@ -31,6 +31,11 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-router.post("/form/found", upload.single("image"), postFoundController);
+router.post(
+  "/form/found",
+  formLimiter,
+  upload.single("image"),
+  postFoundController,
+);
 
 export default router;
