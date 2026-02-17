@@ -4,6 +4,10 @@ export const postLostController = async (req, res) => {
   try {
     const { name, email, description, location, resource } = req.body;
 
+    if (!name || !email || !description || !location || !resource) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
     const terms =
       req.body.terms === "true" ||
       req.body.terms === "on" ||
@@ -13,6 +17,12 @@ export const postLostController = async (req, res) => {
       req.body.fees === "true" ||
       req.body.fees === "on" ||
       req.body.fees === "1";
+
+    if (!terms || !fees) {
+      return res
+        .status(400)
+        .json({ error: "You must agree to the terms and fees" });
+    }
 
     //req.file is the object multer attaches to the request. It contains filename, originalname, mimetype, size, etc.
     const filePath = req.file ? `/uploads/lost/${req.file.filename}` : null;
