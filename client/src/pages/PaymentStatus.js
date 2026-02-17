@@ -12,7 +12,10 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import StatusMessage from "../components/StatusMessage";
 //api config
-import API_URL from "../config/api";
+
+import config from "../config/index";
+
+import axios from "../api/axios";
 
 export default function PaymentStatus() {
   const { reportId } = useParams(); // e.g., /payment/:reportId
@@ -22,6 +25,7 @@ export default function PaymentStatus() {
 
   const [status, setStatus] = useState("payment_in_progress");
   const { t } = useTranslation();
+  const { apiUrl } = config;
 
   const { message, description, icon } =
     statusInfo(t)[status] || statusInfo(t)["payment_server_error"];
@@ -31,13 +35,13 @@ export default function PaymentStatus() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch(
+        const res = await axios.get(
           //development
-          `http://localhost:5000/api/payment-status/${reportId}`
+          `/api/payment-status/${reportId}`,
           //production
           // `${API_URL}/api/payment-status/${reportId}`
         );
-        const data = await res.json();
+        const data = res.data;
         if (alreadyPaid) {
           //from url query
           setStatus("payed");

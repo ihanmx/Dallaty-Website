@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const handleRefreshToken = async (req, res) => {
+export const getRefreshToken = async (req, res) => {
   const cookies = req.cookies;
 
   // 1. Check if cookies exist and contain jwt

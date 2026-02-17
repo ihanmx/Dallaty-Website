@@ -23,8 +23,7 @@ import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import design1 from "../images/design1.png";
 //react-router-dom
 import { Link as RouterLink } from "react-router-dom";
-//api config
-import API_URL from "../config/api";
+import axios from "../api/axios";
 
 const LostForm = () => {
   const whereYouHear = [
@@ -126,17 +125,11 @@ const LostForm = () => {
       //name of append must match the name in the backend multer single("image")
       //development
 
-      const response = await fetch("http://localhost:5000/form/lost", {
-        //production
-      // const response = await fetch(`${API_URL}/form/lost`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await axios.post("/form/lost", formData);
 
-      const responseData = await response.json();
-      console.log("Server response:", responseData);
+      console.log("Server response:", response.data);
 
-      if (response.ok) {
+      if (response.status === 200) {
         showSnackbar(t("Form submitted successfully!"), "success");
         setLostUserInfo({
           name: "",
@@ -156,7 +149,7 @@ const LostForm = () => {
 
       //reset lostUserInfo and file preview for new submissions
     } catch (err) {
-      console.error(err.message);
+      console.error(err.response?.data || err.message);
       alert("Error submitting form");
     } finally {
       setLoading(false);
@@ -262,7 +255,7 @@ const LostForm = () => {
             multiline
             rows={4}
             placeholder={t(
-              "Mention details such as type, color, brand, size, place, any unique features, etc."
+              "Mention details such as type, color, brand, size, place, any unique features, etc.",
             )}
             value={lostUserInfo.description}
             onChange={handleDescriptionChange}
@@ -341,7 +334,7 @@ const LostForm = () => {
               />
             }
             label={t(
-              "I acknowledge that a service fee of 25 SAR applies if the item is found"
+              "I acknowledge that a service fee of 25 SAR applies if the item is found",
             )}
           />
 
@@ -362,7 +355,7 @@ const LostForm = () => {
                 <Link
                   href="/terms-and-conditions"
                   underline="hover"
-                  component={require('react-router-dom').Link}
+                  component={require("react-router-dom").Link}
                   to="/terms-and-conditions"
                 >
                   {t("Terms and Conditions")}

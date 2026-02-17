@@ -1,8 +1,8 @@
 import express from "express";
 //admin controller
 import {
-  login,
-  logout,
+  postLogin,
+  postLogout,
   getDashboardData,
   postConfirmMatchLost,
   postConfirmMatchFound,
@@ -10,7 +10,7 @@ import {
   deleteTableRows,
 } from "../controllers/AdminController.js";
 //refresh token controller
-import { handleRefreshToken } from "../controllers/refreshTokenController.js";
+import { getRefreshToken } from "../controllers/refreshTokenController.js";
 //auth middleware
 import { verifyAdminToken } from "../middleware/authMiddleware.js";
 
@@ -19,14 +19,14 @@ const router = express.Router();
 //  1. Public Routes (Accessible without token)
 // Login Route
 // Frontend endpoint: POST /admin/login
-router.post("/login", login);
+router.post("/login", postLogin);
 // Refresh Token Route (MUST be public/before middleware)
 // Frontend calls this when it gets a 403 error
 // Frontend endpoint: GET /admin/refresh
-router.get("/refresh", handleRefreshToken);
+router.get("/refresh", getRefreshToken);
 // Logout Route
 // Frontend endpoint: POST /admin/logout
-router.post("/logout", logout);
+router.post("/logout", postLogout);
 
 //  2. Protected Routes (Require Valid Access Token)
 

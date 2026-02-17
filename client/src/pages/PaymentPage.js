@@ -1,8 +1,6 @@
-
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../api/axios";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Card from "@mui/material/Card";
@@ -19,7 +17,7 @@ import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
 import Modal from "@mui/material/Modal";
 //api config
-import API_URL from "../config/api";
+import config from "../config/index";
 
 //context
 
@@ -30,17 +28,13 @@ export default function PaymentPage() {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const { t } = useTranslation();
-  const [openImage, setOpenImage] = useState(false);
+  // const [openImage, setOpenImage] = useState(false);
+  const { apiUrl } = config;
 
   useEffect(() => {
     const fetchUserReportDetails = async () => {
       try {
-        const res = await axios.get(
-          //development
-          `http://localhost:5000/payment-details/${paymentToken}`
-          //production
-          // `${API_URL}/payment-details/${paymentToken}`
-        );
+        const res = await axios.get(`/payment-details/${paymentToken}`);
 
         console.log("server res with details", res);
 
@@ -63,10 +57,7 @@ export default function PaymentPage() {
   }, [paymentToken]);
 
   const handlePayClick = async () => {
-    //development
-    const res = await axios.post("http://localhost:5000/api/create-payment", {
-      //production
-    // const res = await axios.post(`${API_URL}/api/create-payment`, {
+    const res = await axios.post("/api/create-payment", {
       paymentToken,
       agreedToTerms: agreed,
     });
@@ -185,7 +176,7 @@ export default function PaymentPage() {
             {reportData.recipient_details}
           </Typography>
 
-            {/* <Typography mt={2} variant="body1"color="primary.main"> */}
+          {/* <Typography mt={2} variant="body1"color="primary.main"> */}
           <Typography mt={2} variant="body1" color="primary.main">
             {t("complete_payment_instruction")}
           </Typography>

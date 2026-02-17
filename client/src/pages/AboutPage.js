@@ -86,13 +86,6 @@ const AboutPage = () => {
     },
   ];
 
-  const stats = [
-    { number: "10,000+", label: "Items Reported" },
-    { number: "7,500+", label: "Items Reunited" },
-    { number: "15,000+", label: "Active Users" },
-    { number: "95%", label: "Success Rate" },
-  ];
-
   const values = [
     {
       icon: <GroupsIcon sx={{ fontSize: 40, color: "primary.main" }} />,
@@ -403,7 +396,7 @@ const AboutPage = () => {
                 step: "3",
                 title: "Connect & Reunite",
                 description:
-                   "Connect with the owner to provide him with the lost item details.",
+                  "Connect with the owner to provide him with the lost item details.",
               },
             ].map((step, index) => (
               <Grid item size={{ xs: 12, md: 12, lg: 4 }} key={index}>

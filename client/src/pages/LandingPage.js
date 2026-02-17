@@ -21,7 +21,7 @@ import ScreenSearchDesktopOutlinedIcon from "@mui/icons-material/ScreenSearchDes
 import { motion } from "framer-motion";
 
 const LandingPage = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const containerVariants = {
     hidden: { opacity: 0 },

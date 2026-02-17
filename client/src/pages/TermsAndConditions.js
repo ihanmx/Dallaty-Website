@@ -8,7 +8,7 @@ const TermsAndConditions = () => {
   const sections = t("terms.sections", { returnObjects: true });
   const lastUpdate = t("terms.lastUpdate", { returnObjects: true });
   const pageTitle = t("terms.pageTitle", { returnObjects: true });
-  const WEBSITE_URL = "https://dhallaty.sa";
+  const WEBSITE_URL = process.env.REACT_APP_WEBSITE_URL;
   if (!Array.isArray(sections)) return null;
 
   return (

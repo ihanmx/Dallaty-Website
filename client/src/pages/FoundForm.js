@@ -31,7 +31,7 @@ import design1dark from "../images/design1dark.png";
 //local components
 import ReportInstruction from "../components/ReportInstruction";
 //api config
-import API_URL from "../config/api";
+import axios from "../api/axios";
 
 const FoundForm = () => {
   //Access foundUserInfo and setFoundUserInfo from context
@@ -115,7 +115,7 @@ const FoundForm = () => {
       formData.append("location", foundUserInfo.location);
       formData.append(
         "recipientDescription",
-        foundUserInfo.recipientDescription
+        foundUserInfo.recipientDescription,
       );
 
       formData.append("terms", foundUserInfo.terms);
@@ -135,19 +135,11 @@ const FoundForm = () => {
       }
       //name of append must match the name in the backend multer single("image")
 
-      
-//development
-      const response = await fetch("http://localhost:5000/form/found", {
-        //production
-      // const response = await fetch(`${API_URL}/form/found`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await axios.post("/form/found", formData);
 
-      const responseData = await response.json();
-      console.log("Server response:", responseData);
+      console.log("Server response:", response.data);
 
-      if (response.ok) {
+      if (response.status === 200) {
         showSnackbar(t("Form submitted successfully!"), "success");
         setFoundUserInfo({
           name: "",
@@ -166,7 +158,7 @@ const FoundForm = () => {
         console.log(foundUserInfo);
       }
     } catch (err) {
-      console.error(err.message);
+      console.error(err.response?.data || err.message);
       alert("Error submitting form");
     } finally {
       setLoading(false);
@@ -272,7 +264,7 @@ const FoundForm = () => {
             multiline
             rows={4}
             placeholder={t(
-              "Mention details such as type, color, brand, size, place, any unique features, etc."
+              "Mention details such as type, color, brand, size, place, any unique features, etc.",
             )}
             value={foundUserInfo.description}
             onChange={handleDescriptionChange}
@@ -331,7 +323,7 @@ const FoundForm = () => {
             multiline
             rows={4}
             placeholder={t(
-              "Please enter a description of the place and information about the recipient if possible."
+              "Please enter a description of the place and information about the recipient if possible.",
             )}
             value={foundUserInfo.recipientDescription}
             onChange={handleRecipientDescriptionChange}
@@ -370,7 +362,7 @@ const FoundForm = () => {
               />
             }
             label={t(
-              "I acknowledge that I committed to all instructions for reporting a found item."
+              "I acknowledge that I committed to all instructions for reporting a found item.",
             )}
           />
 
@@ -391,7 +383,7 @@ const FoundForm = () => {
                 <Link
                   href="/terms-and-conditions"
                   underline="hover"
-                  component={require('react-router-dom').Link}
+                  component={require("react-router-dom").Link}
                   to="/terms-and-conditions"
                 >
                   {t("Terms and Conditions")}

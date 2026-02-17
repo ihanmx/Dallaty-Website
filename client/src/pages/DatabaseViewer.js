@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+//react hooks
+import { useState, useEffect } from "react";
+//axios api
+import axios from "../api/axios";
+//MUI
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Box,
@@ -10,7 +13,6 @@ import {
   MenuItem,
   Stack,
 } from "@mui/material";
-import config from "../config";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -18,7 +20,10 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Button } from "@mui/material";
+//router-dom
 import { Link } from "react-router-dom";
+//config
+import config from "../config";
 
 const DatabaseViewer = () => {
   const [currentTable, setCurrentTable] = useState("payments");
@@ -41,7 +46,7 @@ const DatabaseViewer = () => {
 
     setSelectedRows([]); //  reset selection when fetching
     try {
-      const res = await axios.get(`${config.apiUrl}/admin/table/${tableName}`);
+      const res = await axios.get(`/admin/table/${tableName}`);
       const data = res.data;
       setRows(data.map((row, index) => ({ id: row.id || index, ...row }))); // Ensure ID
 
@@ -122,7 +127,7 @@ const DatabaseViewer = () => {
     console.log("Delete IDs:", idsToDelete);
 
     try {
-      await axios.delete(`${config.apiUrl}/admin/table/${currentTable}`, {
+      await axios.delete(`/admin/table/${currentTable}`, {
         //body
         data: { ids: idsToDelete },
       });

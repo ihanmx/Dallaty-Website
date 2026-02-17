@@ -1,7 +1,6 @@
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../api/axios";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Card from "@mui/material/Card";
@@ -16,7 +15,7 @@ import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
 import Modal from "@mui/material/Modal";
 //api config
-import API_URL from "../config/api";
+import config from "../config/index";
 
 const ItemDetails = () => {
   // `http://localhost:3000/item-details/${reportId}`
@@ -26,16 +25,12 @@ const ItemDetails = () => {
   const [loading, setLoading] = useState(true);
   const [itemDetails, setItemDetails] = useState({});
   const [openImage, setOpenImage] = useState(false);
+  const { apiUrl } = config;
 
   useEffect(() => {
     const fetchItemDetails = async () => {
       try {
-        const res = await axios.get(
-          // development
-          `http://localhost:5000/api/item-details/${reportId}`
-          // production
-          // `${API_URL}/item-details/${reportId}`
-        );
+        const res = await axios.get(`/api/item-details/${reportId}`);
 
         console.log("server res with details", res);
 
@@ -120,9 +115,7 @@ const ItemDetails = () => {
             onClick={() => setOpenImage(false)}
           >
             <img
-              src={`http://localhost:5000${itemDetails.file}`}
-              //production
-              // src={`${API_URL}${itemDetails.file}`}
+              src={`${apiUrl}${itemDetails.file}`}
               alt="Expanded Item"
               style={{
                 width: "100%",
@@ -175,10 +168,7 @@ const ItemDetails = () => {
           <Typography variant="body1"> {itemDetails.matched_at}</Typography>
 
           <img
-          //development
-            src={`http://localhost:5000${itemDetails.file}`}
-            //production
-            // src={`${API_URL}${itemDetails.file}`}
+            src={`${apiUrl}${itemDetails.file}`}
             alt="Found Item"
             onClick={() => setOpenImage(true)}
             style={{

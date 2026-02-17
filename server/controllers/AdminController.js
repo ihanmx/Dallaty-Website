@@ -13,7 +13,7 @@ dotenv.config();
  * Login Function
  * Purpose: Authenticate admin, generate Access & Refresh tokens, and set cookie.
  */
-export const login = async (req, res) => {
+export const postLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -89,7 +89,7 @@ export const login = async (req, res) => {
  * Logout Function
  *Clear the refresh token from DB and cookies.
  */
-export const logout = async (req, res) => {
+export const postLogout = async (req, res) => {
   // Get cookies from request
   const cookies = req.cookies;
 
@@ -257,10 +257,6 @@ export const postConfirmMatchFound = async (req, res) => {
   }
 };
 
-
-
-
-
 export const getTableData = async (req, res) => {
   const { tableName } = req.params;
   const allowedTables = [
@@ -284,12 +280,17 @@ export const getTableData = async (req, res) => {
   }
 };
 
-
 export const deleteTableRows = async (req, res) => {
-  const {tableName} = req.params;
-  const {ids}=req.body;//expecting an array of IDs to delete
-    const allowedTables = ['users', 'lostreports', 'foundreports', 'payments', 'matched_items'];
-      if (!allowedTables.includes(tableName)) {
+  const { tableName } = req.params;
+  const { ids } = req.body; //expecting an array of IDs to delete
+  const allowedTables = [
+    "users",
+    "lostreports",
+    "foundreports",
+    "payments",
+    "matched_items",
+  ];
+  if (!allowedTables.includes(tableName)) {
     return res.status(400).json({ error: "Invalid table name" });
   }
 
@@ -297,31 +298,26 @@ export const deleteTableRows = async (req, res) => {
     return res.status(400).json({ error: "No IDs provided" });
   }
 
-  try{  
-     const idColumnMap = {
-    'lostreports': 'reportid',
-    'foundreports': 'reportid',
-    'payments': 'report_id',}
+  try {
+    const idColumnMap = {
+      lostreports: "reportid",
+      foundreports: "reportid",
+      payments: "report_id",
+    };
 
-      const idColumn = idColumnMap[tableName] || 'id';
+    const idColumn = idColumnMap[tableName] || "id";
 
-        const result = await pool.query(
+    const result = await pool.query(
       `DELETE FROM ${tableName} WHERE ${idColumn} = ANY($1) RETURNING *`,
-      [ids]
+      [ids],
     );
-    
-    res.json({ 
+
+    res.json({
       message: `${result.rowCount} row(s) deleted successfully`,
-      deletedRows: result.rows 
+      deletedRows: result.rows,
     });
   } catch (error) {
     console.error("Error deleting rows:", error);
     res.status(500).json({ error: "Failed to delete rows" });
   }
 };
-
-
-
-
-
-

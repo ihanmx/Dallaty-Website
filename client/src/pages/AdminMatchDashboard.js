@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+//React hooks
+import { useState, useEffect } from "react";
+//axios API
+import axios from "../api/axios";
+//MUI components
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, TextField, Typography } from "@mui/material";
+
+//React router
 import { Stack } from "@mui/system";
 import { Link } from "react-router-dom";
+
 //api config
 import config from "../config";
 
@@ -37,7 +43,7 @@ const AdminMatchDashboard = () => {
     try {
       setLoading(true);
       // development
-      const res = await axios.get(`${config.apiUrl}/admin/dashboard-data`);
+      const res = await axios.get(`/admin/dashboard-data`);
       setLostReports(res.data.lostReports);
       setFoundReports(res.data.foundReports);
     } catch (err) {
@@ -55,10 +61,7 @@ const AdminMatchDashboard = () => {
         matchedFoundReportId: selectedFoundReportId,
       };
 
-      const res = await axios.post(
-        `${config.apiUrl}/admin/confirm-match-lost`,
-        payload,
-      );
+      const res = await axios.post(`/admin/confirm-match-lost`, payload);
       alert(res.data.message || "Payment email sent successfully.");
       fetchDashboardData();
     } catch (err) {
