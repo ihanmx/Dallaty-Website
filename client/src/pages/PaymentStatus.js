@@ -11,9 +11,6 @@ import { useParams } from "react-router-dom";
 // i18-next
 import { useTranslation } from "react-i18next";
 import StatusMessage from "../components/StatusMessage";
-//api config
-
-import config from "../config/index";
 
 import axios from "../api/axios";
 
@@ -25,7 +22,6 @@ export default function PaymentStatus() {
 
   const [status, setStatus] = useState("payment_in_progress");
   const { t } = useTranslation();
-  const { apiUrl } = config;
 
   const { message, description, icon } =
     statusInfo(t)[status] || statusInfo(t)["payment_server_error"];

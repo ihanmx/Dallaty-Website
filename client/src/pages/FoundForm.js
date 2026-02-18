@@ -43,7 +43,7 @@ const FoundForm = () => {
   const [fileName, setFileName] = useState("");
   // const [foundDate, setFoundDate] = useState(null);
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const { showSnackbar } = useSnackbar();
 
@@ -125,7 +125,6 @@ const FoundForm = () => {
       if (foundUserInfo.foundDate) {
         // ensure we format whatever the stored value is using dayjs
         const formatted = dayjs(foundUserInfo.foundDate).format("YYYY-MM-DD");
-        console.log(formatted);
         formData.append("foundDate", formatted);
       }
 
@@ -159,7 +158,14 @@ const FoundForm = () => {
       }
     } catch (err) {
       console.error(err.response?.data || err.message);
-      alert("Error submitting form");
+      if (err.response?.status === 429) {
+        showSnackbar(
+          t("Too many submissions. Please try again later."),
+          "warning.main",
+        );
+      } else {
+        showSnackbar(t("Error submitting form. Please try again."), "error");
+      }
     } finally {
       setLoading(false);
     } //to stop loading when there is an error

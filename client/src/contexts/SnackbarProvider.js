@@ -32,7 +32,7 @@ const SnackbarProvider = ({ children }) => {
       >
         <Alert
           onClose={handleClose}
-          severity="success"
+          severity={snackbar.severity}
           variant="filled"
           sx={{ width: "100%" }}
         >

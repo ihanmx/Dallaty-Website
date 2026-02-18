@@ -5,6 +5,9 @@
  * Create an initial "admin" account to test the dashboard and system functionality.
  * This script is for development/testing purposes to seed the database with an initial admin.
  *
+ *
+ * usage:node seedData.js
+ * or npm run seed
  * *Security Note:
  * Please change the password or delete this account when deploying to a live environment (Production).
  */
@@ -38,11 +41,10 @@ const seedAdmin = async () => {
       console.log("Admin already exists. No changes made.");
     }
 
-    process.exit(0);//terminates node proccess
-
+    process.exit(0); //terminates node proccess
   } catch (error) {
     console.error("Error seeding admin:", error.message);
-    process.exit(1); 
+    process.exit(1);
   }
 };
 

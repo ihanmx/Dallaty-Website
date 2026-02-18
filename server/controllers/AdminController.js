@@ -259,6 +259,13 @@ export const postConfirmMatchFound = async (req, res) => {
 
 export const getTableData = async (req, res) => {
   const { tableName } = req.params;
+
+  //reads pagination params
+
+  const page = parseInt(req.query.page) || 1; //the page
+  const limit = parseInt(req.query.limit) || 10; //the number of rows to fetch
+  const offset = (page - 1) * limit; //the num of rows to skip
+
   const allowedTables = [
     "users",
     "lostreports",
@@ -272,8 +279,26 @@ export const getTableData = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(`SELECT * FROM ${tableName}`);
-    res.json(result.rows);
+    //we need to fetch paginated rows AND total count in one go at the same time so we use Promise.all
+
+    const [dataResult, countResult] = await Promise.all([
+      pool.query(
+        `SELECT * FROM ${tableName} ORDER BY id LIMIT $1 OFFSET $2`,
+        [limit, offset],
+      ),
+      pool.query(`SELECT COUNT(*) FROM ${tableName}`),
+      //COUNT(*) in PostgreSQL returns the number as a string
+      // countResult.rows[0]
+      // → { count: "47" }  ← string, not number
+    ]);
+
+    // const result = await pool.query(`SELECT * FROM ${tableName}`);
+    res.json({
+      rows: dataResult.rows, //data
+      total: parseInt(countResult.rows[0].count),
+      page,
+      limit,
+    });
   } catch (error) {
     console.error("Error fetching table data:", error);
     res.status(500).json({ error: "Failed to fetch table data" });

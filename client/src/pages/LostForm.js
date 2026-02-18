@@ -127,8 +127,6 @@ const LostForm = () => {
 
       const response = await axios.post("/form/lost", formData);
 
-      console.log("Server response:", response.data);
-
       if (response.status === 200) {
         showSnackbar(t("Form submitted successfully!"), "success");
         setLostUserInfo({
@@ -143,14 +141,17 @@ const LostForm = () => {
         });
         setFilePreview(null);
         setFileName("");
-
-        console.log(lostUserInfo);
       }
-
-      //reset lostUserInfo and file preview for new submissions
     } catch (err) {
       console.error(err.response?.data || err.message);
-      alert("Error submitting form");
+      if (err.response?.status === 429) {
+        showSnackbar(
+          t("Too many submissions. Please try again later."),
+          "warning",
+        );
+      } else {
+        showSnackbar(t("Error submitting form. Please try again."), "error");
+      }
     } finally {
       setLoading(false);
     } //to stop loading when there is an error

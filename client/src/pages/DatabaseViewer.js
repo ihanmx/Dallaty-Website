@@ -30,6 +30,12 @@ const DatabaseViewer = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  // Note: MUI DataGrid uses 0-based pages, your backend uses 1-based — handle below
+  const [rowCount, setRowCount] = useState(0);
 
   //selected rows from the data grid (This is stores ONLY the IDs of rows the user selected by checking the boxes.)
   const [selectedRows, setSelectedRows] = useState([]); // Track selected rows
@@ -39,19 +45,25 @@ const DatabaseViewer = () => {
 
   useEffect(() => {
     fetchTableData(currentTable);
-  }, [currentTable]);
+  }, [currentTable, paginationModel]);
 
   const fetchTableData = async (tableName) => {
     setLoading(true);
 
     setSelectedRows([]); //  reset selection when fetching
     try {
-      const res = await axios.get(`/admin/table/${tableName}`);
-      const data = res.data;
-      setRows(data.map((row, index) => ({ id: row.id || index, ...row }))); // Ensure ID
+      const { page, pageSize } = paginationModel;
+      const res = await axios.get(`/admin/table/${tableName}`, {
+        params: {
+          page: page + 1, // MUI is 0-based, backend is 1-based, so add 1
+          limit: pageSize,
+        },
+      });
 
-      if (data.length > 0) {
-        const cols = Object.keys(data[0]).map((key) => {
+      setRows(res.data.rows); // Only the page's rows
+      setRowCount(res.data.total); // Total count for pagination controls
+      if (res.data.rows.length > 0) {
+        const cols = Object.keys(res.data.rows[0]).map((key) => {
           const col = {
             field: key,
             headerName: key.toUpperCase(),
@@ -225,8 +237,12 @@ type: 'exclude' → "select all", compute all row IDs minus the excluded ones */
         <DataGrid
           key={currentTable} // This forces a complete remount
           rows={rows}
+          rowCount={rowCount}
           columns={columns}
           loading={loading}
+          paginationMode="server"
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
           checkboxSelection
           disableRowSelectionOnClick
           onRowSelectionModelChange={(newSelection) => {
