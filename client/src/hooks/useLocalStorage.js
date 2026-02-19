@@ -27,7 +27,7 @@ const useLocalStorage = (key, initialValue) => {
   });
 
   useEffect(() => {
-    localStorage.getItem(key, JSON.stringify(value));
+    localStorage.setItem(key, JSON.stringify(value));
   }, [key, value]); //check on local storage when ever the key or value changes and set them with the localstorage
 
   return [value, setValue]; //return the state to the caller function

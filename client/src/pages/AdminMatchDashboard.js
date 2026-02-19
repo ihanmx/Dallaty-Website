@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 //api config
 import API_URL from "../config/api";
+import useLogout from "../hooks/useLogout";
+import { useNavigate } from "react-router-dom";
 
 const AdminMatchDashboard = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [lostReports, setLostReports] = useState([]);
   const [foundReports, setFoundReports] = useState([]);
   // Search state
@@ -35,10 +38,7 @@ const AdminMatchDashboard = () => {
   async function fetchDashboardData() {
     try {
       setLoading(true);
-      // development
-      const res = await axios.get("http://localhost:5000/admin/dashboard-data");
-      // production
-      // const res = await axios.get(`${API_URL}/admin/dashboard-data`);
+      const res = await axiosPrivate.get("/admin/dashboard-data");
       setLostReports(res.data.lostReports);
       setFoundReports(res.data.foundReports);
     } catch (err) {
@@ -56,9 +56,8 @@ const AdminMatchDashboard = () => {
         matchedFoundReportId: selectedFoundReportId,
       };
 
-      const res = await axios.post(
-        "http://localhost:5000/admin/confirm-match-lost",
-
+      const res = await axiosPrivate.post(
+        "/admin/confirm-match-lost",
         payload,
       );
       alert(res.data.message || "Payment email sent successfully.");
@@ -118,6 +117,9 @@ const AdminMatchDashboard = () => {
       row.email.toLowerCase().includes(foundSearch.toLowerCase()) ||
       row.reportid.toLowerCase().includes(foundSearch.toLowerCase()),
   );
+
+  const logout = useLogout();
+  const navigate = useNavigate();
 
   return (
     <Stack direction={"column"} alignItems={"center"}>
@@ -221,9 +223,20 @@ const AdminMatchDashboard = () => {
       <Button
         variant="outlined"
         sx={{ width: "40%", mt: 2 }}
-        onClick={() => (window.location.href = "/admin-db-viewer")}
+        onClick={() => navigate("/admin-db-viewer")}
       >
         View RAW Database (Tables)
+      </Button>
+      <Button
+        variant="outlined"
+        color="primary"
+        sx={{ width: "40%", mt: 2 }}
+        onClick={async () => {
+          await logout();
+          navigate("/admin-login", { replace: true });
+        }}
+      >
+        Logout
       </Button>
     </Stack>
   );
