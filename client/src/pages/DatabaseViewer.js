@@ -24,18 +24,17 @@ import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 //config
 import config from "../config";
+import usePagination from "../hooks/usePagination";
 
 const DatabaseViewer = () => {
   const [currentTable, setCurrentTable] = useState("payments");
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState([]);
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 10,
-  });
+
   // Note: MUI DataGrid uses 0-based pages, your backend uses 1-based — handle below
-  const [rowCount, setRowCount] = useState(0);
+  const { paginationModel, setPaginationModel, rowCount, setRowCount } =
+    usePagination(); //default page 0 and size 10
 
   //selected rows from the data grid (This is stores ONLY the IDs of rows the user selected by checking the boxes.)
   const [selectedRows, setSelectedRows] = useState([]); // Track selected rows

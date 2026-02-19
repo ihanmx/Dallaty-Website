@@ -128,24 +128,132 @@ export const postLogout = async (req, res) => {
   }
 };
 
-export const getDashboardData = async (req, res) => {
+export const getTableData = async (req, res) => {
+  const { tableName } = req.params;
+
+  //reads pagination params
+
+  const page = parseInt(req.query.page) || 1; //the page
+  const limit = parseInt(req.query.limit) || 10; //the number of rows to fetch
+  const offset = (page - 1) * limit; //the num of rows to skip
+  const search = req.query.search?.trim() || ""; //search option for admin match dashboard
+
+  const allowedTables = [
+    "users",
+    "lostreports",
+    "foundreports",
+    "payments",
+    "matched_items",
+  ];
+
+  // searchable columns per table
+  const searchCols = {
+    lostreports: ["name", "email", "reportid"],
+    foundreports: ["name", "email", "reportid"],
+    payments: ["email", "report_id"],
+    matched_items: ["description", "location"],
+  };
+
+  //builds SQL condition based on input
+  //maps over the search coloumns and apply the search condition
+  //ILIKE = case-insensitive LIKE in PostgreSQL. So "ahmed" matches "Ahmed" or "AHMED".
+
+  // .map() produces:
+  // ["name ILIKE $3", "email ILIKE $3", "reportid ILIKE $3"]
+
+  // .join(" OR ") produces:
+  // "name ILIKE $3 OR email ILIKE $3 OR reportid ILIKE $3"
+
+  // DATA QUERY — 3 params
+  // pool.query(
+  //   `SELECT * FROM lostreports
+  //    WHERE name ILIKE $3 OR email ILIKE $3 OR reportid ILIKE $3
+  //    ORDER BY id LIMIT $1 OFFSET $2`,
+  //   [limit, offset, "%Ahmed%"]
+  // //  $1     $2      $3
+  // )
+
+  // // COUNT QUERY — only 1 param (no limit/offset needed)
+  // pool.query(
+  //   `SELECT COUNT(*) FROM lostreports
+  //    WHERE name ILIKE $1 OR email ILIKE $1 OR reportid ILIKE $1`,
+  //   ["%Ahmed%"]
+  // //  $1
+  // )
+
+  const buildWhere = (cols, paramIndex) =>
+    cols.map((col) => `${col} ILIKE $${paramIndex}`).join(" OR ");
+
+  const cols = search ? searchCols[tableName] : null; //select the table based on query
+  const dataWhere = cols ? `WHERE ${buildWhere(cols, 3)}` : ""; // $3 = search
+  const countWhere = cols ? `WHERE ${buildWhere(cols, 1)}` : ""; // $1 = search
+
+  if (!allowedTables.includes(tableName)) {
+    return res.status(400).json({ error: "Invalid table name" });
+  }
+
   try {
-    const [lostReports, foundReports, paymentRecords] = await Promise.all([
-      pool.query(`SELECT * FROM lostreports`),
-      pool.query(`SELECT * FROM foundreports`),
-      pool.query(`SELECT * FROM payments`),
-    ]); //we used array destructuring to store the queries in 3 constants + Promise to retrive values at the same time instead of await since there is no dependencies between them
+    const [dataResult, countResult] = await Promise.all([
+      pool.query(
+        `SELECT * FROM ${tableName} ${dataWhere} ORDER BY id LIMIT $1 OFFSET $2`,
+        search ? [limit, offset, `%${search}%`] : [limit, offset],
+      ),
+      pool.query(
+        `SELECT COUNT(*) FROM ${tableName} ${countWhere}`,
+        search ? [`%${search}%`] : [],
+      ),
+    ]);
 
     res.json({
-      lostReports: lostReports.rows,
-      foundReports: foundReports.rows,
-      paymentRecords: paymentRecords.rows,
+      rows: dataResult.rows,
+      total: parseInt(countResult.rows[0].count),
+      page,
+      limit,
     });
-
-    console.log("dashboared endpoint called");
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "failed to load DBs " });
+    console.error("Error fetching table data:", error);
+    res.status(500).json({ error: "Failed to fetch table data" });
+  }
+};
+export const deleteTableRows = async (req, res) => {
+  const { tableName } = req.params;
+  const { ids } = req.body; //expecting an array of IDs to delete
+  const allowedTables = [
+    "users",
+    "lostreports",
+    "foundreports",
+    "payments",
+    "matched_items",
+  ];
+  if (!allowedTables.includes(tableName)) {
+    return res.status(400).json({ error: "Invalid table name" });
+  }
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: "No IDs provided" });
+  }
+
+  try {
+    const idColumnMap = {
+      lostreports: "reportid",
+      foundreports: "reportid",
+      payments: "report_id",
+    };
+
+    const idColumn = idColumnMap[tableName] || "id";
+
+    const result = await pool.query(
+      `DELETE FROM ${tableName} WHERE ${idColumn} = ANY($1) RETURNING *`,
+      [ids],
+    );
+
+    res.json({
+      message: `${result.rowCount} row(s) deleted successfully`,
+      deletedRows: result.rows,
+    });
+  } catch (error) {
+    console.error("Error deleting rows:", error);
+    res.status(500).json({ error: "Failed to delete rows" });
   }
 };
 
@@ -254,95 +362,5 @@ export const postConfirmMatchFound = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to confirm found item match" });
-  }
-};
-
-export const getTableData = async (req, res) => {
-  const { tableName } = req.params;
-
-  //reads pagination params
-
-  const page = parseInt(req.query.page) || 1; //the page
-  const limit = parseInt(req.query.limit) || 10; //the number of rows to fetch
-  const offset = (page - 1) * limit; //the num of rows to skip
-
-  const allowedTables = [
-    "users",
-    "lostreports",
-    "foundreports",
-    "payments",
-    "matched_items",
-  ];
-
-  if (!allowedTables.includes(tableName)) {
-    return res.status(400).json({ error: "Invalid table name" });
-  }
-
-  try {
-    //we need to fetch paginated rows AND total count in one go at the same time so we use Promise.all
-
-    const [dataResult, countResult] = await Promise.all([
-      pool.query(
-        `SELECT * FROM ${tableName} ORDER BY id LIMIT $1 OFFSET $2`,
-        [limit, offset],
-      ),
-      pool.query(`SELECT COUNT(*) FROM ${tableName}`),
-      //COUNT(*) in PostgreSQL returns the number as a string
-      // countResult.rows[0]
-      // → { count: "47" }  ← string, not number
-    ]);
-
-    // const result = await pool.query(`SELECT * FROM ${tableName}`);
-    res.json({
-      rows: dataResult.rows, //data
-      total: parseInt(countResult.rows[0].count),
-      page,
-      limit,
-    });
-  } catch (error) {
-    console.error("Error fetching table data:", error);
-    res.status(500).json({ error: "Failed to fetch table data" });
-  }
-};
-
-export const deleteTableRows = async (req, res) => {
-  const { tableName } = req.params;
-  const { ids } = req.body; //expecting an array of IDs to delete
-  const allowedTables = [
-    "users",
-    "lostreports",
-    "foundreports",
-    "payments",
-    "matched_items",
-  ];
-  if (!allowedTables.includes(tableName)) {
-    return res.status(400).json({ error: "Invalid table name" });
-  }
-
-  if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return res.status(400).json({ error: "No IDs provided" });
-  }
-
-  try {
-    const idColumnMap = {
-      lostreports: "reportid",
-      foundreports: "reportid",
-      payments: "report_id",
-    };
-
-    const idColumn = idColumnMap[tableName] || "id";
-
-    const result = await pool.query(
-      `DELETE FROM ${tableName} WHERE ${idColumn} = ANY($1) RETURNING *`,
-      [ids],
-    );
-
-    res.json({
-      message: `${result.rowCount} row(s) deleted successfully`,
-      deletedRows: result.rows,
-    });
-  } catch (error) {
-    console.error("Error deleting rows:", error);
-    res.status(500).json({ error: "Failed to delete rows" });
   }
 };

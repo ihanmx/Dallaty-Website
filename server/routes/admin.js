@@ -3,7 +3,6 @@ import express from "express";
 import {
   postLogin,
   postLogout,
-  getDashboardData,
   postConfirmMatchLost,
   postConfirmMatchFound,
   getTableData,
@@ -33,7 +32,7 @@ router.post("/logout", postLogout);
 // Apply authentication middleware to all routes below this line
 // router.use(verifyAdminToken);
 // Frontend endpoint: GET /admin/dashboard-data
-router.get("/dashboard-data", getDashboardData);
+// router.get("/dashboard-data", getDashboardData);
 // Frontend endpoint: GET /admin/table/:tableName
 router.get("/table/:tableName", getTableData); // this route should matche the frontend request
 

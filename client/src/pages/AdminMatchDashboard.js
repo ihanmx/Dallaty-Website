@@ -12,7 +12,8 @@ import { Link } from "react-router-dom";
 
 //api config
 import config from "../config";
-
+import usePagination from "../hooks/usePagination";
+import useDebounce from "../hooks/useDebounce";
 const AdminMatchDashboard = () => {
   const [lostReports, setLostReports] = useState([]);
   const [foundReports, setFoundReports] = useState([]);
@@ -21,38 +22,80 @@ const AdminMatchDashboard = () => {
   const [foundSearch, setFoundSearch] = useState("");
 
   //the names of the json keys should match the backend to avoid setData conflict
-  const [loading, setLoading] = useState(true);
+  const [lostLoading, setLostLoading] = useState(true);
+  const [foundLoading, setFoundLoading] = useState(true);
 
   const [selectedLostReportId, setSelectedLostReportId] = useState("");
   const [selectedFoundReportId, setSelectedFoundReportId] = useState("");
 
-  // ✅ Load all dashboard data
+  //pagination instances
+  const lostPagination = usePagination();
+  const foundPagination = usePagination();
+
+  // debounced — only updates 400ms after user stops typing
+  const debouncedLostSearch = useDebounce(lostSearch, 400);
+  const debouncedFoundSearch = useDebounce(foundSearch, 400);
+
+  // re-fetch lost when its page OR search changes
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    fetchLostReports();
+  }, [lostPagination.paginationModel, debouncedLostSearch]); /// fire request only when debounced value changes, not raw value
 
   useEffect(() => {
-    console.log(
-      "Normalized dashboard state updated",
-      lostReports,
-      foundReports,
-    );
-  }, [lostReports, foundReports]);
+    fetchFoundReports();
+  }, [foundPagination.paginationModel, debouncedFoundSearch]);
 
-  async function fetchDashboardData() {
+  const fetchLostReports = async () => {
+    setLostLoading(true);
     try {
-      setLoading(true);
-      // development
-      const res = await axios.get(`/admin/dashboard-data`);
-      setLostReports(res.data.lostReports);
-      setFoundReports(res.data.foundReports);
+      const { page, pageSize } = lostPagination.paginationModel; //extract model state
+      const res = await axios.get(`/admin/table/lostreports`, {
+        params: {
+          page: page + 1, //MUI counts from 0
+          limit: pageSize,
+          search: lostSearch || undefined, //this ommit params if search is empty
+        },
+      });
+
+      setLostReports(res.data.rows);
+      lostPagination.setRowCount(res.data.total);
     } catch (err) {
-      console.error("Error fetching dashboard data:", err);
-      alert("Failed to load data from server.");
+      console.error("Error fetching lost reports:", err);
     } finally {
-      setLoading(false);
+      setLostLoading(false);
     }
-  }
+  };
+
+  const fetchFoundReports = async () => {
+    setFoundLoading(true);
+    try {
+      const { page, pageSize } = foundPagination.paginationModel;
+      const res = await axios.get(`/admin/table/foundreports`, {
+        params: {
+          page: page + 1,
+          limit: pageSize,
+          search: foundSearch || undefined,
+        },
+      });
+      setFoundReports(res.data.rows);
+      foundPagination.setRowCount(res.data.total);
+    } catch (err) {
+      console.error("Error fetching found reports:", err);
+    } finally {
+      setFoundLoading(false);
+    }
+  };
+
+  // reset to page 0 when search changes so results start from the beginning
+  const handleLostSearch = (e) => {
+    setLostSearch(e.target.value);
+    lostPagination.resetPagination();
+  };
+
+  const handleFoundSearch = (e) => {
+    setFoundSearch(e.target.value);
+    foundPagination.resetPagination();
+  };
 
   const handleSubmitMatch = async () => {
     try {
@@ -63,7 +106,8 @@ const AdminMatchDashboard = () => {
 
       const res = await axios.post(`/admin/confirm-match-lost`, payload);
       alert(res.data.message || "Payment email sent successfully.");
-      fetchDashboardData();
+      fetchFoundReports();
+      fetchLostReports();
     } catch (err) {
       const backendError = err.response?.data?.error;
       if (backendError === "lost_already_matched") {
@@ -143,20 +187,6 @@ const AdminMatchDashboard = () => {
     { field: "status", headerName: "Status", flex: 1 },
   ];
 
-  // Filter rows based on search
-  const filteredLostRows = lostReports.filter(
-    (row) =>
-      row.name.toLowerCase().includes(lostSearch.toLowerCase()) ||
-      row.email.toLowerCase().includes(lostSearch.toLowerCase()) ||
-      row.reportid.toLowerCase().includes(lostSearch.toLowerCase()),
-  );
-  const filteredFoundRows = foundReports.filter(
-    (row) =>
-      row.name.toLowerCase().includes(foundSearch.toLowerCase()) ||
-      row.email.toLowerCase().includes(foundSearch.toLowerCase()) ||
-      row.reportid.toLowerCase().includes(foundSearch.toLowerCase()),
-  );
-
   return (
     <Stack direction={"column"} alignItems={"center"}>
       <Box
@@ -225,16 +255,19 @@ const AdminMatchDashboard = () => {
             variant="outlined"
             size="small"
             value={lostSearch}
-            onChange={(e) => setLostSearch(e.target.value)}
+            onChange={handleLostSearch}
             sx={{ mb: 1 }}
           />
           <DataGrid
-            loading={loading}
-            rows={filteredLostRows}
+            loading={lostLoading}
+            rows={lostReports}
             columns={lostColumns}
+            paginationMode="server"
+            rowCount={lostPagination.rowCount}
+            paginationModel={lostPagination.paginationModel}
+            onPaginationModelChange={lostPagination.setPaginationModel}
             getRowId={(row) => row.reportid}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
+            pageSizeOptions={[5, 10, 20]}
             checkboxSelection
             disableMultipleRowSelection
             sx={{ overflowX: "auto" }}
@@ -261,18 +294,21 @@ const AdminMatchDashboard = () => {
             variant="outlined"
             size="small"
             value={foundSearch}
-            onChange={(e) => setFoundSearch(e.target.value)}
+            onChange={handleFoundSearch}
             sx={{ mb: 1 }}
           />
           <DataGrid
-            rows={filteredFoundRows}
+            rows={foundReports}
             columns={foundColumns}
+            loading={foundLoading}
+            paginationMode="server"
+            paginationModel={foundPagination.paginationModel}
+            onPaginationModelChange={foundPagination.setPaginationModel}
+            rowCount={foundPagination.rowCount}
             getRowId={(row) => row.reportid}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
+            pageSizeOptions={[5, 10, 20]}
             checkboxSelection
             disableMultipleRowSelection
-            loading={loading}
             sx={{ overflowX: "auto" }}
             getRowHeight={() => "auto"}
             onRowSelectionModelChange={(rowSelectionModel) => {
