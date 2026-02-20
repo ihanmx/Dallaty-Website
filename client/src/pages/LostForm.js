@@ -143,7 +143,7 @@ const LostForm = () => {
         setFileName("");
       }
     } catch (err) {
-      console.error(err.response?.data || err.message);
+      // console.error(err.response?.data || err.message);
       if (err.response?.status === 429) {
         showSnackbar(
           t("Too many submissions. Please try again later."),

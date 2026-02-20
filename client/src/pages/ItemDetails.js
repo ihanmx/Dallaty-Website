@@ -32,10 +32,10 @@ const ItemDetails = () => {
       try {
         const res = await axios.get(`/api/item-details/${reportId}`);
 
-        console.log("server res with details", res);
+        // console.log("server res with details", res);
 
         setItemDetails(res.data);
-        console.log("item details", ItemDetails);
+        // console.log("item details", ItemDetails);
         setLoading(false);
       } catch (err) {
         // Axios puts backend response here

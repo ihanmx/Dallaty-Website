@@ -1,17 +1,13 @@
 import axios from "axios";
 import pool from "../config/dp.js";
-import dotenv from "dotenv";
 
 import { sendReportDetails } from "../services/zapiermail.js";
 
-dotenv.config();
-
+import appConfig from "../config/appConfig.js";
 // PayTabs API credentials (keep in .env)
 const PAYTABS_PROFILE_ID = process.env.PAYTABS_PROFILE_ID;
 const PAYTABS_SERVER_KEY = process.env.PAYTABS_SERVER_KEY;
 const PAYTABS_BASE_URL = process.env.PAYTABS_BASE_URL;
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://185.164.25.144";
-const BACKEND_URL = process.env.BACKEND_URL || "http://185.164.25.144";
 
 //done
 export const getPaymentDetails = async (req, res) => {
@@ -20,26 +16,20 @@ export const getPaymentDetails = async (req, res) => {
   try {
     const userReportData = await pool.query(
       "SELECT matched_items.* from matched_items JOIN payments ON payments.report_id=matched_items.lost_reportid WHERE payments.payment_token=$1",
-      [paymentToken]
+      [paymentToken],
     );
 
     if (userReportData.rows.length > 0) {
-      console.log("user report details", userReportData.rows[0]);
+      // console.log("user report details", userReportData.rows[0]);
       res.json(userReportData.rows[0]);
     } else
       res.status(404).json({
-        //development
-        url: `http://localhost:3000/payment-status/invalid?error=invalidToken`,
-        //production
-        // url: `${FRONTEND_URL}/payment-status/invalid?error=invalidToken`,
+        url: `${appConfig.frontendUrl}/payment-status/invalid?error=invalidToken`,
       });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      //development
-      url: `http://localhost:3000/payment-status/invalid?error=serverError`,
-      //production
-      // url: `${FRONTEND_URL}/payment-status/invalid?error=serverError`,
+      url: `${appConfig.frontendUrl}/payment-status/invalid?error=serverError`,
     });
   }
 };
@@ -51,7 +41,7 @@ export const postCreatePayment = async (req, res) => {
     const { paymentToken, agreedToTerms } = req.body;
 
     //access the payment DB to make sure that user has a record + retrive his information to use it in paytabs
-    console.log("create payment calles");
+    // console.log("create payment calles");
     if (!agreedToTerms) {
       return res
         .status(400)
@@ -60,9 +50,9 @@ export const postCreatePayment = async (req, res) => {
 
     const paymentQuery = await pool.query(
       `SELECT * FROM payments WHERE payment_token=$1`,
-      [paymentToken]
+      [paymentToken],
     );
-    console.log("row in payment", paymentQuery.rows[0]);
+    // console.log("row in payment", paymentQuery.rows[0]);
 
     //validate that there is a record of payment for the user
     if (paymentQuery.rows.length === 0) {
@@ -71,21 +61,17 @@ export const postCreatePayment = async (req, res) => {
         .json({ error: "there is no record of user in the payments DB" });
     } else if (paymentQuery.rows[0].status === "success") {
       return res.json({
-        //development
-        url: `http://localhost:3000/payment-status/${paymentQuery.rows[0].report_id}?alreadyPaid=true`,
-        //production
-        // url: `${FRONTEND_URL}/payment-status/${paymentQuery.rows[0].report_id}?alreadyPaid=true`,
+        url: `${appConfig.frontendUrl}/payment-status/${paymentQuery.rows[0].report_id}?alreadyPaid=true`,
       });
     }
 
     const paymentRecord = paymentQuery.rows[0];
     //development
-    const returnUrl = `http://localhost:3000/payment-status/${paymentRecord.report_id}`; //front (success page)
+    const returnUrl = `${appConfig.frontendUrl}/payment-status/${paymentRecord.report_id}`; //front (success page)
     const callbackUrl =
       "https://lourdes-unligatured-benton.ngrok-free.dev/api/webhook"; //hosted back from nogrek to be able to use callcack from paytabs since it does not work with local host
-      //production
-    // const returnUrl = `${FRONTEND_URL}/payment-status/${paymentRecord.report_id}`; //front (success page)
-    // const callbackUrl = `${BACKEND_URL}/api/webhook`; // Production callback URL for PayTabs
+    //production
+    // const callbackUrl = `${appConfig.backendUrl}/api/webhook`; // Production callback URL for PayTabs
 
     const uniqueCartID = `${paymentRecord.report_id}_${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
     //note you must set digital product setting from paytabs dashboard
@@ -112,13 +98,13 @@ export const postCreatePayment = async (req, res) => {
 
     const { tran_ref, redirect_url, cart_id } = response.data; //extract reference and redirect URL from paytabs response
 
-    console.log("the res of Paytabs", response.data);
+    // console.log("the res of Paytabs", response.data);
 
     //now the user has created a payment proccess it paytabs we are going to store it ref of the procees from paytabs res
     //from paytabs in payment DB and change the record status to initiated
     await pool.query(
       `UPDATE payments SET paytabs_tran_ref=$1, status='initiated', cart_id=$2,agreed_to_terms=$3 WHERE payment_token=$4`,
-      [tran_ref, uniqueCartID, agreedToTerms, paymentToken]
+      [tran_ref, uniqueCartID, agreedToTerms, paymentToken],
     );
     //finally the route will send the redirect URL as a response
 
@@ -126,7 +112,7 @@ export const postCreatePayment = async (req, res) => {
   } catch (error) {
     console.error(
       "Error creating PayTabs payment:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: "Payment initialization failed" });
   }
@@ -137,7 +123,7 @@ export const postCreatePayment = async (req, res) => {
 export const postPaymentWebhook = async (req, res) => {
   try {
     console.log("✅ Webhook triggered");
-    console.log("Webhook full body:", JSON.stringify(req.body, null, 2));
+    // console.log("Webhook full body:", JSON.stringify(req.body, null, 2));
     const { tran_ref, payment_result, cart_id } = req.body;
 
     if (!tran_ref || !cart_id) {
@@ -151,30 +137,29 @@ export const postPaymentWebhook = async (req, res) => {
       statusCode === "A"
         ? "success"
         : statusCode === "D"
-        ? "declined"
-        : "failed";
- 
+          ? "declined"
+          : "failed";
 
     // Extract report ID (we used cart_id = `${reportId}_${Date.now()}`)
     const originalReportId = cart_id.split("_")[0];
-    console.error("From webhook the report ID is:", originalReportId);
+    // console.error("From webhook the report ID is:", originalReportId);
 
     // Update payments table
     await pool.query(
       `UPDATE payments SET status=$1, paytabs_tran_ref=$2 WHERE report_id=$3`,
-      [status, tran_ref, originalReportId]
+      [status, tran_ref, originalReportId],
     );
 
     // If payment succeeded, mark lostreports as paid
     if (status === "success") {
       const lostUserData = await pool.query(
         `UPDATE lostreports SET status='paid' WHERE reportid=$1 RETURNING *`,
-        [originalReportId]
+        [originalReportId],
       );
 
       const lostUserDataRow = lostUserData.rows[0];
 
-      console.log("for zapier send th id", lostUserDataRow.reportid);
+      // console.log("for zapier send th id", lostUserDataRow.reportid);
       // const reportData = await pool.query(
       //   "SELECT * from matched_items WHERE lost_reportid=$1",
       //   [originalReportId]
@@ -195,7 +180,7 @@ export const postPaymentWebhook = async (req, res) => {
       sendReportDetails(
         lostUserDataRow.reportid,
         lostUserDataRow.email,
-        lostUserDataRow.name
+        lostUserDataRow.name,
 
         // reportDataRow.location,
         // reportDataRow.description,
@@ -223,7 +208,7 @@ export const getPaymentStatus = async (req, res) => {
     const { reportId } = req.params;
     const result = await pool.query(
       `SELECT status FROM payments WHERE report_id=$1`,
-      [reportId]
+      [reportId],
     );
 
     if (result.rows.length === 0) {

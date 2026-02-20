@@ -293,7 +293,7 @@ export const postConfirmMatchLost = async (req, res) => {
       return res.status(400).json({ error: "found_already_matched" });
     }
 
-    console.log(lostRow);
+    // console.log(lostRow);
 
     //update LostReports database by the admin
     await pool.query(

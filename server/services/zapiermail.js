@@ -1,19 +1,10 @@
 import axios from "axios";
-import dotenv from "dotenv";
+import appConfig from "../config/appConfig.js";
 
-dotenv.config();
-//development
 const sendPaymentEmail = async (toEmail, userName, paymentToken) => {
-  const paymentLink = `http://localhost:3000/payment/${paymentToken}`;
-  console.log(paymentLink);
-  //development
+  const paymentLink = `${appConfig.frontendUrl}/payment/${paymentToken}`;
+  // console.log(paymentLink);
 
-  // production
-  // const FRONTEND_URL = process.env.FRONTEND_URL || "http://185.164.25.144";
-
-  // const sendPaymentEmail = async (toEmail, userName, paymentToken) => {
-  //   const paymentLink = `${FRONTEND_URL}/payment/${paymentToken}`;
-  //production
   try {
     await axios.post(process.env.ZAPIER_PAYMENT_WEBHOOK_URL, {
       email: toEmail,
@@ -49,11 +40,9 @@ const sendReportDetails = async (
   // recipientDescription,
   // foundDate
 ) => {
-  //development
-  const DetailsLink = `http://localhost:3000/item-details/${reportId}`;
-  console.log(DetailsLink);
-  //production
-  // const DetailsLink = `${FRONTEND_URL}/item-details/${reportId}`;
+  const DetailsLink = `${appConfig.frontendUrl}/item-details/${reportId}`;
+  // console.log(DetailsLink);
+
   try {
     await axios.post(process.env.ZAPIER_ITEM_DETAILS_WEBHOOK_URL, {
       reportId: reportId,
