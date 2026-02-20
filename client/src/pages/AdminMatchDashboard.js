@@ -1,13 +1,19 @@
 //React hooks
 import { useState, useEffect } from "react";
-//axios API
-import axios from "../api/axios";
+
 //MUI components
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
-//React router
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+
 import { Stack } from "@mui/system";
+
+import useLogout from "../hooks/useLogout";
+import { useNavigate } from "react-router-dom";
+
+//React router
+
 import { Link } from "react-router-dom";
 
 //api config
@@ -15,6 +21,7 @@ import config from "../config";
 import usePagination from "../hooks/usePagination";
 import useDebounce from "../hooks/useDebounce";
 const AdminMatchDashboard = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [lostReports, setLostReports] = useState([]);
   const [foundReports, setFoundReports] = useState([]);
   // Search state
@@ -36,6 +43,9 @@ const AdminMatchDashboard = () => {
   const debouncedLostSearch = useDebounce(lostSearch, 400);
   const debouncedFoundSearch = useDebounce(foundSearch, 400);
 
+  const logout = useLogout();
+  const navigate = useNavigate();
+
   // re-fetch lost when its page OR search changes
   useEffect(() => {
     fetchLostReports();
@@ -49,11 +59,11 @@ const AdminMatchDashboard = () => {
     setLostLoading(true);
     try {
       const { page, pageSize } = lostPagination.paginationModel; //extract model state
-      const res = await axios.get(`/admin/table/lostreports`, {
+      const res = await axiosPrivate.get(`/admin/table/lostreports`, {
         params: {
           page: page + 1, //MUI counts from 0
           limit: pageSize,
-          search: lostSearch || undefined, //this ommit params if search is empty
+          search: debouncedLostSearch || undefined, //this ommit params if search is empty
         },
       });
 
@@ -70,11 +80,11 @@ const AdminMatchDashboard = () => {
     setFoundLoading(true);
     try {
       const { page, pageSize } = foundPagination.paginationModel;
-      const res = await axios.get(`/admin/table/foundreports`, {
+      const res = await axiosPrivate.get(`/admin/table/foundreports`, {
         params: {
           page: page + 1,
           limit: pageSize,
-          search: foundSearch || undefined,
+          search: debouncedFoundSearch || undefined,
         },
       });
       setFoundReports(res.data.rows);
@@ -104,7 +114,7 @@ const AdminMatchDashboard = () => {
         matchedFoundReportId: selectedFoundReportId,
       };
 
-      const res = await axios.post(`/admin/confirm-match-lost`, payload);
+      const res = await axiosPrivate.post("/admin/confirm-match-lost", payload);
       alert(res.data.message || "Payment email sent successfully.");
       fetchFoundReports();
       fetchLostReports();
@@ -216,6 +226,17 @@ const AdminMatchDashboard = () => {
             >
               Submit Match
             </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              // sx={{ width: "40%", mt: 2 }}
+              onClick={async () => {
+                await logout();
+                navigate("/admin-login", { replace: true });
+              }}
+            >
+              Logout
+            </Button>
 
             <Button variant="outlined" component={Link} to="/admin-db-viewer">
               View RAW Database (Tables)
@@ -274,7 +295,7 @@ const AdminMatchDashboard = () => {
             getRowHeight={() => "auto"}
             onRowSelectionModelChange={(rowSelectionModel) => {
               setSelectedLostReportId(...rowSelectionModel.ids);
-              console.log(...rowSelectionModel.ids); //...  because  rowSelectionModel.ids gives set as result and to convert set into array i need to use ...
+              // console.log(...rowSelectionModel.ids); //...  because  rowSelectionModel.ids gives set as result and to convert set into array i need to use ...
             }}
           />
         </Box>
@@ -313,7 +334,7 @@ const AdminMatchDashboard = () => {
             getRowHeight={() => "auto"}
             onRowSelectionModelChange={(rowSelectionModel) => {
               setSelectedFoundReportId(...rowSelectionModel.ids);
-              console.log(...rowSelectionModel.ids); //...  because  rowSelectionModel.ids gives set as result and to convert set into array i need to use ...
+              // console.log(...rowSelectionModel.ids); //...  because  rowSelectionModel.ids gives set as result and to convert set into array i need to use ...
             }}
           />
         </Box>

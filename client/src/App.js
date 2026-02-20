@@ -3,6 +3,8 @@ import { useMemo, useEffect } from "react";
 
 // React router-dom
 import { Routes, Route } from "react-router-dom";
+import RequireAuth from "./components/RequireAuth";
+import PersistLogin from "./components/PersistLogin";
 
 //contexts
 import { LostUserInfoProvider } from "./contexts/LostUserInfoContext";
@@ -115,14 +117,13 @@ function App() {
                     {/* admin dashboard  */}
 
                     <Route path="/admin-login" element={<AdminLogin />} />
-                    <Route
-                      path="/admin-match-dashboard"
-                      element={<AdminMatchDashboard />}
-                    />
-                    <Route
-                      path="/admin-db-viewer"
-                      element={<DatabaseViewer />}
-                    />
+                    {/* Protected admin routes */}
+                    <Route element={<PersistLogin />}>
+                      <Route element={<RequireAuth />}>
+                        <Route path="/admin-match-dashboard" element={<AdminMatchDashboard />} />
+                        <Route path="/admin-db-viewer" element={<DatabaseViewer />} />
+                      </Route>
+                    </Route>
                     {/* displays item details for the users who paid the fees */}
 
                     <Route

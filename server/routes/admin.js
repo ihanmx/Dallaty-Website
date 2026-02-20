@@ -9,7 +9,7 @@ import {
   deleteTableRows,
 } from "../controllers/AdminController.js";
 //refresh token controller
-import { getRefreshToken } from "../controllers/refreshTokenController.js";
+import handleRefreshToken from "../controllers/refreshTokenController.js";
 //auth middleware
 import { verifyAdminToken } from "../middleware/authMiddleware.js";
 import { loginLimiter } from "../config/rateLimiter.js";
@@ -22,7 +22,7 @@ router.post("/login", loginLimiter, postLogin);
 // Refresh Token Route (MUST be public/before middleware)
 // Frontend calls this when it gets a 403 error
 // Frontend endpoint: GET /admin/refresh
-router.get("/refresh", getRefreshToken);
+router.get("/refresh", handleRefreshToken);
 // Logout Route
 // Frontend endpoint: POST /admin/logout
 router.post("/logout", postLogout);
@@ -30,7 +30,7 @@ router.post("/logout", postLogout);
 //  2. Protected Routes (Require Valid Access Token)
 
 // Apply authentication middleware to all routes below this line
-// router.use(verifyAdminToken);
+router.use(verifyAdminToken);
 // Frontend endpoint: GET /admin/dashboard-data
 // router.get("/dashboard-data", getDashboardData);
 // Frontend endpoint: GET /admin/table/:tableName

@@ -2,8 +2,20 @@
 // This page is based on the LostForm page structure and MUI design
 
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, InputLabel } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import axios from "../api/axios";
+import useAuth from "../hooks/useAuth";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  InputLabel,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
+import useLocalStorage from "../hooks/useLocalStorage";
 import design1 from "../images/design1.png";
 
 const AdminLogin = () => {
@@ -11,7 +23,13 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { setAuth } = useAuth();
   const { t, i18n } = useTranslation();
+
+  // Remember me (persist) state
+  const [persist, setPersist] = useLocalStorage("persist", false);
 
   // Handle email input change
   const handleEmailChange = (e) => setEmail(e.target.value);
@@ -19,11 +37,31 @@ const AdminLogin = () => {
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: Implement admin login logic here
-    setTimeout(() => setLoading(false), 1000);
+    setError("");
+    try {
+      const response = await axios.post(
+        "/admin/login",
+        { email, password },
+        { withCredentials: true },
+      );
+      setAuth({
+        email,
+        accessToken: response?.data?.accessToken,
+        role: "admin",
+      });
+      navigate("/admin-match-dashboard", { replace: true });
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          "Login failed",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,6 +101,8 @@ const AdminLogin = () => {
           boxSizing: "border-box",
         }}
       >
+        {/* Remember me checkbox */}
+
         <Typography
           variant="h3"
           color="primary.main"
@@ -147,6 +187,26 @@ const AdminLogin = () => {
             },
           }}
         />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={persist}
+              onChange={() => setPersist((prev) => !prev)}
+              color="primary"
+            />
+          }
+          label={t("Remember me")}
+          sx={{
+            alignSelf: "flex-start",
+            mt: -1,
+          }}
+        />
+
+        {error && (
+          <Typography color="error" sx={{ textAlign: "center" }}>
+            {error}
+          </Typography>
+        )}
 
         <Button
           type="submit"

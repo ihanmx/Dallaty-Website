@@ -1,7 +1,6 @@
 //react hooks
 import { useState, useEffect } from "react";
-//axios api
-import axios from "../api/axios";
+
 //MUI
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -25,6 +24,9 @@ import { Link } from "react-router-dom";
 //config
 import config from "../config";
 import usePagination from "../hooks/usePagination";
+import useLogout from "../hooks/useLogout";
+import { useNavigate } from "react-router-dom";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const DatabaseViewer = () => {
   const [currentTable, setCurrentTable] = useState("payments");
@@ -40,6 +42,10 @@ const DatabaseViewer = () => {
   const [selectedRows, setSelectedRows] = useState([]); // Track selected rows
   const [openDialog, setOpenDialog] = useState(false);
 
+  const logout = useLogout();
+  const navigate = useNavigate();
+  const axiosPrivate = useAxiosPrivate();
+
   const tables = ["payments", "lostreports", "foundreports", "matched_items"];
 
   useEffect(() => {
@@ -52,7 +58,7 @@ const DatabaseViewer = () => {
     setSelectedRows([]); //  reset selection when fetching
     try {
       const { page, pageSize } = paginationModel;
-      const res = await axios.get(`/admin/table/${tableName}`, {
+      const res = await axiosPrivate.get(`/admin/table/${tableName}`, {
         params: {
           page: page + 1, // MUI is 0-based, backend is 1-based, so add 1
           limit: pageSize,
@@ -128,7 +134,7 @@ const DatabaseViewer = () => {
       payments: "report_id",
     };
 
-    const idField = idFieldMap[currentTable]; //get the correct ID field for the table
+    const idField = idFieldMap[currentTable] || "reportid"; //get the correct ID field for the table
     //selected rows only contains the row IDs, we need to map them to actual database data
     const selectedRowsData = rows.filter((row) =>
       selectedRows.includes(row.id),
@@ -138,7 +144,7 @@ const DatabaseViewer = () => {
     console.log("Delete IDs:", idsToDelete);
 
     try {
-      await axios.delete(`/admin/table/${currentTable}`, {
+      await axiosPrivate.delete(`/admin/table/${currentTable}`, {
         //body
         data: { ids: idsToDelete },
       });
@@ -199,6 +205,18 @@ const DatabaseViewer = () => {
             disabled={selectedRows.length === 0}
           >
             {`Delete (${selectedRows?.length || 0})`}
+          </Button>
+
+          <Button
+            variant="outlined"
+            color="primary"
+            // sx={{ width: "40%", mt: 2, fontWeight: 600, fontSize: 18 }}
+            onClick={async () => {
+              await logout();
+              navigate("/admin-login", { replace: true });
+            }}
+          >
+            Logout
           </Button>
 
           <FormControl sx={{ minWidth: 200 }}>

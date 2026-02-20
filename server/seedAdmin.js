@@ -26,12 +26,12 @@ const seedAdmin = async () => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 2. Try to insert (Do nothing if email exists)
-    const query = `
-      INSERT INTO admins (email, password)
-      VALUES ($1, $2)
-      ON CONFLICT (email) DO NOTHING
-      RETURNING *;
-    `;
+const query = `
+  INSERT INTO admins (email, password)
+  VALUES ($1, $2)
+  ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password
+  RETURNING *;
+`;
 
     const result = await pool.query(query, [email, hashedPassword]);
 

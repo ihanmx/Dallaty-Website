@@ -154,10 +154,10 @@ const FoundForm = () => {
         setFilePreview(null);
         setFileName("");
 
-        console.log(foundUserInfo);
+        // console.log(foundUserInfo);
       }
     } catch (err) {
-      console.error(err.response?.data || err.message);
+      // console.error(err.response?.data || err.message);
       if (err.response?.status === 429) {
         showSnackbar(
           t("Too many submissions. Please try again later."),

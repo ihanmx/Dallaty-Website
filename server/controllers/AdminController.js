@@ -4,9 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import { sendPaymentEmail } from "../services/zapiermail.js";
 import bcrypt from "bcrypt"; // Import bcrypt to check hashed passwords
 import jwt from "jsonwebtoken"; // Import JWT to generate tokens
-import dotenv from "dotenv";
-
-dotenv.config();
 
 //  ADMIN LOGIN FUNCTION (UPDATED)
 /**
@@ -15,10 +12,12 @@ dotenv.config();
  */
 export const postLogin = async (req, res) => {
   try {
+    // console.log("[LOGIN] Request body:", req.body);
     const { email, password } = req.body;
 
     // 1. Check if email/password are provided
     if (!email || !password) {
+      // console.log("[LOGIN] Missing email or password");
       return res
         .status(400)
         .json({ message: "Please provide both email and password" });
@@ -28,9 +27,11 @@ export const postLogin = async (req, res) => {
     const result = await pool.query("SELECT * FROM admins WHERE email = $1", [
       email,
     ]);
+    // console.log("[LOGIN] DB result:", result.rows);
 
     // Check if user exists
     if (result.rows.length === 0) {
+      // console.log("[LOGIN] Admin not found");
       return res.status(401).json({ message: "unauthorize" });
     }
 
@@ -38,20 +39,25 @@ export const postLogin = async (req, res) => {
 
     // 3. Compare passwords
     const isMatch = await bcrypt.compare(password, admin.password);
+    // console.log("[LOGIN] Password match:", isMatch);
 
     if (!isMatch) {
+      // console.log("[LOGIN] Invalid credentials");
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     // 4. Generate Tokens (Access + Refresh)
-    // Access Token: Short-lived (15 minutes) for security
+    // console.log(
+    //   "[LOGIN] Generating tokens with secret:",
+    //   process.env.ACCESS_TOKEN_SECRET,
+    //   process.env.REFRESH_TOKEN_SECRET,
+    // );
     const accessToken = jwt.sign(
       { id: admin.id, email: admin.email },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "15m" },
     );
 
-    // Refresh Token: Long-lived (e.g., 7 days) to maintain session
     const refreshToken = jwt.sign(
       { id: admin.id, email: admin.email },
       process.env.REFRESH_TOKEN_SECRET,
@@ -59,14 +65,12 @@ export const postLogin = async (req, res) => {
     );
 
     // 5. Store Refresh Token in Database
-    // This allows us to invalidate the session later (for example on logout)
     await pool.query("UPDATE admins SET refresh_token = $1 WHERE id = $2", [
       refreshToken,
       admin.id,
     ]);
 
     // 6. Send Refresh Token as HttpOnly Cookie
-    // This prevents XSS attacks since JavaScript cannot read this cookie
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -75,13 +79,13 @@ export const postLogin = async (req, res) => {
     });
 
     // 7. Send Access Token in JSON response
+    // console.log("[LOGIN] Login successful, sending accessToken");
     res.json({
       message: "Login successful",
       accessToken: accessToken,
-      // admin: { id: admin.id, email: admin.email } // for the fornt-end if needed
     });
   } catch (error) {
-    console.error(error.message);
+    console.error("[LOGIN] Error:", error.message, error);
     res.status(500).json({ message: "Server Error" });
   }
 };
