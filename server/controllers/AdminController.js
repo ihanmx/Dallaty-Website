@@ -21,11 +21,15 @@ export const login = async (req, res) => {
     // 1. Check if email/password are provided
     if (!email || !password) {
       console.log("[LOGIN] Missing email or password");
-      return res.status(400).json({ message: "Please provide both email and password" });
+      return res
+        .status(400)
+        .json({ message: "Please provide both email and password" });
     }
 
     // 2. Find admin in Database
-    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [email]);
+    const result = await pool.query("SELECT * FROM admins WHERE email = $1", [
+      email,
+    ]);
     console.log("[LOGIN] DB result:", result.rows);
 
     // Check if user exists
@@ -46,7 +50,11 @@ export const login = async (req, res) => {
     }
 
     // 4. Generate Tokens (Access + Refresh)
-    console.log("[LOGIN] Generating tokens with secret:", process.env.ACCESS_TOKEN_SECRET, process.env.REFRESH_TOKEN_SECRET);
+    console.log(
+      "[LOGIN] Generating tokens with secret:",
+      process.env.ACCESS_TOKEN_SECRET,
+      process.env.REFRESH_TOKEN_SECRET,
+    );
     const accessToken = jwt.sign(
       { id: admin.id, email: admin.email },
       process.env.ACCESS_TOKEN_SECRET,
@@ -60,7 +68,10 @@ export const login = async (req, res) => {
     );
 
     // 5. Store Refresh Token in Database
-    await pool.query("UPDATE admins SET refresh_token = $1 WHERE id = $2", [refreshToken, admin.id]);
+    await pool.query("UPDATE admins SET refresh_token = $1 WHERE id = $2", [
+      refreshToken,
+      admin.id,
+    ]);
 
     // 6. Send Refresh Token as HttpOnly Cookie
     res.cookie("jwt", refreshToken, {
@@ -105,7 +116,9 @@ export const logout = async (req, res) => {
     // If token found in DB, remove it
     if (foundAdmin.rows.length > 0) {
       const adminId = foundAdmin.rows[0].id;
-      await pool.query("UPDATE admins SET refresh_token = NULL WHERE id = $1", [adminId]);
+      await pool.query("UPDATE admins SET refresh_token = NULL WHERE id = $1", [
+        adminId,
+      ]);
     }
 
     // Clear cookie (it Must match login cookie settings)
@@ -251,10 +264,6 @@ export const postConfirmMatchFound = async (req, res) => {
   }
 };
 
-
-
-
-
 export const getTableData = async (req, res) => {
   const { tableName } = req.params;
   const allowedTables = [
@@ -278,12 +287,17 @@ export const getTableData = async (req, res) => {
   }
 };
 
-
 export const deleteTableRows = async (req, res) => {
-  const {tableName} = req.params;
-  const {ids}=req.body;//expecting an array of IDs to delete
-    const allowedTables = ['users', 'lostreports', 'foundreports', 'payments', 'matched_items'];
-      if (!allowedTables.includes(tableName)) {
+  const { tableName } = req.params;
+  const { ids } = req.body; //expecting an array of IDs to delete
+  const allowedTables = [
+    "users",
+    "lostreports",
+    "foundreports",
+    "payments",
+    "matched_items",
+  ];
+  if (!allowedTables.includes(tableName)) {
     return res.status(400).json({ error: "Invalid table name" });
   }
 
@@ -291,31 +305,26 @@ export const deleteTableRows = async (req, res) => {
     return res.status(400).json({ error: "No IDs provided" });
   }
 
-  try{  
-     const idColumnMap = {
-    'lostreports': 'reportid',
-    'foundreports': 'reportid',
-    'payments': 'report_id',}
+  try {
+    const idColumnMap = {
+      lostreports: "reportid",
+      foundreports: "reportid",
+      payments: "report_id",
+    };
 
-      const idColumn = idColumnMap[tableName] || 'id';
+    const idColumn = idColumnMap[tableName] || "id";
 
-        const result = await pool.query(
+    const result = await pool.query(
       `DELETE FROM ${tableName} WHERE ${idColumn} = ANY($1) RETURNING *`,
-      [ids]
+      [ids],
     );
-    
-    res.json({ 
+
+    res.json({
       message: `${result.rowCount} row(s) deleted successfully`,
-      deletedRows: result.rows 
+      deletedRows: result.rows,
     });
   } catch (error) {
     console.error("Error deleting rows:", error);
     res.status(500).json({ error: "Failed to delete rows" });
   }
 };
-
-
-
-
-
-

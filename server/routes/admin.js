@@ -10,7 +10,7 @@ import {
   deleteTableRows,
 } from "../controllers/AdminController.js";
 //refresh token controller
-import { handleRefreshToken } from "../controllers/refreshTokenController.js";
+import handleRefreshToken from "../controllers/refreshTokenController.js";
 //auth middleware
 import { verifyAdminToken } from "../middleware/authMiddleware.js";
 
@@ -31,7 +31,7 @@ router.post("/logout", logout);
 //  2. Protected Routes (Require Valid Access Token)
 
 // Apply authentication middleware to all routes below this line
-// router.use(verifyAdminToken);
+router.use(verifyAdminToken);
 // Frontend endpoint: GET /admin/dashboard-data
 router.get("/dashboard-data", getDashboardData);
 // Frontend endpoint: GET /admin/table/:tableName

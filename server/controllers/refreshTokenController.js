@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const handleRefreshToken = async (req, res) => {
+const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
 
   // 1. Check if cookies exist and contain jwt
@@ -33,11 +33,13 @@ export const handleRefreshToken = async (req, res) => {
         if (err || admin.id !== decoded.id) return res.sendStatus(403);
 
         // 4. If valid, generate a NEW Access Token
+
         const accessToken = jwt.sign(
           { id: decoded.id, email: decoded.email },
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: "15m" }, // Short life for security
         );
+        console.log("refreshed");
 
         // Send the new access token to frontend
         res.json({ accessToken });
@@ -48,3 +50,5 @@ export const handleRefreshToken = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+export default handleRefreshToken;
