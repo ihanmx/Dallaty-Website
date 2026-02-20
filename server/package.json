@@ -14,8 +14,6 @@
     "seed:data": "node seedData.js"
   },
   "dependencies": {
-    "@mui/x-data-grid": "^8.25.0",
-    "@ngrok/ngrok": "^1.5.2",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.1",
@@ -24,18 +22,15 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
-    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.3",
-    "mailersend": "^2.6.0",
     "multer": "^2.0.2",
     "ngrok": "^5.0.0-beta.2",
-    "nodemailer": "^7.0.10",
-    "path": "^0.12.7",
     "paytabs_pt2": "^2.0.11",
     "pg": "^8.16.3",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "@ngrok/ngrok": "^1.5.2"
   }
 }

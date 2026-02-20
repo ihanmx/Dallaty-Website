@@ -11,7 +11,6 @@ import lostFormRoute from "./routes/lostForm.js";
 import foundFormRoute from "./routes/foundForm.js";
 import adminRoute from "./routes/admin.js";
 import matchedItemRouter from "./routes/matchedItem.js";
-import ngrok from "@ngrok/ngrok";
 import corsOptions from "./config/corsOptions.js";
 
 //development
@@ -86,14 +85,16 @@ app.use((req, res, next) => {
 // Initialize database tables
 await initializeTables(); //
 app.listen(port, async () => {
-  console.log(`✅ Server is running locally on port ${port}`); // Connect ngrok tunnel
-  const listener = await ngrok.forward({
-    // The port your app is running on.
-    addr: 5000,
-    authtoken: process.env.NGROK_AUTHTOKEN, // Secure your endpoint with a traffic policy. // This could also be a path to a traffic policy file.
-  });
+  console.log(`✅ Server is running locally on port ${port}`);
 
-  console.log(`Ingress established at ${listener.url()}`);
+  if (process.env.NGROK_AUTHTOKEN) {
+    const { default: ngrok } = await import("@ngrok/ngrok");
+    const listener = await ngrok.forward({
+      addr: port,
+      authtoken: process.env.NGROK_AUTHTOKEN,
+    });
+    console.log(`Ingress established at ${listener.url()}`);
+  }
 });
 
 //production
