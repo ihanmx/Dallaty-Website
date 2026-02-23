@@ -18,15 +18,15 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const seedAdmin = async () => {
-  const email = "admin@test.com";
-  const password = "123456";
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
 
   try {
     // 1. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 2. Try to insert (Do nothing if email exists)
-const query = `
+    const query = `
   INSERT INTO admins (email, password)
   VALUES ($1, $2)
   ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password
