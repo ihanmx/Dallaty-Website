@@ -57,7 +57,6 @@ export const initializeTables = async () => {
 
       CREATE TABLE IF NOT EXISTS payments (
         id SERIAL PRIMARY KEY,
-        order_id VARCHAR(50),
         paytabs_tran_ref VARCHAR(100),
         status VARCHAR(50),
         created_at TIMESTAMP DEFAULT NOW(),
