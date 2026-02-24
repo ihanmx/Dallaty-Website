@@ -73,8 +73,8 @@ export const postLogin = async (req, res) => {
     // 6. Send Refresh Token as HttpOnly Cookie
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: false,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -121,8 +121,8 @@ export const postLogout = async (req, res) => {
     // Clear cookie (it Must match login cookie settings)
     res.clearCookie("jwt", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      secure: false,
     });
 
     res.sendStatus(204);
