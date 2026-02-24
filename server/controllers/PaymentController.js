@@ -68,10 +68,7 @@ export const postCreatePayment = async (req, res) => {
     const paymentRecord = paymentQuery.rows[0];
     //development
     const returnUrl = `${appConfig.frontendUrl}/payment-status/${paymentRecord.report_id}`; //front (success page)
-    const callbackUrl =
-      "https://lourdes-unligatured-benton.ngrok-free.dev/api/webhook"; //hosted back from nogrek to be able to use callcack from paytabs since it does not work with local host
-    //production
-    // const callbackUrl = `${appConfig.backendUrl}/api/webhook`; // Production callback URL for PayTabs
+    const callbackUrl = `${appConfig.backendUrl}/api/webhook`; // Production callback URL for PayTabs
 
     const uniqueCartID = `${paymentRecord.report_id}_${Date.now()}`; //we combined the date of using with the card ID to avoid duplication error when the user access the link multiple times
     //note you must set digital product setting from paytabs dashboard

@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
 import Typography from "@mui/material/Typography";
@@ -15,7 +15,7 @@ import design1 from "../images/design1.png";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import { useTranslation } from "react-i18next";
-import Modal from "@mui/material/Modal";
+
 //api config
 import config from "../config/index";
 
