@@ -134,7 +134,7 @@ const DatabaseViewer = () => {
       payments: "report_id",
     };
 
-    const idField = idFieldMap[currentTable] || "reportid"; //get the correct ID field for the table
+    const idField = idFieldMap[currentTable] || "id"; //get the correct ID field for the table
     //selected rows only contains the row IDs, we need to map them to actual database data
     const selectedRowsData = rows.filter((row) =>
       selectedRows.includes(row.id),
