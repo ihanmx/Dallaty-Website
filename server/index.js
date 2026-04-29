@@ -44,9 +44,9 @@ app.use("/uploads/found", express.static(uploadsFoundDir));
 
 //development
 // Root route for testing server status.
-// app.get("/", (req, res) => {
-//   res.send("<h1>here is server 5000</h1>");
-// });
+app.get("/", (req, res) => {
+  res.send("<h1>here is server 5000</h1>");
+});
 //development
 
 //production
@@ -67,13 +67,13 @@ app.use("/admin", adminRoute);
 app.use(matchedItemRouter);
 
 //development
-// app.get("/test", (req, res) => {
-//   console.log("✅ /test route reached through ngrok");
-//   res.send("Ngrok works!");
-// });
-//development
+app.get("/test", (req, res) => {
+  console.log("✅ /test route reached through ngrok");
+  res.send("Ngrok works!");
+});
+// development;
 
-//production
+// production;
 // app.get("/test", (req, res) => {
 //   console.log("✅ /test route reached");
 //   res.send("Server is running!");
@@ -86,24 +86,24 @@ app.use((req, res, next) => {
 });
 
 // Initialize database tables
-// await initializeTables(); //
-// app.listen(port, async () => {
-//   console.log(`✅ Server is running locally on port ${port}`);
+await initializeTables(); //
+app.listen(port, async () => {
+  console.log(`✅ Server is running locally on port ${port}`);
 
-//   if (process.env.NGROK_AUTHTOKEN) {
-//     const { default: ngrok } = await import("@ngrok/ngrok");
-//     const listener = await ngrok.forward({
-//       addr: port,
-//       authtoken: process.env.NGROK_AUTHTOKEN,
-//     });
-//     console.log(`Ingress established at ${listener.url()}`);
-//   }
-// });
+  if (process.env.NGROK_AUTHTOKEN) {
+    const { default: ngrok } = await import("@ngrok/ngrok");
+    const listener = await ngrok.forward({
+      addr: port,
+      authtoken: process.env.NGROK_AUTHTOKEN,
+    });
+    console.log(`Ingress established at ${listener.url()}`);
+  }
+});
 
 //production
 // Initialize database tables and start server
-await initializeTables();
-app.listen(port, "0.0.0.0", () => {
-  console.log(`✅ Server is running on port ${port}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || "development"}`);
-});
+// await initializeTables();
+// app.listen(port, "0.0.0.0", () => {
+//   console.log(`✅ Server is running on port ${port}`);
+//   console.log(`📍 Environment: ${process.env.NODE_ENV || "development"}`);
+// });
